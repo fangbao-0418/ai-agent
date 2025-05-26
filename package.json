@@ -1,0 +1,37 @@
+{
+  "name": "browser-use-system",
+  "version": "1.0.0",
+  "description": "Browser Use AI Agent Control System with React + Socket.io",
+  "private": true,
+  "scripts": {
+    "dev": "./start-dev.sh",
+    "dev:agent": "node dist/node/server.js",
+    "build:agent": "ncc build dist/node/server.js -o dist2",
+    "build:tcp-agent": "ncc build dist/node/tcp-server.js -o dist2",
+    "test:agent": "node dist2/index.js",
+    "dev:windows": "start-dev.bat",
+    "dev:client": "cd src/client && npm run dev",
+    "dev:server": "cd src/node && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd src/client && npm run build",
+    "build:server": "cd src/node && npm run build",
+    "install:all": "cd src/client && npm install && cd ../node && npm install",
+    "clean": "rm -rf src/client/node_modules src/node/node_modules src/client/dist src/node/dist",
+    "start": "cd src/node && npm start"
+  },
+  "workspaces": [
+    "src/client",
+    "src/node"
+  ],
+  "keywords": [
+    "browser-use",
+    "ai-agent",
+    "react",
+    "socket.io",
+    "rsbuild",
+    "automation"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}

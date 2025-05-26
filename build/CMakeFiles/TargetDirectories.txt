@@ -1,0 +1,8 @@
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/CppNodeApp.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/edit_cache.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/rebuild_cache.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/list_install_components.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/install.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/install/local.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/install/strip.dir
+/Users/fb/Documents/ai/cppnode/build/CMakeFiles/CppNodeApp_autogen.dir
