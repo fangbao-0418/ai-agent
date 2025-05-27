@@ -9,10 +9,10 @@ class AgentMessageServer {
   constructor () {
     this.agent = new AgentServer({
       onData: (e) => {
-        this.socket.emit('agent_message', JSON.stringify(e))
+        this.socket.emit('agent_message', e)
       },
       onError: (e) => {
-        this.socket.emit('agent_error', JSON.stringify(e))
+        this.socket.emit('agent_error', e)
       }
     });
   }
@@ -41,23 +41,25 @@ class AgentMessageServer {
   listen (socket: any) {
     this.socket = socket;
     this.socket.on('execute_command', async (data: string) => {
-      
       this.onExecuteCommand(JSON.parse(data))
     })
 
     // 处理停止代理
     socket.on('stop_agent', () => {
       this.agent.stop();
+      this.socket.emit('agent_stopped');
     });
 
     // 处理暂停代理
     socket.on('pause_agent', () => {
       this.agent.pause();
+      this.socket.emit('agent_paused');
     });
 
-    // 处理暂停代理
+    // 处理恢复代理
     socket.on('resume_agent', () => {
       this.agent.resume();
+      this.socket.emit('agent_resumed');
     });
 
     socket.on('disconnect', () => {

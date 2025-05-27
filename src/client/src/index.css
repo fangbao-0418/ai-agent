@@ -48,4 +48,45 @@ body {
     min-width: 200px !important;
     max-width: 200px !important;
   }
+}
+
+/* 思考中动画 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  50% {
+    box-shadow: 0 1px 8px rgba(24, 144, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* 思考气泡动画 */
+@keyframes thinking-dots {
+  0%, 20% {
+    color: #1890ff;
+    transform: scale(1);
+  }
+  50% {
+    color: #40a9ff;
+    transform: scale(1.1);
+  }
+  100% {
+    color: #1890ff;
+    transform: scale(1);
+  }
 } 

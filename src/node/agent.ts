@@ -19,11 +19,11 @@ class AgentServer {
   }
 
   async run (command: string, type: AgentType = 'browser') {
-    const modelVersion: any = '1.5'
+    const modelVersion: any = 'doubao-1.5-15B'
     const logger = new ConsoleLogger('[BrowserGUIAgent]');
     const operator = await DefaultBrowserOperator.getInstance(
-      true,
-      true,
+      false,
+      false,
       // lastStatus === StatusEnum.CALL_USER,
       false,
       SearchEngine.BAIDU,
@@ -38,12 +38,12 @@ class AgentServer {
     // });
     const guiAgent = new GUIAgent({
       model: {
-        // baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-        // apiKey: '40510637-b0b7-4106-a372-acf2983ad03c',
-        // model: 'doubao-1.5-ui-tars-250328',
-        baseURL: 'http://116.148.216.92:32513/v1',
-        apiKey: 'EMPTY',
-        model: 'UI-TARS-1.5-7B',
+        baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
+        apiKey: '40510637-b0b7-4106-a372-acf2983ad03c',
+        model: 'doubao-1.5-ui-tars-250328',
+        // baseURL: 'http://116.148.216.92:32513/v1',
+        // apiKey: 'EMPTY',
+        // model: 'UI-TARS-1.5-7B',
       },
       systemPrompt: getSystemPromptV1_5_Custom('zh', 'normal'),
       logger,
@@ -81,7 +81,11 @@ class AgentServer {
       uiTarsVersion: modelVersion,
     });
     this.guiAgent = guiAgent;
-    await this.guiAgent.run(command);
+    try {
+      await this.guiAgent.run(command);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   pause () {

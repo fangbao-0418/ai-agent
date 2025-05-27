@@ -39,12 +39,6 @@ class BrowserUseServer {
     this.initializeSocketHandlers();
   }
 
-  private initializeMiddleware() {
-    this.app.use(cors());
-    this.app.use(express.json());
-    this.app.use(express.static(path.join(__dirname, '../client/dist')));
-  }
-
   private initializeRoutes() {
     this.app.get('/health', (req, res) => {
       res.json({ 
@@ -57,49 +51,15 @@ class BrowserUseServer {
         }
       });
     });
-
-    // 服务静态文件
-    this.app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-    });
   }
 
   private initializeSocketHandlers() {
     this.io.on('connection', (socket) => {
       console.log('🔗 客户端连接:', socket.id);
-      
-      // 发送当前状态
-      socket.emit('agent_status', {
-        isRunning: this.isAgentRunning,
-        currentAction: this.currentAction,
-        progress: this.progress
-      });
-
       const messageServer = new AgentMessageServer()
       messageServer.listen(socket)
     });
   }
-
-  private updateProgress(socket: any) {
-    const status = {
-      isRunning: this.isAgentRunning,
-      currentAction: this.currentAction,
-      progress: this.progress
-    };
-
-    // 发送给当前连接的客户端
-    socket.emit('agent_status', status);
-    
-    // 广播给所有连接的客户端
-    this.io.emit('agent_status', status);
-    
-    // 发送进度更新
-    this.io.emit('agent_progress', {
-      action: this.currentAction,
-      progress: this.progress
-    });
-  }
-
   public start(port: number = 8888) {
     this.server.listen(port, () => {
       console.log(`🚀 Browser Use 服务器启动成功`);
