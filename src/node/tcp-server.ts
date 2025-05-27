@@ -58,7 +58,8 @@ type Response = CalculateResponse | MessageResponse | ErrorResponse;
 
 // 创建TCP服务器
 const server = net.createServer();
-const HOST = '127.0.0.1';
+// const HOST = '127.0.0.1';
+const HOST = 'localhost';
 const PORT = 8888;
 
 console.log('=== Node.js TCP服务器启动 ===');
@@ -143,21 +144,22 @@ server.on('connection', (socket: net.Socket) => {
   // 接收客户端数据
   socket.on('data', async (data: Buffer) => {
     try {
+      console.log(data, 'data')
       const obj = JSON.parse(data.toString());
       runAgent(obj.command)
       return;
     } catch (error) {
-      console.error('处理消息出错:', error);
-      try {
-        const response: ErrorResponse = {
-          type: 'error',
-          message: '消息格式错误或处理失败',
-          requestId: 'error'
-        };
-        socket.write(JSON.stringify(response));
-      } catch (e) {
-        console.error('发送错误响应失败:', e);
-      }
+      // console.error('处理消息出错:', error);
+      // try {
+      //   const response: ErrorResponse = {
+      //     type: 'error',
+      //     message: '消息格式错误或处理失败',
+      //     requestId: 'error'
+      //   };
+      //   socket.write(JSON.stringify(response));
+      // } catch (e) {
+      //   console.error('发送错误响应失败:', e);
+      // }
     }
   });
   
@@ -167,7 +169,7 @@ server.on('connection', (socket: net.Socket) => {
     content: '欢迎连接到Node.js TCP服务器',
     requestId: 'server-welcome'
   };
-  socket.write(JSON.stringify(welcomeMessage));
+  socket.emit(JSON.stringify(welcomeMessage));
   
   // 客户端断开连接
   socket.on('close', () => {

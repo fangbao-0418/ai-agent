@@ -16,6 +16,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "../node/agent.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

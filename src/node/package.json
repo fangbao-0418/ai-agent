@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "ts-node server.ts",
+    "web-server": "ts-node web-server.ts",
     "build": "tsc",
     "agent": "ts-node agent.ts",
     "tcp": "ts-node tcp-server.ts",

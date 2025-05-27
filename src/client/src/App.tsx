@@ -144,9 +144,9 @@ const App: React.FC = () => {
       // 发送指令到 Node 服务
       socketService.current?.emit('execute_command', {
         command: inputValue,
+        type: 'browser',
         autoMode,
-        type: "browser",
-      });
+      })
     } catch (error) {
       addMessage({
         id: Date.now().toString(),

@@ -4,7 +4,7 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:8888', {
+    this.socket = io('http://127.0.0.1:8888', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
