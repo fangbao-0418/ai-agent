@@ -1,7 +1,8 @@
 import { ConsoleLogger } from '@agent-infra/logger';
-import { DefaultBrowserOperator, SearchEngine } from '@ui-tars/operator-browser';
-import { GUIAgent } from '@ui-tars/sdk';
+import { DefaultBrowserOperator, SearchEngine } from './browser-use/operator-browser';
+import { GUIAgent } from './libs/sdk';
 import { getSystemPromptV1_5_Custom } from './prompts';
+import { LocalBrowser } from '@agent-infra/browser';
 
 export type AgentType = 'browser' | 'computer';
 
@@ -21,21 +22,23 @@ class AgentServer {
   async run (command: string, type: AgentType = 'browser') {
     const modelVersion: any = 'doubao-1.5-15B'
     const logger = new ConsoleLogger('[BrowserGUIAgent]');
+    let isBrowserAlive = false;
+    if (DefaultBrowserOperator.browser) {
+      isBrowserAlive = await DefaultBrowserOperator.browser?.isBrowserAlive()
+    }
+
     const operator = await DefaultBrowserOperator.getInstance(
       false,
       false,
-      // lastStatus === StatusEnum.CALL_USER,
-      false,
+      isBrowserAlive,
       SearchEngine.BAIDU,
     );
+
+    if (isBrowserAlive) {
+      //
+    }
     // const operator = new NutJSElectronOperator();
-    // const operator = new BrowserOperator({
-    //   browser: new LocalBrowser({
-    //     logger,
-    //   }),
-    //   browserType: 'chrome',
-    //   logger,
-    // });
+
     const guiAgent = new GUIAgent({
       model: {
         baseURL: 'https://ark.cn-beijing.volces.com/api/v3',

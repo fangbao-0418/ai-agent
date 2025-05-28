@@ -405,7 +405,7 @@ bool MainFrame::StartNodeServer()
         
         // 获取当前工作目录和脚本路径
         wxString currentDir = wxFileName::GetCwd();
-        wxString scriptPath = currentDir + "/dist2/server.js";
+        wxString scriptPath = currentDir + "/dist2/index.js";
         
         // 检查脚本文件是否存在
         if (!wxFileExists(scriptPath)) {

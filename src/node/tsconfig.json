@@ -11,6 +11,6 @@
     "resolveJsonModule": true,
     "sourceMap": true
   },
-  "include": ["src/node/*", "dist/node/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": ["src/*"],
+  "exclude": ["node_modules"]
 } 
