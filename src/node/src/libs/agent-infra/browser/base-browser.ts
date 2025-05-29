@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import * as puppeteer from 'puppeteer-core';
+import * as fs from 'fs';
 import { Logger, defaultLogger } from '@agent-infra/logger';
 import {
   BrowserInterface,
@@ -100,6 +101,21 @@ export abstract class BaseBrowser implements BrowserInterface {
     this.browser.on('targetcreated', async (target) => {
       const page = await target.page();
       if (page) {
+
+        // const client = await target.createCDPSession();
+        // if (client) {
+        //   // await client.send('Browser.setDownloadBehavior', {
+        //   //   behavior: 'allow',
+        //   //   downloadPath: '/Users/fb/Documents/ai/cppnode/file/downloads'
+        //   // });
+          
+        //   // client.on('Browser.downloadProgress', (event) => {
+        //   //   if (event.state === 'completed') {
+        //   //     console.log('下载完成:', event.guid);
+        //   //   }
+        //   // });  
+        // }
+
         this.logger.info('New page created:', await page.url());
         this.activePage = page;
 
@@ -114,6 +130,29 @@ export abstract class BaseBrowser implements BrowserInterface {
             this.activePage = null;
           }
         });
+
+        page.on('download', (download) => {
+          console.log('Download started:', download);
+          // download.on('end', () => {
+          //   this.logger.info('Download completed:', download.url());
+          // });
+        });
+
+        // page.on('response', async (response) => {
+        //   const buffer = await response.buffer();
+        //   const url = response.url();
+        //   const contentType = response.headers()['content-type'];
+        //   console.log(url, contentType, 'xxxx')
+        //   const responsebuffer = await response.buffer();
+        //   console.log(responsebuffer, url, 'xxxx')
+        //   const responseHeaders = response.headers();
+        //   if (url.endsWith('.pdf') || contentType === 'application/pdf') {
+           
+        //     // fs.writeFileSync('/path/to/file.pdf', buffer);
+        //   }
+        //   // fs.writeFileSync('/Users/fb/Documents/ai/cppnode/file.pdf', buffer);
+        //   // console.log('Response:', response);
+        // });
       }
     });
   }

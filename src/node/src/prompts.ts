@@ -192,3 +192,9 @@ Action: click(point='<point>10 20</point>')
 
 ## User Instruction
 `;
+
+export const getProfileAnalysisPrompt = (resumes: string) => {
+  return `
+  
+  `;
+}

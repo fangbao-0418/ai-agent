@@ -82,7 +82,8 @@ export class LocalBrowser extends BaseBrowser {
       ignoreDefaultArgs: ['--enable-automation'],
       timeout: options.timeout ?? 0,
       downloadBehavior: {
-        policy: 'deny',
+        downloadPath: '/Users/fb/Documents/ai/cppnode/file/downloads2',
+        policy: 'allow',
       },
     };
 

@@ -80,8 +80,8 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('未处理的 Promise 拒绝:', reason);
 });
 
-// 启动服务器
-const server = new BrowserUseServer();
-server.start();
+// // 启动服务器
+// const server = new BrowserUseServer();
+// server.start();
 
 export default BrowserUseServer; 
