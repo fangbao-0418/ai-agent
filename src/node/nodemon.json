@@ -2,5 +2,5 @@
   "watch": ["./dist"],
   "ext": "js",
   "ignore": ["node_modules"],
-  "exec": "node ./dist/web-server.js"
+  "exec": "node ./dist/index.js --node-dir /Users/fb/Documents/ai/cppnode/file"
 }

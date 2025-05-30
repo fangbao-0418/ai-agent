@@ -92,15 +92,15 @@ class AgentServer {
   }
 
   pause () {
-    this.guiAgent.pause();
+    this.guiAgent?.pause?.();
   }
 
   resume () {
-    this.guiAgent.resume();
+    this.guiAgent?.resume?.();
   }
 
   stop () {
-    this.guiAgent.stop();
+    this.guiAgent?.stop?.();
   }
 
   socket () {

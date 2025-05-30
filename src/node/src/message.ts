@@ -41,12 +41,13 @@ class AgentMessageServer {
   listen (socket: any) {
     this.socket = socket;
     this.socket.on('execute_command', async (data: string) => {
+      console.log(data, 'data')
       this.onExecuteCommand(JSON.parse(data))
     })
 
     // 处理停止代理
     socket.on('stop_agent', () => {
-      this.agent.stop();
+      this.agent?.stop?.();
       this.socket.emit('agent_stopped');
     });
 

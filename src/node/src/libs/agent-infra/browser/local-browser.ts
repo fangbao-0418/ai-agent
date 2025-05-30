@@ -5,6 +5,7 @@
 import * as puppeteer from 'puppeteer-core';
 import { BrowserFinder } from './browser-finder';
 import { BaseBrowser } from './base-browser';
+import globalData from '../../../global';
 
 import type { BrowserType, LaunchOptions } from './types';
 
@@ -23,7 +24,7 @@ export class LocalBrowser extends BaseBrowser {
    */
   async launch(options: LaunchOptions = {}): Promise<void> {
     this.logger.info('Launching browser with options:', options);
-
+    const downloadDir = globalData.get('download-dir');
     const { path, type } = this.getBrowserInfo(options);
     const viewportWidth = options?.defaultViewport?.width ?? 1280;
     const viewportHeight = options?.defaultViewport?.height ?? 800;
@@ -81,9 +82,11 @@ export class LocalBrowser extends BaseBrowser {
       }),
       ignoreDefaultArgs: ['--enable-automation'],
       timeout: options.timeout ?? 0,
-      downloadBehavior: {
-        downloadPath: '/Users/fb/Documents/ai/cppnode/file/downloads2',
+      downloadBehavior: downloadDir ? {
+        downloadPath: downloadDir,
         policy: 'allow',
+      } : {
+        policy: 'deny',
       },
     };
 

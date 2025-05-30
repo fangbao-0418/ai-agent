@@ -6,9 +6,11 @@
   "scripts": {
     "start": "node dist/server.js",
     "web-server": "ts-node web-server.ts",
+    "tcp-server": "ts-node tcp-server.ts",
     "build": "tsc",
     "tsc-watch": "tsc --watch",
     "dev": "nodemon",
+    "index": "ts-node index.ts",
     "agent": "ts-node agent.ts",
     "tcp": "ts-node tcp-server.ts",
     "tcp-build": "tsc && node dist/tcp-server.js"

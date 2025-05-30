@@ -1,11 +1,24 @@
+
+interface AppStateDataProps {
+  'node-dir': string;
+  'download-dir': string;
+}
+
 class AppState {
-  data: any = {};
+  data: AppStateDataProps = {
+    'node-dir': '',
+    'download-dir': '',
+  };
   constructor() {
   }
-  get(key: string) {
+  
+  get(key: keyof AppStateDataProps) {
+    if (key === 'download-dir') {
+      return this.data['node-dir'] + '/download3';
+    }
     return this.data[key];
   }
-  set(key: string, value: any) {
+  set(key: keyof AppStateDataProps, value: any) {
     this.data[key] = value;
   }
 }

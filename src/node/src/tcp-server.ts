@@ -1,176 +1,110 @@
 import * as net from 'net';
 import * as dotenv from 'dotenv';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import cors from 'cors';
-import path from 'path';
-import { getSystemPromptV1_5, getSystemPromptV1_5_Custom } from './prompts';
-import { DefaultBrowserOperator, BrowserOperator, SearchEngine } from '@ui-tars/operator-browser';
-import { LocalBrowser, BrowserType } from '@agent-infra/browser';
+
+import { getSystemPromptV1_5_Custom } from './prompts';
+import { DefaultBrowserOperator, SearchEngine } from '@ui-tars/operator-browser';
 import { ConsoleLogger } from '@agent-infra/logger';
 import { GUIAgent } from '@ui-tars/sdk';
-import { NutJSElectronOperator } from './computer-use/operator';
-import { logger } from './utils/logger';
+import AgentMessageServer from './message';
 
 // 加载环境变量
 dotenv.config();
 
-// 定义请求和响应的接口
-interface BaseRequest {
-  type: string;
-  requestId: string;
-}
-
-interface CalculateRequest extends BaseRequest {
-  type: 'calculate';
-  a: number;
-  b: number;
-}
-
-interface MessageRequest extends BaseRequest {
-  type: 'message';
-  content: string;
-}
-
-type Request = CalculateRequest | MessageRequest;
-
-interface BaseResponse {
-  type: string;
-  requestId: string;
-}
-
-interface CalculateResponse extends BaseResponse {
-  type: 'calculateResult';
-  result: number;
-}
-
-interface MessageResponse extends BaseResponse {
-  type: 'messageResult';
-  content: string;
-}
-
-interface ErrorResponse extends BaseResponse {
-  type: 'error';
-  message: string;
-}
-
-type Response = CalculateResponse | MessageResponse | ErrorResponse;
-
 // 创建TCP服务器
 const server = net.createServer();
-// const HOST = '127.0.0.1';
+
 const HOST = 'localhost';
 const PORT = 8888;
 
-console.log('=== Node.js TCP服务器启动 ===');
-console.log(`时间: ${new Date().toLocaleString()}`);
-console.log(`进程ID: ${process.pid}`);
-console.log(`版本: Node ${process.version}`);
-console.log(`平台: ${process.platform}`);
-console.log(`当前工作目录: ${process.cwd()}`);
-
-
-async function runAgent (command: string) {
-  const modelVersion: any = '1.5'
-  const logger = new ConsoleLogger('[BrowserGUIAgent]');
-  const operator = await DefaultBrowserOperator.getInstance(
-    true,
-    true,
-    // lastStatus === StatusEnum.CALL_USER,
-    false,
-    SearchEngine.BAIDU,
-  );
-  // const operator = new NutJSElectronOperator();
-  // const operator = new BrowserOperator({
-  //   browser: new LocalBrowser({
-  //     logger,
-  //   }),
-  //   browserType: 'chrome',
-  //   logger,
-  // });
-  const guiAgent = new GUIAgent({
-    model: {
-      // baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-      // apiKey: '40510637-b0b7-4106-a372-acf2983ad03c',
-      // model: 'doubao-1.5-ui-tars-250328',
-      baseURL: 'http://116.148.216.92:32513/v1',
-      apiKey: 'EMPTY',
-      model: 'UI-TARS-1.5-7B',
-    },
-    systemPrompt: getSystemPromptV1_5_Custom('zh', 'normal'),
-    logger,
-    operator: operator,
-    onData: (e)  => {
-      //
-    },
-    onError: (params: any) => {
-      console.log('GUIAgent 错误:', params);
-      if (params && params.error && params.error.message) {
-        console.log('GUIAgent 错误:', params.error.message);
-        // this.io.emit('agent_message', {
-        //   message: `执行失败: ${params.error.message}`,
-        //   status: 'error'
-        // });
-      }
-      if (params && params.message && params.message.includes('context')) {
-        // conror('检测到 context 相关错误');
-      }
-    },
-    retry: {
-      model: {
-        maxRetries: 3,
-      },
-      screenshot: {
-        maxRetries: 5,
-      },
-      execute: {
-        maxRetries: 1,
-      },
-    },
-    maxLoopCount: 200,
-    loopIntervalInMs: 3000,
-    uiTarsVersion: modelVersion,
-  });
-  await guiAgent.run(command);
+function _calculateCRC32(data: Buffer) {
+  // 实际应用中应使用专业的CRC32算法
+  const crypto = require('crypto');
+  const hash = crypto.createHash('sha256').update(data).digest();
+  return hash.readUInt32BE(0);
 }
 
 // 当有新客户端连接时
 server.on('connection', (socket: net.Socket) => {
   console.log(`C++客户端已连接: ${socket.remoteAddress}:${socket.remotePort}`);
+  let buffer: Buffer = Buffer.alloc(0);
+
+  const newSocket: any = {
+    listeners: {},
+    emit: (event: string, data?: any) => {
+      try {
+        const payload = JSON.stringify({
+          event: event,
+          data: data,
+        })
+        const payloadBuf = Buffer.from(payload)
+        
+        const header = Buffer.alloc(4);
+        header.writeUInt32BE(payloadBuf.length);
+        const typeBuf = Buffer.from('00', 'ascii');
+        const crcBuf = Buffer.alloc(4);
+        const dataToCrc = Buffer.concat([typeBuf, payloadBuf]);
+        const crc = _calculateCRC32(dataToCrc);
+        crcBuf.writeUInt32BE(crc);
   
-  // 设置编码
-  socket.setEncoding('utf8');
-  
-  // 接收客户端数据
-  socket.on('data', async (data: Buffer) => {
-    try {
-      console.log(data, 'data')
-      const obj = JSON.parse(data.toString());
-      runAgent(obj.command)
-      return;
-    } catch (error) {
-      // console.error('处理消息出错:', error);
-      // try {
-      //   const response: ErrorResponse = {
-      //     type: 'error',
-      //     message: '消息格式错误或处理失败',
-      //     requestId: 'error'
-      //   };
-      //   socket.write(JSON.stringify(response));
-      // } catch (e) {
-      //   console.error('发送错误响应失败:', e);
-      // }
+        const message = Buffer.concat([
+          header,
+          typeBuf,
+          payloadBuf,
+          crcBuf,
+        ]);
+        socket.write(message);
+        // socket.write(JSON.stringify({
+        //   event: "hide_window",
+        // }));
+        return;
+      } catch (error) {
+        console.error('处理消息出错:', error);
+      }
+    },
+    on: (event: string, callback: (data: any) => any) => {
+      newSocket.listeners[event] = callback;
+    },
+    exec: (event: string, data?: any) => {
+      if (newSocket.listeners[event]) {
+        newSocket.listeners[event](data);
+      }
     }
-  });
+  }
   
-  // 发送欢迎消息
-  const welcomeMessage: MessageResponse = {
-    type: 'messageResult',
-    content: '欢迎连接到Node.js TCP服务器',
-    requestId: 'server-welcome'
-  };
-  socket.emit(JSON.stringify(welcomeMessage));
-  
+  const messageServer = new AgentMessageServer()
+  messageServer.listen(newSocket)
+
+  socket.on('data', async (data: Buffer) => {
+    buffer = Buffer.concat([buffer, data])
+    while (buffer.length >= 4) {
+      const length = buffer.readUInt32BE(0);
+      const fullMessageLength = 4 + 2 + length + 4; // 长度头+类型+数据+CRC
+      if (buffer.length >= fullMessageLength) {
+        const message = buffer.slice(4, 6 + length);
+        const receivedCrc = buffer.readUInt32BE(6 + length);
+        const calculatedCrc = _calculateCRC32(message);
+        if (receivedCrc !== calculatedCrc) {
+          // 如果CRC校验失败，则丢弃当前消息
+          buffer = buffer.slice(fullMessageLength);
+          continue;
+        }
+        // 解析消息内容
+        const type = message.readUInt16BE(0);
+        const payload = message.slice(2);
+        const obj = JSON.parse(payload.toString())
+        newSocket.exec(obj.event, obj.data)
+        buffer = buffer.slice(fullMessageLength);
+      } else {
+        break; // 等待更多数据
+      }
+    };
+    // newSocket.emit('execute_command', JSON.stringify({
+    //   type: "browser",
+    //   command: "帮我打开boss直聘并登录",
+    // }))
+
+    // newSocket.emit('stop_agent')
+  })
   // 客户端断开连接
   socket.on('close', () => {
     console.log('C++客户端已断开');

@@ -1,12 +1,16 @@
 import BrowserUseServer from './web-server';
+
 import globalData from './global';
 const minimist = require('minimist');
 
 const args = minimist(process.argv.slice(2));
 
-const appDir = args.appDir;
+const appDir = args['node-dir'];
+globalData.set('node-dir', appDir);
 
-globalData.set('appDir', appDir);
+function init () {
+  //
+}
 
 const browserOperator = new BrowserUseServer();
 
