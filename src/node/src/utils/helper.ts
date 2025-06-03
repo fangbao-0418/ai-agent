@@ -2,7 +2,7 @@ import globalData from '../global';
 const fs = require('fs');
 
 export function checkDownloadFilesExist () {
-  const downloadDir = globalData.get('download-dir');
+  const downloadDir = globalData.get('temp-download-dir');
   try {
     const files = fs.readdirSync(downloadDir);
     const pdfFiles = files.filter((file: any) => file.toLowerCase().endsWith('.pdf'));

@@ -29,6 +29,18 @@ add_executable(CppNodeApp
     tcpclient.h
 )
 
+# 在Windows上显示控制台窗口（用于显示Node.js输出）
+if(WIN32)
+    # 在Windows上创建控制台窗口
+    set_target_properties(CppNodeApp PROPERTIES
+        WIN32_EXECUTABLE FALSE  # 这将创建控制台应用而不是WIN32应用
+    )
+    # 或者使用这个方式（推荐）
+    target_compile_definitions(CppNodeApp PRIVATE 
+        WIN32_CONSOLE_APP=1
+    )
+endif()
+
 # 链接Qt库
 target_link_libraries(CppNodeApp PRIVATE
     Qt::Core

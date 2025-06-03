@@ -103,6 +103,7 @@ server.on('connection', (socket: net.Socket) => {
   // 客户端断开连接
   socket.on('close', () => {
     console.log('C++客户端已断开');
+    newSocket.exec('disconnect')
   });
   
   // 连接错误处理

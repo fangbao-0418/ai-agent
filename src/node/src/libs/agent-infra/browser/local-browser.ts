@@ -24,10 +24,10 @@ export class LocalBrowser extends BaseBrowser {
    */
   async launch(options: LaunchOptions = {}): Promise<void> {
     this.logger.info('Launching browser with options:', options);
-    const downloadDir = globalData.get('download-dir');
+    const downloadDir = globalData.get('temp-download-dir');
     const { path, type } = this.getBrowserInfo(options);
     const viewportWidth = options?.defaultViewport?.width ?? 1280;
-    const viewportHeight = options?.defaultViewport?.height ?? 800;
+    const viewportHeight = options?.defaultViewport?.height ?? 600;
 
     const puppeteerLaunchOptions: puppeteer.LaunchOptions = {
       browser: type,
@@ -44,7 +44,7 @@ export class LocalBrowser extends BaseBrowser {
       args: [
         '--no-sandbox',
         '--mute-audio',
-        '--disable-gpu',
+        // '--disable-gpu',
         '--disable-http2',
         '--disable-blink-features=AutomationControlled',
         '--disable-infobars',

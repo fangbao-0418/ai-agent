@@ -246,9 +246,6 @@ Qt5Widgets_DIR:PATH=/usr/local/opt/qt@5/lib/cmake/Qt5Widgets
 //The directory containing a CMake configuration file for Qt5.
 Qt5_DIR:PATH=/usr/local/opt/qt@5/lib/cmake/Qt5
 
-//The directory containing a CMake configuration file for Qt6.
-Qt6_DIR:PATH=Qt6_DIR-NOTFOUND
-
 
 ########################
 # INTERNAL cache entries

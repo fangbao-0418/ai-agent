@@ -31,6 +31,12 @@ public:
     QString sendMessage(const QString &message, ResponseCallback callback);
     // 发送计算请求到服务器
     QString sendCalculateRequest(int a, int b, ResponseCallback callback);
+    // 发送执行命令请求
+    QString sendExecuteCommand(const QString &type, const QString &command, ResponseCallback callback);
+    // 直接发送字符串消息
+    QString sendDirectMessage(const QString &message, ResponseCallback callback);
+    // 发送通用请求到服务器
+    QString sendRequest(const QJsonObject &request, ResponseCallback callback);
 
 signals:
     void connected();
@@ -46,12 +52,19 @@ private slots:
     void onTimeout();
 
 private:
-    QString sendRequest(const QJsonObject &request, ResponseCallback callback);
-
     QTcpSocket m_socket;
     QMap<QString, ResponseCallback> m_pendingRequests;
     QTimer m_timeoutTimer;
     static const int TIMEOUT_MS = 5000; // 5秒超时
+    
+    // 黏包处理相关
+    QByteArray m_receiveBuffer;
+    
+    // 协议相关方法
+    QByteArray buildProtocolMessage(const QJsonObject &message);
+    QByteArray buildProtocolMessageDirect(const QByteArray &rawData);
+    quint32 calculateCRC32(const QByteArray &data);
+    void processReceivedData(const QByteArray &data);
 };
 
 #endif // TCPCLIENT_H 

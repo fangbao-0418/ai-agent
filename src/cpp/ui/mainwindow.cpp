@@ -60,8 +60,8 @@ void MainWindow::on_btnSendMessage_clicked()
         return;
     }
     
-    // 发送消息并设置回调
-    m_tcpClient->sendMessage(message, [this](const QJsonObject &response) {
+    // 直接发送JSON字符串消息，不使用{event, data}包装
+    m_tcpClient->sendDirectMessage(message, [this](const QJsonObject &response) {
         if (response.contains("content")) {
             QString result = response["content"].toString();
             ui->labelMessageResult->setText("响应: " + result);
@@ -81,8 +81,16 @@ void MainWindow::on_btnCalculate_clicked()
     int a = ui->spinNum1->value();
     int b = ui->spinNum2->value();
     
-    // 发送计算请求并设置回调
-    m_tcpClient->sendCalculateRequest(a, b, [this, a, b](const QJsonObject &response) {
+    // 构建计算请求的JSON字符串
+    QJsonObject calcData;
+    calcData["a"] = a;
+    calcData["b"] = b;
+    calcData["operation"] = "add";
+    QJsonDocument calcDoc(calcData);
+    QString calcJson = calcDoc.toJson(QJsonDocument::Compact);
+    
+    // 直接发送JSON字符串，不使用{event, data}包装
+    m_tcpClient->sendDirectMessage(calcJson, [this, a, b](const QJsonObject &response) {
         if (response.contains("result")) {
             int result = response["result"].toInt();
             ui->labelCalculateResult->setText(QString("计算结果: %1 + %2 = %3").arg(a).arg(b).arg(result));
@@ -146,14 +154,13 @@ void MainWindow::on_btnOpenBrowser_clicked()
         return;
     }
     
-    // 发送打开浏览器请求
-    QJsonObject request;
-    request["type"] = "openBrowser";
-    request["url"] = "https://www.baidu.com";  // 可以修改为任意URL
+    // 发送执行命令请求（使用正确的协议格式）
+    appendToLog("发送execute_command请求...");
     
-    m_tcpClient->sendRequest(request, [this](const QJsonObject &response) {
+    m_tcpClient->sendExecuteCommand("browser", "帮我打开boss直聘并登录", [this](const QJsonObject &response) {
+        appendToLog("收到execute_command响应: " + QString(QJsonDocument(response).toJson(QJsonDocument::Compact)));
         if (response.contains("status")) {
-            appendToLog("浏览器打开状态: " + response["status"].toString());
+            appendToLog("执行状态: " + response["status"].toString());
         }
     });
 }

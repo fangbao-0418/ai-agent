@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[11];
-    char stringdata0[161];
+    QByteArrayData data[12];
+    char stringdata0[187];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,17 +37,19 @@ QT_MOC_LITERAL(1, 11, 21), // "on_btnConnect_clicked"
 QT_MOC_LITERAL(2, 33, 0), // ""
 QT_MOC_LITERAL(3, 34, 25), // "on_btnSendMessage_clicked"
 QT_MOC_LITERAL(4, 60, 23), // "on_btnCalculate_clicked"
-QT_MOC_LITERAL(5, 84, 14), // "onTcpConnected"
-QT_MOC_LITERAL(6, 99, 17), // "onTcpDisconnected"
-QT_MOC_LITERAL(7, 117, 10), // "onTcpError"
-QT_MOC_LITERAL(8, 128, 8), // "errorMsg"
-QT_MOC_LITERAL(9, 137, 15), // "onTcpLogMessage"
-QT_MOC_LITERAL(10, 153, 7) // "message"
+QT_MOC_LITERAL(5, 84, 25), // "on_btnOpenBrowser_clicked"
+QT_MOC_LITERAL(6, 110, 14), // "onTcpConnected"
+QT_MOC_LITERAL(7, 125, 17), // "onTcpDisconnected"
+QT_MOC_LITERAL(8, 143, 10), // "onTcpError"
+QT_MOC_LITERAL(9, 154, 8), // "errorMsg"
+QT_MOC_LITERAL(10, 163, 15), // "onTcpLogMessage"
+QT_MOC_LITERAL(11, 179, 7) // "message"
 
     },
     "MainWindow\0on_btnConnect_clicked\0\0"
     "on_btnSendMessage_clicked\0"
-    "on_btnCalculate_clicked\0onTcpConnected\0"
+    "on_btnCalculate_clicked\0"
+    "on_btnOpenBrowser_clicked\0onTcpConnected\0"
     "onTcpDisconnected\0onTcpError\0errorMsg\0"
     "onTcpLogMessage\0message"
 };
@@ -59,7 +61,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,13 +69,14 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x08 /* Private */,
-       3,    0,   50,    2, 0x08 /* Private */,
-       4,    0,   51,    2, 0x08 /* Private */,
-       5,    0,   52,    2, 0x08 /* Private */,
-       6,    0,   53,    2, 0x08 /* Private */,
-       7,    1,   54,    2, 0x08 /* Private */,
-       9,    1,   57,    2, 0x08 /* Private */,
+       1,    0,   54,    2, 0x08 /* Private */,
+       3,    0,   55,    2, 0x08 /* Private */,
+       4,    0,   56,    2, 0x08 /* Private */,
+       5,    0,   57,    2, 0x08 /* Private */,
+       6,    0,   58,    2, 0x08 /* Private */,
+       7,    0,   59,    2, 0x08 /* Private */,
+       8,    1,   60,    2, 0x08 /* Private */,
+      10,    1,   63,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -81,8 +84,9 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,    8,
-    QMetaType::Void, QMetaType::QString,   10,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,    9,
+    QMetaType::Void, QMetaType::QString,   11,
 
        0        // eod
 };
@@ -96,10 +100,11 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->on_btnConnect_clicked(); break;
         case 1: _t->on_btnSendMessage_clicked(); break;
         case 2: _t->on_btnCalculate_clicked(); break;
-        case 3: _t->onTcpConnected(); break;
-        case 4: _t->onTcpDisconnected(); break;
-        case 5: _t->onTcpError((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 6: _t->onTcpLogMessage((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 3: _t->on_btnOpenBrowser_clicked(); break;
+        case 4: _t->onTcpConnected(); break;
+        case 5: _t->onTcpDisconnected(); break;
+        case 6: _t->onTcpError((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 7: _t->onTcpLogMessage((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -134,13 +139,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }

@@ -3,6 +3,9 @@ import { DefaultBrowserOperator, SearchEngine } from './browser-use/operator-bro
 import { GUIAgent } from './libs/sdk';
 import { getSystemPromptV1_5_Custom } from './prompts';
 import { LocalBrowser } from '@agent-infra/browser';
+import globalData from './global';
+import { createUniqueID } from './utils/helper';
+import * as fs from 'fs';
 
 export type AgentType = 'browser' | 'computer';
 
@@ -19,7 +22,28 @@ class AgentServer {
     this.onError = options?.onError;
   }
 
+  // 确保有会话ID
+  private ensureSessionId() {
+    let sessionId = globalData.get('session-id');
+    if (!sessionId) {
+      sessionId = createUniqueID();
+      globalData.set('session-id', sessionId);
+      console.log('Agent执行时生成会话ID:', sessionId);
+      
+      // 创建会话临时目录
+      const tempDir = globalData.get('temp-download-dir');
+      if (tempDir && !fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+        console.log('创建会话临时目录:', tempDir);
+      }
+    }
+    return sessionId;
+  }
+
   async run (command: string, type: AgentType = 'browser') {
+    // 确保有会话ID
+    this.ensureSessionId();
+    
     const modelVersion: any = 'doubao-1.5-15B'
     const logger = new ConsoleLogger('[BrowserGUIAgent]');
     let isBrowserAlive = false;

@@ -11,12 +11,39 @@ interface ResumeInfo {
   extractedAt: Date;
 }
 
+// 删除会话文件
+function clearSessionFiles(): void {
+  const sessionId = globalData.get('session-id');
+  const tempDir = globalData.get('temp-download-dir');
+  
+  if (sessionId && tempDir && fs.existsSync(tempDir)) {
+    try {
+      const files = fs.readdirSync(tempDir);
+      console.log(`清理会话 ${sessionId} 中的 ${files.length} 个文件`);
+      
+      files.forEach(file => {
+        const filePath = path.join(tempDir, file);
+        try {
+          fs.unlinkSync(filePath);
+          console.log(`✓ 删除文件: ${file}`);
+        } catch (error) {
+          console.error(`✗ 删除文件失败: ${file} - ${(error as Error).message}`);
+        }
+      });
+      
+      console.log('会话文件清理完成');
+    } catch (error) {
+      console.error('清理会话文件时发生错误:', (error as Error).message);
+    }
+  }
+}
+
 // 初始化必要的目录
 function initializeDirectories(): void {
-  const requiredDirs = [
-    globalData.get('node-dir'),
-    globalData.get('download-dir')
-  ];
+  const nodeDir = globalData.get('node-dir');
+  const downloadDir = globalData.get('download-dir');
+  
+  const requiredDirs = [nodeDir, downloadDir].filter((dir): dir is string => Boolean(dir));
 
   requiredDirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
@@ -44,7 +71,11 @@ async function extractPdfText(filePath: string): Promise<string> {
 
 // 读取downloads目录下的所有简历文件
 async function readAllResumes(): Promise<ResumeInfo[]> {
-  const downloadsPath = globalData.get('download-dir');
+  const downloadsPath = globalData.get('temp-download-dir');
+  
+  if (!downloadsPath) {
+    throw new Error('下载目录未配置');
+  }
   
   try {
     const files = fs.readdirSync(downloadsPath);
@@ -190,9 +221,15 @@ export async function parseProfiles(): Promise<void> {
     // 3. 调用DeepSeek进行分析
     console.log('正在调用AI进行简历分析...');
     const analysisResult = await callDeepSeek(analysisPrompt);
+    
+    // 4. 清理会话文件
+    clearSessionFiles();
+    
     return analysisResult;
   } catch (error) {
     console.error('简历解析过程中发生错误:', (error as Error).message);
+    // 即使出错也要清理会话文件
+    clearSessionFiles();
     throw error;
   }
 }

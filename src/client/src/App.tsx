@@ -32,6 +32,8 @@ import {
   CaretRightOutlined,
   LoadingOutlined,
   BulbOutlined,
+  FileTextOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 import { SocketService } from './services/socket';
 
@@ -93,6 +95,42 @@ const App: React.FC = () => {
 
     socketService.current.on('agent_message', (data: any) => {
       console.log(data, 'data')
+      
+      // 处理简历解析相关的消息
+      if (data?.data?.conclusion !== undefined) {
+        if (data.data.status === 'running') {
+          // 状态为 running 时显示 "开始解析简历"
+          addMessage({
+            id: Date.now().toString(),
+            type: 'agent',
+            content: '开始解析简历',
+            timestamp: new Date(),
+            status: 'pending',
+          });
+        } else if (data.data.status === 'end') {
+          // 状态为 end 时显示 conclusion 的内容
+          if (data.data.conclusion) {
+            addMessage({
+              id: Date.now().toString(),
+              type: 'agent',
+              content: data.data.conclusion,
+              timestamp: new Date(),
+              status: 'success',
+            });
+          } else {
+            addMessage({
+              id: Date.now().toString(),
+              type: 'agent',
+              content: '简历解析完成，但未生成分析结果',
+              timestamp: new Date(),
+              status: 'error',
+            });
+          }
+        }
+        return; // 处理完简历解析消息后直接返回
+      }
+      
+      // 原有的对话消息处理逻辑
       if (data?.data?.conversations) {
         data.data.conversations.forEach((e: any) => {
           if (e.from === 'gpt') {
@@ -288,10 +326,16 @@ const App: React.FC = () => {
     }
   };
 
-  const getMessageIcon = (type: string, isThinking?: boolean) => {
+  const getMessageIcon = (type: string, isThinking?: boolean, content?: string) => {
     if (isThinking) {
       return <LoadingOutlined spin />;
     }
+    
+    // 检查是否是简历解析相关消息
+    if (content?.includes('开始解析简历') || content?.includes('简历分析')) {
+      return <FileTextOutlined style={{ color: '#1890ff' }} />;
+    }
+    
     switch (type) {
       case 'user': return <UserOutlined />;
       case 'agent': return <RobotOutlined />;
@@ -497,7 +541,7 @@ const App: React.FC = () => {
                         <List.Item.Meta
                           avatar={
                             <Avatar 
-                              icon={getMessageIcon(message.type, message.status === 'pending')} 
+                              icon={getMessageIcon(message.type, message.status === 'pending', message.content)} 
                               style={{
                                 backgroundColor: message.type === 'user' ? '#1890ff' : 
                                                 message.type === 'agent' ? '#52c41a' : '#faad14'
@@ -523,13 +567,17 @@ const App: React.FC = () => {
                           description={
                             <div style={{ 
                               background: message.status === 'pending' ? 
-                                'linear-gradient(45deg, #f0f9ff, #e0f2fe)' : '#fff', 
+                                'linear-gradient(45deg, #f0f9ff, #e0f2fe)' : 
+                                (message.content?.includes('开始解析简历') || message.content?.includes('简历分析')) ?
+                                'linear-gradient(45deg, #f6ffed, #f0f9ff)' : '#fff', 
                               padding: 12, 
                               borderRadius: 8,
                               marginTop: 8,
                               boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
                               border: message.status === 'pending' ? 
-                                '1px dashed #1890ff' : 'none',
+                                '1px dashed #1890ff' : 
+                                (message.content?.includes('开始解析简历') || message.content?.includes('简历分析')) ?
+                                '1px solid #52c41a' : 'none',
                               animation: message.status === 'pending' ? 
                                 'pulse 2s infinite' : 'none',
                             }}>
@@ -575,6 +623,38 @@ const App: React.FC = () => {
                                   <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
                                     点击图片查看大图
                                   </div>
+                                </div>
+                              ) : (message.content?.includes('开始解析简历') || message.content?.includes('简历分析')) ? (
+                                <div>
+                                  <Space>
+                                    <FileTextOutlined style={{ color: '#52c41a' }} />
+                                    <Text style={{ 
+                                      color: '#52c41a',
+                                      fontWeight: 'bold'
+                                    }}>
+                                      {message.content?.includes('开始解析简历') ? '🔍 ' : '📋 '}
+                                      {message.content}
+                                    </Text>
+                                  </Space>
+                                  {message.content?.includes('开始解析简历') && (
+                                    <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+                                      正在处理PDF简历文件，请稍候...
+                                    </div>
+                                  )}
+                                  {message.content?.includes('简历分析') && message.content.length > 20 && (
+                                    <div style={{ 
+                                      marginTop: 8, 
+                                      padding: 8, 
+                                      background: '#f9f9f9', 
+                                      borderRadius: 4,
+                                      fontSize: 12,
+                                      whiteSpace: 'pre-wrap',
+                                      maxHeight: '300px',
+                                      overflowY: 'auto'
+                                    }}>
+                                      {message.content}
+                                    </div>
+                                  )}
                                 </div>
                               ) : (
                                 <Text>{message.content}</Text>

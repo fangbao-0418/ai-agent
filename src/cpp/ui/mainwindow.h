@@ -20,6 +20,7 @@ private slots:
     void on_btnConnect_clicked();
     void on_btnSendMessage_clicked();
     void on_btnCalculate_clicked();
+    void on_btnOpenBrowser_clicked();
 
     void onTcpConnected();
     void onTcpDisconnected();
