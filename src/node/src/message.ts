@@ -3,6 +3,8 @@ import parseProfiles from './libs/parse-profile';
 import { checkDownloadFilesExist, createUniqueID } from './utils/helper';
 import globalData from './global';
 import * as fs from 'fs';
+import { Worker } from 'worker_threads';
+import * as path from 'path';
 
 class AgentMessageServer {
 
@@ -103,6 +105,47 @@ class AgentMessageServer {
     }
   }
 
+  // 使用Worker执行简历解析
+  private async executeParseProfilesInWorker(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const workerPath = path.join(__dirname, 'libs/parse-profile/worker.js');
+      const downloadDir = globalData.get('temp-download-dir');
+      const sessionId = globalData.get('session-id');
+
+      if (!downloadDir || !sessionId) {
+        reject(new Error('下载目录或会话ID未配置'));
+        return;
+      }
+
+      const worker = new Worker(workerPath);
+
+      worker.postMessage({
+        downloadDir,
+        sessionId
+      });
+
+      worker.on('message', (result) => {
+        worker.terminate();
+        if (result.success) {
+          resolve(result.data);
+        } else {
+          reject(new Error(result.error));
+        }
+      });
+
+      worker.on('error', (error) => {
+        worker.terminate();
+        reject(error);
+      });
+
+      worker.on('exit', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Worker进程意外退出，退出码: ${code}`));
+        }
+      });
+    });
+  }
+
   emitThoughtStart () {
     this.socket.emit('thought-start')
   }
@@ -126,21 +169,25 @@ class AgentMessageServer {
             status: "running"
           }
         })
-        parseProfiles().then((res) => {
+        
+        // 使用Worker执行简历解析
+        try {
+          const result = await this.executeParseProfilesInWorker();
           this.socket.emit('agent_message', {
             data: {
-              conclusion: res,
+              conclusion: result,
               status: "end"
             }
-          })
-        }, () => {
+          });
+        } catch (error) {
+          console.error('Worker执行简历解析失败:', error);
           this.socket.emit('agent_message', {
             data: {
               conclusion: null,
               status: "end"
             }
-          })
-        })
+          });
+        }
       }
     } catch (error) {
       //
