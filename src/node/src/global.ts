@@ -14,7 +14,7 @@ class AppState {
   
   get(key: keyof AppStateDataProps) {
     if (key === 'download-dir') {
-      return this.data['node-dir'] + '/download3';
+      return this.data['node-dir'] + '/download';
     }
     return this.data[key];
   }

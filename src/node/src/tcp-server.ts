@@ -1,10 +1,5 @@
 import * as net from 'net';
 import * as dotenv from 'dotenv';
-
-import { getSystemPromptV1_5_Custom } from './prompts';
-import { DefaultBrowserOperator, SearchEngine } from '@ui-tars/operator-browser';
-import { ConsoleLogger } from '@agent-infra/logger';
-import { GUIAgent } from '@ui-tars/sdk';
 import AgentMessageServer from './message';
 
 // 加载环境变量
@@ -13,7 +8,7 @@ dotenv.config();
 // 创建TCP服务器
 const server = net.createServer();
 
-const HOST = 'localhost';
+const HOST = '127.0.0.1';
 const PORT = 8888;
 
 function _calculateCRC32(data: Buffer) {
@@ -140,10 +135,12 @@ process.on('SIGTERM', () => {
   }, 5000);
 });
 
-// 启动服务器
-server.listen(PORT, HOST, () => {
-  console.log(`Node.js TCP服务器启动成功，监听 ${HOST}:${PORT}`);
-  console.log('等待C++客户端连接...');
-});
+const start = () => {
+  // 启动服务器
+  server.listen(PORT, HOST, () => {
+    console.log(`Node.js TCP服务器启动成功，监听 ${HOST}:${PORT}`);
+    console.log('等待C++客户端连接...');
+  });
+}
 
-export { server }; 
+export default { server, start }; 

@@ -89,11 +89,11 @@ export class UIHelper {
         .gui-agent-click-indicator {
           position: fixed;
           pointer-events: none;
-          width: 60px;
-          height: 60px;
+          width: 94px;
+          height: 94px;
+          border: 2px solid rgba(255, 255, 255, 0.5);
           border-radius: 50%;
-          border: 4px solid #00ff9d;
-          background: rgba(0, 255, 157, 0.3);
+          background: rgba(100, 79, 255, 0.3);
           transform: translate(-50%, -50%);
           animation: click-pulse 1.2s ease-out;
           z-index: 2147483647;
@@ -106,9 +106,10 @@ export class UIHelper {
           left: 50%;
           width: 12px;
           height: 12px;
-          background: #00ff9d;
+          background: rgba(100, 79, 255, 0.3);
           border-radius: 50%;
           transform: translate(-50%, -50%);
+          animation: counter-scale 1.2s ease-out;
         }
 
         /* Base highlight style */
@@ -234,6 +235,14 @@ export class UIHelper {
           100% {
             transform: translate(-50%, -50%) scale(2.5);
             opacity: 0;
+          }
+        }
+        @keyframes counter-scale {
+          0% {
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% {
+            transform: translate(-62.6666%, -62.66%) scale(0.666);
           }
         }
       `;
@@ -371,48 +380,41 @@ export class UIHelper {
           top: 0; right: 0; bottom: 0; left: 0;
           pointer-events: none;
           z-index: 9999;
-          background:
-            linear-gradient(to right, rgba(30, 144, 255, 0.4), transparent 50%) left,
-            linear-gradient(to left, rgba(30, 144, 255, 0.4), transparent 50%) right,
-            linear-gradient(to bottom, rgba(30, 144, 255, 0.4), transparent 50%) top,
-            linear-gradient(to top, rgba(30, 144, 255, 0.4), transparent 50%) bottom;
+          background: 
+            linear-gradient(to right, #004FFF, transparent 80%) left,
+            linear-gradient(to left, #CA39FF, transparent 80%) right,
+            linear-gradient(to right, #004FFF, #CA39FF) top,
+            linear-gradient(to right, #004FFF, #CA39FF) bottom;
+          background-size: 100px 100%, 100px 100%, 100% 40px, 100% 40px;
           background-repeat: no-repeat;
-          background-size: 10% 100%, 10% 100%, 100% 10%, 100% 10%;
+          mask: 
+            linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0) 60%) left,
+            linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0) 60%) right,
+            linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%) top,
+            linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%) bottom;
+          mask-repeat: no-repeat;
+          mask-size: 100px 100%, 100px 100%, 100% 40px, 100% 40px;
           animation: waterflow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-          filter: blur(8px);
+          filter: blur(6px);
+          opacity: 0.6;
+          transform: scale(1);
         }
 
         @keyframes waterflow {
           0%, 100% {
-            background-image:
-              linear-gradient(to right, rgba(30, 144, 255, 0.4), transparent 50%),
-              linear-gradient(to left, rgba(30, 144, 255, 0.4), transparent 50%),
-              linear-gradient(to bottom, rgba(30, 144, 255, 0.4), transparent 50%),
-              linear-gradient(to top, rgba(30, 144, 255, 0.4), transparent 50%);
+            opacity: 0.6;
             transform: scale(1);
           }
           25% {
-            background-image:
-              linear-gradient(to right, rgba(30, 144, 255, 0.39), transparent 52%),
-              linear-gradient(to left, rgba(30, 144, 255, 0.39), transparent 52%),
-              linear-gradient(to bottom, rgba(30, 144, 255, 0.39), transparent 52%),
-              linear-gradient(to top, rgba(30, 144, 255, 0.39), transparent 52%);
+            opacity: 0.8;
             transform: scale(1.03);
           }
           50% {
-            background-image:
-              linear-gradient(to right, rgba(30, 144, 255, 0.38), transparent 55%),
-              linear-gradient(to left, rgba(30, 144, 255, 0.38), transparent 55%),
-              linear-gradient(to bottom, rgba(30, 144, 255, 0.38), transparent 55%),
-              linear-gradient(to top, rgba(30, 144, 255, 0.38), transparent 55%);
-            transform: scale(1.05);
+            opacity: 0.6;
+            transform: scale(1);
           }
           75% {
-            background-image:
-              linear-gradient(to right, rgba(30, 144, 255, 0.39), transparent 52%),
-              linear-gradient(to left, rgba(30, 144, 255, 0.39), transparent 52%),
-              linear-gradient(to bottom, rgba(30, 144, 255, 0.39), transparent 52%),
-              linear-gradient(to top, rgba(30, 144, 255, 0.39), transparent 52%);
+            opacity: 0.8;
             transform: scale(1.03);
           }
         }

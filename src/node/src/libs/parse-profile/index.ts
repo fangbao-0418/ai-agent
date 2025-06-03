@@ -1,14 +1,34 @@
 import callDeepSeek from "../../utils/ai-call/deepseek";
 import * as fs from 'fs';
 import * as path from 'path';
-
-const pdf = require('pdf-parse');
+import globalData from '../../global';
+const pdf = require('pdf-parse/lib/pdf-parse.js');
 
 // 定义简历信息接口
 interface ResumeInfo {
   fileName: string;
   content: string;
   extractedAt: Date;
+}
+
+// 初始化必要的目录
+function initializeDirectories(): void {
+  const requiredDirs = [
+    globalData.get('node-dir'),
+    globalData.get('download-dir')
+  ];
+
+  requiredDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      console.log(`创建目录: ${dir}`);
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`✓ 目录创建成功: ${dir}`);
+    } else {
+      console.log(`✓ 目录已存在: ${dir}`);
+    }
+  });
+  
+  console.log('目录初始化完成！\n');
 }
 
 // PDF文本提取函数
@@ -24,13 +44,18 @@ async function extractPdfText(filePath: string): Promise<string> {
 
 // 读取downloads目录下的所有简历文件
 async function readAllResumes(): Promise<ResumeInfo[]> {
-  const downloadsPath = path.join(process.cwd(), 'file', 'downloads');
+  const downloadsPath = globalData.get('download-dir');
   
   try {
     const files = fs.readdirSync(downloadsPath);
     const pdfFiles = files.filter(file => file.toLowerCase().endsWith('.pdf'));
     
     console.log(`发现 ${pdfFiles.length} 份PDF简历文件`);
+    
+    if (pdfFiles.length === 0) {
+      console.log(`提示：请将PDF简历文件放置到 ${downloadsPath} 目录下`);
+      return [];
+    }
     
     const resumes: ResumeInfo[] = [];
     
@@ -146,12 +171,15 @@ export async function parseProfiles(): Promise<void> {
   try {
     console.log('开始解析简历文件...');
     
+    // 0. 初始化目录
+    initializeDirectories();
+    
     // 1. 读取所有简历
     const resumes = await readAllResumes();
     
     if (resumes.length === 0) {
       console.log('未找到任何简历文件，请确保file/downloads目录下有PDF简历文件');
-      return;
+      return Promise.reject(new Error('未找到任何简历文件，请确保file/downloads目录下有PDF简历文件'));
     }
     
     console.log(`成功读取 ${resumes.length} 份简历，开始AI分析...`);
@@ -162,21 +190,7 @@ export async function parseProfiles(): Promise<void> {
     // 3. 调用DeepSeek进行分析
     console.log('正在调用AI进行简历分析...');
     const analysisResult = await callDeepSeek(analysisPrompt);
-    
-    // 4. 输出结果
-    console.log('\n' + '='.repeat(80));
-    console.log('简历分析结果');
-    console.log('='.repeat(80));
-    console.log(analysisResult);
-    console.log('='.repeat(80));
-    
-    // 5. 保存分析结果到文件
-    const outputPath = path.join(process.cwd(), 'file', 'resume-analysis-result.txt');
-    const outputContent = `简历分析报告\n生成时间: ${new Date().toLocaleString('zh-CN')}\n\n${analysisResult}`;
-    
-    fs.writeFileSync(outputPath, outputContent, 'utf8');
-    console.log(`\n分析结果已保存到: ${outputPath}`);
-    
+    return analysisResult;
   } catch (error) {
     console.error('简历解析过程中发生错误:', (error as Error).message);
     throw error;
@@ -195,5 +209,4 @@ if (require.main === module) {
       process.exit(1);
     });
 }
-parseProfiles();
 export default parseProfiles; 

@@ -16,11 +16,20 @@
 
 // const payloadBuf = Buffer.from(payload)
 
-const payload = {"name": "fang"}
+// const payload = {"name": "fang"}
 
-const buffer = Buffer.from(JSON.stringify(payload))
+// const buffer = Buffer.from(JSON.stringify(payload))
 
 
-// 0000001730307B226576656E74223A2274686F756768742D656E64227D94B23217
+// // 0000001730307B226576656E74223A2274686F756768742D656E64227D94B23217
 
-console.log(buffer.toString())
+// console.log(buffer.toString())
+
+const header = Buffer.alloc(4);
+const ss = header.writeUInt32BE(2332423232);
+
+console.log(header, 'ss')
+
+var buffer2 = Buffer([0, 0, 126, 169])
+
+console.log(buffer2)

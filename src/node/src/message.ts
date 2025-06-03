@@ -1,4 +1,6 @@
 import AgentServer, { AgentType } from './agent';
+import parseProfiles from './libs/parse-profile';
+import { checkDownloadFilesExist } from './utils/helper';
 
 class AgentMessageServer {
 
@@ -33,6 +35,29 @@ class AgentMessageServer {
       this.emitThoughtStart();
       await this.agent.run(data.command, data.type)
       this.emitThoughtEnd();
+      if (checkDownloadFilesExist()) {
+        this.socket.emit('agent_message', {
+          data: {
+            conclusion: "开始解析简历文件",
+            status: "running"
+          }
+        })
+        parseProfiles().then((res) => {
+          this.socket.emit('agent_message', {
+            data: {
+              conclusion: res,
+              status: "end"
+            }
+          })
+        }, () => {
+          this.socket.emit('agent_message', {
+            data: {
+              conclusion: null,
+              status: "end"
+            }
+          })
+        })
+      }
     } catch (error) {
       //
     }
@@ -41,7 +66,6 @@ class AgentMessageServer {
   listen (socket: any) {
     this.socket = socket;
     this.socket.on('execute_command', async (data: string) => {
-      console.log(data, 'data')
       this.onExecuteCommand(JSON.parse(data))
     })
 
