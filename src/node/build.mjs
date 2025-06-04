@@ -1,41 +1,46 @@
 import esbuild from 'esbuild';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { createPathAliasPlugin } from './scripts/path-alias-plugin.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// 创建路径别名插件实例
+const pathAliasPlugin = createPathAliasPlugin('./tsconfig.json');
 
 // 基础配置
 const baseConfig = {
   platform: 'node',
   target: 'node18',
   format: 'cjs',
-  bundle: true,
+  // bundle: true,
   sourcemap: !isProduction,
   minify: isProduction,
-  external: [
-    // Node.js 内置模块
-    'fs', 'path', 'os', 'worker_threads', 'crypto', 'stream', 'util',
-    // 需要保持外部的依赖
-    'pdf-parse',
-    'axios',
-    'express',
-    'socket.io',
-    'cors',
-    'jimp',
-    'robotjs',
-    'electron',
-    'systeminformation',
-    '@computer-use/nut-js',
-    '@ui-tars/operator-browser',
-    '@ui-tars/operator-nut-js',
-    '@ui-tars/sdk'
-  ],
+  plugins: [pathAliasPlugin], // 使用自动化的路径别名插件
+  // external: [
+  //   // Node.js 内置模块
+  //   'fs', 'path', 'os', 'worker_threads', 'crypto', 'stream', 'util',
+  //   // 需要保持外部的依赖
+  //   'pdf-parse',
+  //   'axios',
+  //   'express',
+  //   'socket.io',
+  //   'cors',
+  //   'jimp',
+  //   'robotjs',
+  //   'electron',
+  //   'systeminformation',
+  //   '@computer-use/nut-js',
+  //   '@ui-tars/operator-browser',
+  //   '@ui-tars/operator-nut-js',
+  //   '@ui-tars/sdk'
+  // ],
 };
 
 // 主入口配置
 const mainConfig = {
   ...baseConfig,
-  entryPoints: ['src/index.ts'],
+  entryPoints: ['src/entry/agent.ts'],
   outfile: 'dist/index.js',
 };
 

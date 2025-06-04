@@ -1,7 +1,11 @@
 const esbuild = require('esbuild');
 const path = require('path');
+const { createPathAliasPlugin } = require('./scripts/path-alias-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// 创建路径别名插件实例
+const pathAliasPlugin = createPathAliasPlugin('./tsconfig.json');
 
 // 基础配置
 const baseConfig = {
@@ -11,6 +15,7 @@ const baseConfig = {
   bundle: true,
   sourcemap: !isProduction,
   minify: isProduction,
+  plugins: [pathAliasPlugin], // 使用智能路径别名插件
   external: [
     // Node.js 内置模块
     'fs', 'path', 'os', 'worker_threads', 'crypto', 'stream', 'util',

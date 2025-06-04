@@ -114,7 +114,7 @@ class Logger implements ILogger {
 }
 
 // 创建默认日志器实例
-export const logger = new Logger();
+export const logger: any = new Logger();
 
 // 导出类供其他模块使用
 export { Logger };

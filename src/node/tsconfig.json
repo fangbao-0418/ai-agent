@@ -9,7 +9,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@agent-infra/*": ["./src/libs/agent-infra/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "*.test.ts"]
