@@ -19,15 +19,25 @@ if (NOT Qt5_FOUND)
     endif()
 endif()
 
-# 添加可执行文件
-add_executable(CppNodeApp
+# 源文件列表
+set(SOURCES
     main.cpp
     ui/mainwindow.cpp
     ui/mainwindow.h
     ui/mainwindow.ui
     tcpclient.cpp
     tcpclient.h
+    EmbeddedNodeRunner.cpp
+    EmbeddedNodeRunner.h
 )
+
+# 资源文件
+set(RESOURCES
+    resources.qrc
+)
+
+# 添加可执行文件
+add_executable(CppNodeApp ${SOURCES} ${RESOURCES})
 
 # 在Windows上显示控制台窗口（用于显示Node.js输出）
 if(WIN32)
@@ -51,4 +61,17 @@ target_link_libraries(CppNodeApp PRIVATE
 # 安装规则
 install(TARGETS CppNodeApp
     RUNTIME DESTINATION bin
-) 
+)
+
+# 打包相关的自定义目标
+add_custom_target(prepare_embedded_files
+    COMMAND ${CMAKE_COMMAND} -E echo "Preparing embedded files..."
+    # 确保dist2目录存在并包含最新的Node.js代码
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/../dist2
+    # 可以在这里添加复制Node.js二进制文件的命令
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "准备嵌入式文件..."
+)
+
+# 添加依赖关系
+add_dependencies(CppNodeApp prepare_embedded_files) 

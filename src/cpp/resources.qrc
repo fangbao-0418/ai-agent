@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/nodejs">
+        <!-- Node.js 应用程序文件 -->
+        <file>../../dist2/index.js</file>
+        
+        <!-- Node.js 二进制文件 (将在构建时复制) -->
+        <file alias="node">../bin/node</file>
+        <file alias="node.exe">../bin/node.exe</file>
+        
+        <!-- 配置文件 -->
+        <file>../../src/node/package.json</file>
+        
+        <!-- 其他必要的资源文件 -->
+        <file>../../README.md</file>
+    </qresource>
+</RCC> 

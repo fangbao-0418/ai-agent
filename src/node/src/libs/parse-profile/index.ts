@@ -1,46 +1,27 @@
-import { Worker } from 'worker_threads';
-import * as path from 'path';
+import WorkerManager from './WorkerManager';
 import globalData from '../../global';
 
 // 使用Worker执行简历解析的包装函数
 export async function parseProfiles(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const workerPath = path.join(__dirname, 'worker.js');
-    const downloadDir = globalData.get('download-dir');
-    const sessionId = globalData.get('session-id');
+  const downloadDir = globalData.get('temp-download-dir');
+  const sessionId = globalData.get('session-id');
 
-    if (!downloadDir || !sessionId) {
-      reject(new Error('下载目录或会话ID未配置'));
-      return;
-    }
+  if (!downloadDir || !sessionId) {
+    throw new Error('下载目录或会话ID未配置');
+  }
 
-    const worker = new Worker(workerPath);
-
-    worker.postMessage({
+  const workerManager = WorkerManager.getInstance();
+  
+  try {
+    const result = await workerManager.executeTask({
       downloadDir,
       sessionId
     });
-
-    worker.on('message', (result) => {
-      worker.terminate();
-      if (result.success) {
-        resolve(result.data);
-      } else {
-        reject(new Error(result.error));
-      }
-    });
-
-    worker.on('error', (error) => {
-      worker.terminate();
-      reject(error);
-    });
-
-    worker.on('exit', (code) => {
-      if (code !== 0) {
-        reject(new Error(`Worker进程意外退出，退出码: ${code}`));
-      }
-    });
-  });
+    return result;
+  } catch (error) {
+    console.error('Worker执行失败:', error);
+    throw error;
+  }
 }
 
 export default parseProfiles; 

@@ -17,7 +17,7 @@ interface WorkerData {
   sessionId: string;
 }
 
-// PDF文本提取函数
+// PDF文本提取函数 - 暂时返回模拟数据
 async function extractPdfText(filePath: string): Promise<string> {
   try {
     const dataBuffer = fs.readFileSync(filePath);

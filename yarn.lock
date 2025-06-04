@@ -231,6 +231,106 @@
   version "0.7.5"
   resolved "https://registry.npmmirror.com/@emotion/unitless/-/unitless-0.7.5.tgz"
 
+"@esbuild/aix-ppc64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/aix-ppc64/-/aix-ppc64-0.25.5.tgz#4e0f91776c2b340e75558f60552195f6fad09f18"
+
+"@esbuild/android-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/android-arm64/-/android-arm64-0.25.5.tgz#bc766407f1718923f6b8079c8c61bf86ac3a6a4f"
+
+"@esbuild/android-arm@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/android-arm/-/android-arm-0.25.5.tgz#4290d6d3407bae3883ad2cded1081a234473ce26"
+
+"@esbuild/android-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/android-x64/-/android-x64-0.25.5.tgz#40c11d9cbca4f2406548c8a9895d321bc3b35eff"
+
+"@esbuild/darwin-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/darwin-arm64/-/darwin-arm64-0.25.5.tgz#49d8bf8b1df95f759ac81eb1d0736018006d7e34"
+
+"@esbuild/darwin-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/darwin-x64/-/darwin-x64-0.25.5.tgz#e27a5d92a14886ef1d492fd50fc61a2d4d87e418"
+
+"@esbuild/freebsd-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.5.tgz#97cede59d638840ca104e605cdb9f1b118ba0b1c"
+
+"@esbuild/freebsd-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/freebsd-x64/-/freebsd-x64-0.25.5.tgz#71c77812042a1a8190c3d581e140d15b876b9c6f"
+
+"@esbuild/linux-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-arm64/-/linux-arm64-0.25.5.tgz#f7b7c8f97eff8ffd2e47f6c67eb5c9765f2181b8"
+
+"@esbuild/linux-arm@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-arm/-/linux-arm-0.25.5.tgz#2a0be71b6cd8201fa559aea45598dffabc05d911"
+
+"@esbuild/linux-ia32@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-ia32/-/linux-ia32-0.25.5.tgz#763414463cd9ea6fa1f96555d2762f9f84c61783"
+
+"@esbuild/linux-loong64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-loong64/-/linux-loong64-0.25.5.tgz#428cf2213ff786a502a52c96cf29d1fcf1eb8506"
+
+"@esbuild/linux-mips64el@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-mips64el/-/linux-mips64el-0.25.5.tgz#5cbcc7fd841b4cd53358afd33527cd394e325d96"
+
+"@esbuild/linux-ppc64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-ppc64/-/linux-ppc64-0.25.5.tgz#0d954ab39ce4f5e50f00c4f8c4fd38f976c13ad9"
+
+"@esbuild/linux-riscv64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-riscv64/-/linux-riscv64-0.25.5.tgz#0e7dd30730505abd8088321e8497e94b547bfb1e"
+
+"@esbuild/linux-s390x@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-s390x/-/linux-s390x-0.25.5.tgz#5669af81327a398a336d7e40e320b5bbd6e6e72d"
+
+"@esbuild/linux-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/linux-x64/-/linux-x64-0.25.5.tgz#b2357dd153aa49038967ddc1ffd90c68a9d2a0d4"
+
+"@esbuild/netbsd-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.5.tgz#53b4dfb8fe1cee93777c9e366893bd3daa6ba63d"
+
+"@esbuild/netbsd-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/netbsd-x64/-/netbsd-x64-0.25.5.tgz#a0206f6314ce7dc8713b7732703d0f58de1d1e79"
+
+"@esbuild/openbsd-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.5.tgz#2a796c87c44e8de78001d808c77d948a21ec22fd"
+
+"@esbuild/openbsd-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/openbsd-x64/-/openbsd-x64-0.25.5.tgz#28d0cd8909b7fa3953af998f2b2ed34f576728f0"
+
+"@esbuild/sunos-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/sunos-x64/-/sunos-x64-0.25.5.tgz#a28164f5b997e8247d407e36c90d3fd5ddbe0dc5"
+
+"@esbuild/win32-arm64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/win32-arm64/-/win32-arm64-0.25.5.tgz#6eadbead38e8bd12f633a5190e45eff80e24007e"
+
+"@esbuild/win32-ia32@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/win32-ia32/-/win32-ia32-0.25.5.tgz#bab6288005482f9ed2adb9ded7e88eba9a62cc0d"
+
+"@esbuild/win32-x64@0.25.5":
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/@esbuild/win32-x64/-/win32-x64-0.25.5.tgz#7fc114af5f6563f19f73324b5d5ff36ece0803d1"
+
 "@jimp/bmp@^0.22.12":
   version "0.22.12"
   resolved "https://registry.npmmirror.com/@jimp/bmp/-/bmp-0.22.12.tgz#0316044dc7b1a90274aef266d50349347fb864d4"
@@ -747,6 +847,17 @@
   version "2.2.0"
   resolved "https://registry.npmmirror.com/@mixmark-io/domino/-/domino-2.2.0.tgz"
 
+"@module-federation/error-codes@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/@module-federation/error-codes/-/error-codes-0.14.0.tgz#d54581bfb998ce9ace4cb33f8795c644e461bfeb"
+
+"@module-federation/runtime-core@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/@module-federation/runtime-core/-/runtime-core-0.14.0.tgz#a00a3666cc25a8bb822a36552c631e6e3f7326cc"
+  dependencies:
+    "@module-federation/error-codes" "0.14.0"
+    "@module-federation/sdk" "0.14.0"
+
 "@module-federation/runtime-tools@0.0.8":
   version "0.0.8"
   resolved "https://registry.npmmirror.com/@module-federation/runtime-tools/-/runtime-tools-0.0.8.tgz"
@@ -754,15 +865,34 @@
     "@module-federation/runtime" "0.0.8"
     "@module-federation/webpack-bundler-runtime" "0.0.8"
 
+"@module-federation/runtime-tools@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/@module-federation/runtime-tools/-/runtime-tools-0.14.0.tgz#f5b5f3d19605b6d7c90ed278dc00a5400f1aa49d"
+  dependencies:
+    "@module-federation/runtime" "0.14.0"
+    "@module-federation/webpack-bundler-runtime" "0.14.0"
+
 "@module-federation/runtime@0.0.8":
   version "0.0.8"
   resolved "https://registry.npmmirror.com/@module-federation/runtime/-/runtime-0.0.8.tgz"
   dependencies:
     "@module-federation/sdk" "0.0.8"
 
+"@module-federation/runtime@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/@module-federation/runtime/-/runtime-0.14.0.tgz#e04012d2d928275fd00525904c0b4f8be514dc70"
+  dependencies:
+    "@module-federation/error-codes" "0.14.0"
+    "@module-federation/runtime-core" "0.14.0"
+    "@module-federation/sdk" "0.14.0"
+
 "@module-federation/sdk@0.0.8":
   version "0.0.8"
   resolved "https://registry.npmmirror.com/@module-federation/sdk/-/sdk-0.0.8.tgz"
+
+"@module-federation/sdk@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/@module-federation/sdk/-/sdk-0.14.0.tgz#efa38341b7601f58967397cc630068f69691b931"
 
 "@module-federation/webpack-bundler-runtime@0.0.8":
   version "0.0.8"
@@ -770,6 +900,13 @@
   dependencies:
     "@module-federation/runtime" "0.0.8"
     "@module-federation/sdk" "0.0.8"
+
+"@module-federation/webpack-bundler-runtime@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/@module-federation/webpack-bundler-runtime/-/webpack-bundler-runtime-0.14.0.tgz#21a82505f95fdb3cb202786f8dc20611b4d7f93c"
+  dependencies:
+    "@module-federation/runtime" "0.14.0"
+    "@module-federation/sdk" "0.14.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -885,6 +1022,16 @@
     html-webpack-plugin "npm:html-rspack-plugin@5.6.2"
     postcss "^8.4.33"
 
+"@rsbuild/core@^1.3.22":
+  version "1.3.22"
+  resolved "https://registry.npmmirror.com/@rsbuild/core/-/core-1.3.22.tgz#02353d5dddbb7dddb8414027e2b84cf7bb00fd39"
+  dependencies:
+    "@rspack/core" "1.3.12"
+    "@rspack/lite-tapable" "~1.0.1"
+    "@swc/helpers" "^0.5.17"
+    core-js "~3.42.0"
+    jiti "^2.4.2"
+
 "@rsbuild/plugin-react@^0.4.11":
   version "0.4.15"
   resolved "https://registry.npmmirror.com/@rsbuild/plugin-react/-/plugin-react-0.4.15.tgz"
@@ -913,37 +1060,73 @@
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-darwin-arm64/-/binding-darwin-arm64-0.5.7.tgz#a75236b26341c2889954555bea202c39a7b2d2c9"
 
+"@rspack/binding-darwin-arm64@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-darwin-arm64/-/binding-darwin-arm64-1.3.12.tgz#2e7cc00b813dcb155572908d956ab1d75d9747a5"
+
 "@rspack/binding-darwin-x64@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-darwin-x64/-/binding-darwin-x64-0.5.7.tgz"
+
+"@rspack/binding-darwin-x64@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-darwin-x64/-/binding-darwin-x64-1.3.12.tgz#cb148cc62658d74204621a695e1698cda82877f9"
 
 "@rspack/binding-linux-arm64-gnu@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-0.5.7.tgz#d66df80c17b25c97f5bb1f24a3a695f757c5ac2f"
 
+"@rspack/binding-linux-arm64-gnu@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.3.12.tgz#79820857dfbd3819e0026da507c271531c013d0c"
+
 "@rspack/binding-linux-arm64-musl@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-linux-arm64-musl/-/binding-linux-arm64-musl-0.5.7.tgz#64b1f32a0dc3fc9870b90fa1c64cac7039bfc7f8"
+
+"@rspack/binding-linux-arm64-musl@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.3.12.tgz#a794dfe8df6bf75af217597881592add6f6b046e"
 
 "@rspack/binding-linux-x64-gnu@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-linux-x64-gnu/-/binding-linux-x64-gnu-0.5.7.tgz#9fe439fdf4f2af6df30dca81f1da5a95cfb1086e"
 
+"@rspack/binding-linux-x64-gnu@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.3.12.tgz#a0e23831a1374d9039a4b29e927cef58a485085c"
+
 "@rspack/binding-linux-x64-musl@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-linux-x64-musl/-/binding-linux-x64-musl-0.5.7.tgz#98449b3bf7c2a5d5786dc4989d63630279d93e83"
+
+"@rspack/binding-linux-x64-musl@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-linux-x64-musl/-/binding-linux-x64-musl-1.3.12.tgz#61620efda6a6805689890c130e6b38c1725baaf4"
 
 "@rspack/binding-win32-arm64-msvc@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-0.5.7.tgz#72651322c101d1255f96f6aed8982485104f6eba"
 
+"@rspack/binding-win32-arm64-msvc@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.3.12.tgz#46d874df8bd5b84e82ea83480969f7e0293ccd82"
+
 "@rspack/binding-win32-ia32-msvc@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-0.5.7.tgz#a374de43283d502c76e02d542feade1cbb2f990e"
 
+"@rspack/binding-win32-ia32-msvc@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.3.12.tgz#fec435e31e56f3d58b4fa52746643d1d593b2b89"
+
 "@rspack/binding-win32-x64-msvc@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/binding-win32-x64-msvc/-/binding-win32-x64-msvc-0.5.7.tgz#006d2c57dc2512bc542f7aa8255db6f0fed263b6"
+
+"@rspack/binding-win32-x64-msvc@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.3.12.tgz#33b73cbab75920cf8a92e7245a794970f8508b6c"
 
 "@rspack/binding@0.5.7":
   version "0.5.7"
@@ -958,6 +1141,20 @@
     "@rspack/binding-win32-arm64-msvc" "0.5.7"
     "@rspack/binding-win32-ia32-msvc" "0.5.7"
     "@rspack/binding-win32-x64-msvc" "0.5.7"
+
+"@rspack/binding@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/binding/-/binding-1.3.12.tgz#0a8356fdbd89f08cda3e9bb8aff4ea781dfe972e"
+  optionalDependencies:
+    "@rspack/binding-darwin-arm64" "1.3.12"
+    "@rspack/binding-darwin-x64" "1.3.12"
+    "@rspack/binding-linux-arm64-gnu" "1.3.12"
+    "@rspack/binding-linux-arm64-musl" "1.3.12"
+    "@rspack/binding-linux-x64-gnu" "1.3.12"
+    "@rspack/binding-linux-x64-musl" "1.3.12"
+    "@rspack/binding-win32-arm64-msvc" "1.3.12"
+    "@rspack/binding-win32-ia32-msvc" "1.3.12"
+    "@rspack/binding-win32-x64-msvc" "1.3.12"
 
 "@rspack/core@0.5.7":
   version "0.5.7"
@@ -977,6 +1174,19 @@
     zod "^3.21.4"
     zod-validation-error "1.3.1"
 
+"@rspack/core@1.3.12":
+  version "1.3.12"
+  resolved "https://registry.npmmirror.com/@rspack/core/-/core-1.3.12.tgz#68df0111cfac7e8f9dfa11a608ac8731181b5483"
+  dependencies:
+    "@module-federation/runtime-tools" "0.14.0"
+    "@rspack/binding" "1.3.12"
+    "@rspack/lite-tapable" "1.0.1"
+    caniuse-lite "^1.0.30001718"
+
+"@rspack/lite-tapable@1.0.1", "@rspack/lite-tapable@~1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/@rspack/lite-tapable/-/lite-tapable-1.0.1.tgz#d4540a5d28bd6177164bc0ba0bee4bdec0458591"
+
 "@rspack/plugin-react-refresh@0.5.7":
   version "0.5.7"
   resolved "https://registry.npmmirror.com/@rspack/plugin-react-refresh/-/plugin-react-refresh-0.5.7.tgz"
@@ -994,6 +1204,12 @@
   resolved "https://registry.npmmirror.com/@swc/helpers/-/helpers-0.5.3.tgz"
   dependencies:
     tslib "^2.4.0"
+
+"@swc/helpers@^0.5.17":
+  version "0.5.17"
+  resolved "https://registry.npmmirror.com/@swc/helpers/-/helpers-0.5.17.tgz#5a7be95ac0f0bf186e7e6e890e7a6f6cda6ce971"
+  dependencies:
+    tslib "^2.8.0"
 
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"
@@ -1774,6 +1990,10 @@ caniuse-lite@^1.0.30001583, caniuse-lite@^1.0.30001716:
   version "1.0.30001718"
   resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001718.tgz"
 
+caniuse-lite@^1.0.30001718:
+  version "1.0.30001720"
+  resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001720.tgz#c138cb6026d362be9d8d7b0e4bcd0183a850edfd"
+
 centra@^2.7.0:
   version "2.7.0"
   resolved "https://registry.npmmirror.com/centra/-/centra-2.7.0.tgz#4c8312a58436e8a718302011561db7e6a2b0ec18"
@@ -1921,6 +2141,10 @@ copy-to-clipboard@^3.3.3:
 core-js@~3.36.0:
   version "3.36.1"
   resolved "https://registry.npmmirror.com/core-js/-/core-js-3.36.1.tgz"
+
+core-js@~3.42.0:
+  version "3.42.0"
+  resolved "https://registry.npmmirror.com/core-js/-/core-js-3.42.0.tgz#edbe91f78ac8cfb6df8d997e74d368a68082fe37"
 
 core-util-is@~1.0.0:
   version "1.0.3"
@@ -2225,6 +2449,36 @@ es-set-tostringtag@^2.1.0:
 es6-error@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npmmirror.com/es6-error/-/es6-error-4.1.1.tgz#9e3af407459deed47e9a91f9b885a84eb05c561d"
+
+esbuild@^0.25.5:
+  version "0.25.5"
+  resolved "https://registry.npmmirror.com/esbuild/-/esbuild-0.25.5.tgz#71075054993fdfae76c66586f9b9c1f8d7edd430"
+  optionalDependencies:
+    "@esbuild/aix-ppc64" "0.25.5"
+    "@esbuild/android-arm" "0.25.5"
+    "@esbuild/android-arm64" "0.25.5"
+    "@esbuild/android-x64" "0.25.5"
+    "@esbuild/darwin-arm64" "0.25.5"
+    "@esbuild/darwin-x64" "0.25.5"
+    "@esbuild/freebsd-arm64" "0.25.5"
+    "@esbuild/freebsd-x64" "0.25.5"
+    "@esbuild/linux-arm" "0.25.5"
+    "@esbuild/linux-arm64" "0.25.5"
+    "@esbuild/linux-ia32" "0.25.5"
+    "@esbuild/linux-loong64" "0.25.5"
+    "@esbuild/linux-mips64el" "0.25.5"
+    "@esbuild/linux-ppc64" "0.25.5"
+    "@esbuild/linux-riscv64" "0.25.5"
+    "@esbuild/linux-s390x" "0.25.5"
+    "@esbuild/linux-x64" "0.25.5"
+    "@esbuild/netbsd-arm64" "0.25.5"
+    "@esbuild/netbsd-x64" "0.25.5"
+    "@esbuild/openbsd-arm64" "0.25.5"
+    "@esbuild/openbsd-x64" "0.25.5"
+    "@esbuild/sunos-x64" "0.25.5"
+    "@esbuild/win32-arm64" "0.25.5"
+    "@esbuild/win32-ia32" "0.25.5"
+    "@esbuild/win32-x64" "0.25.5"
 
 escalade@^3.1.1, escalade@^3.2.0:
   version "3.2.0"
@@ -2967,6 +3221,10 @@ jimp@1.6.0:
     "@jimp/plugin-threshold" "1.6.0"
     "@jimp/types" "1.6.0"
     "@jimp/utils" "1.6.0"
+
+jiti@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.npmmirror.com/jiti/-/jiti-2.4.2.tgz#d19b7732ebb6116b06e2038da74a55366faef560"
 
 jpeg-js@^0.4.4:
   version "0.4.4"
@@ -4676,7 +4934,7 @@ ts-node@^10.9.2:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-tslib@^2.0.1, tslib@^2.4.0:
+tslib@^2.0.1, tslib@^2.4.0, tslib@^2.8.0:
   version "2.8.1"
   resolved "https://registry.npmmirror.com/tslib/-/tslib-2.8.1.tgz"
 
