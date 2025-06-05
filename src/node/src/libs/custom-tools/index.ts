@@ -28,5 +28,22 @@ export function listCustomTools() {
         },
       },
     },
+    {
+      type: 'function',
+      function: {
+        name: 'computer_use',
+        description: 'operate a computer',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'The search query',
+            },
+          },
+          required: ['query'],
+        },
+      },
+    },
   ] as const;
 }

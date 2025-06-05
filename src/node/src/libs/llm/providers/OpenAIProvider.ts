@@ -21,7 +21,8 @@ export class OpenAIProvider extends BaseProvider {
     // const baseURL = config.baseURL || process.env.OPENAI_API_BASE_URL;
 
     const apiKey = '40510637-b0b7-4106-a372-acf2983ad03c';
-    const baseURL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+    // const baseURL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+    const baseURL = 'https://ark.cn-beijing.volces.com/api/v3';
 
     if (!apiKey) {
       throw new Error(

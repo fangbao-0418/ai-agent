@@ -1515,6 +1515,16 @@
   dependencies:
     "@types/node" "*"
 
+"@types/lodash.merge@^4.6.9":
+  version "4.6.9"
+  resolved "https://registry.npmmirror.com/@types/lodash.merge/-/lodash.merge-4.6.9.tgz#93e94796997ed9a3ebe9ccf071ccaec4c6bc8fb8"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.17.17"
+  resolved "https://registry.npmmirror.com/@types/lodash/-/lodash-4.17.17.tgz#fb85a04f47e9e4da888384feead0de05f7070355"
+
 "@types/mime@^1":
   version "1.3.5"
   resolved "https://registry.npmmirror.com/@types/mime/-/mime-1.3.5.tgz"

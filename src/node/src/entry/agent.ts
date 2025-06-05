@@ -8,7 +8,8 @@ import {
 } from '@agent-infra/shared';
 
 const config: LLMConfig = {
-  model: "gpt-4o-mini",
+  // model: "gpt-4o-mini",
+  model: "deepseek",
   apiKey: process.env.OPENAI_API_KEY,
 };
 
@@ -16,7 +17,11 @@ async function main () {
   const llm = createLLM(config);
 
   const response = await llm.askTool({
-    messages: [Message.userMessage('What model are you using now?')],
+    messages: [
+      // Message.userMessage('What model are you using now?')
+      // Message.userMessage('帮我打开boss直聘并登录')
+      Message.userMessage('帮我打开钉钉')
+    ],
     requestId: 'test',
     tools: [
       {
