@@ -15,6 +15,7 @@ const baseConfig = {
   bundle: true,
   sourcemap: !isProduction,
   minify: isProduction,
+  drop: [], // 不删除任何调试信息
   plugins: [pathAliasPlugin], // 使用智能路径别名插件
   external: [
     // Node.js 内置模块

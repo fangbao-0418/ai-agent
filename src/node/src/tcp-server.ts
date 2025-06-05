@@ -71,6 +71,7 @@ server.on('connection', (socket: net.Socket) => {
 
   socket.on('data', async (data: Buffer) => {
     buffer = Buffer.concat([buffer, data])
+    console.log(data.toString());
     while (buffer.length >= 4) {
       const length = buffer.readUInt32BE(0);
       const fullMessageLength = 4 + 2 + length + 4; // 长度头+类型+数据+CRC

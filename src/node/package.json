@@ -15,9 +15,8 @@
     "dev:build": "NODE_ENV=development npm run build",
     "build:tsc": "tsc && tsc-alias",
     "build:tsc-only": "tsc",
-    "build:tsc-watch": "tsc --watch & tsc-alias --watch",
     "fix-aliases": "node scripts/fix-path-aliases.js",
-    "tsc:watch": "tsc --watch",
+    "tsc:watch": "tsc --watch & tsc-alias --watch",
     "tsc:alias": "tsc-alias",
     "tcp": "ts-node tcp-server.ts",
     "tcp-build": "tsc && node dist/tcp-server.js",
@@ -54,6 +53,7 @@
     "express": "^4.18.2",
     "fs-extra": "^11.3.0",
     "jimp": "1.6.0",
+    "jotai": "^2.12.5",
     "jsonrepair": "^3.12.0",
     "lodash.merge": "^4.6.2",
     "minimatch": "3.1.2",
@@ -80,6 +80,7 @@
     "pkg": "^5.8.1",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "4.2.0",
     "typescript": "^5.3.3"
   },
   "pkg": {

@@ -31,20 +31,21 @@ async function build() {
     
     const externalArgs = externals.map(pkg => `--external:${pkg}`).join(' ');
     
-    // 构建主入口
+    // 构建主入口 - 添加 --drop='' 确保不删除console.log
     console.log('📦 Building main entry (bundling dependencies)...');
-    const mainCmd = `npx --yes esbuild src/index.ts --bundle --platform=node --target=node18 --format=cjs --outfile=dist/index.js ${externalArgs}`;
+    const mainCmd = `npx --yes esbuild src/index.ts --bundle --platform=node --target=node18 --format=cjs --outfile=dist/index.js --drop= ${externalArgs}`;
     execSync(mainCmd, { stdio: 'inherit' });
     console.log('✅ Main entry built successfully');
     
-    // 构建worker
+    // 构建worker - 添加 --drop='' 确保不删除console.log
     console.log('📦 Building worker (bundling dependencies)...');
-    const workerCmd = `npx --yes esbuild src/libs/parse-profile/worker.ts --bundle --platform=node --target=node18 --format=cjs --outfile=dist/libs/parse-profile/worker.js ${externalArgs}`;
+    const workerCmd = `npx --yes esbuild src/libs/parse-profile/worker.ts --bundle --platform=node --target=node18 --format=cjs --outfile=dist/libs/parse-profile/worker.js --drop= ${externalArgs}`;
     execSync(workerCmd, { stdio: 'inherit' });
     console.log('✅ Worker built successfully');
     
     console.log('🎉 Build completed! All dependencies bundled.');
     console.log('📦 Generated files are self-contained (except for native modules)');
+    console.log('📝 Console.log statements are preserved for debugging');
     
   } catch (error) {
     console.error('❌ Build failed:', error.message);

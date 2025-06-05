@@ -13,10 +13,12 @@ const baseConfig = {
   platform: 'node',
   target: 'node18',
   format: 'cjs',
-  // bundle: true,
+  bundle: true,
   sourcemap: !isProduction,
   minify: isProduction,
+  drop: [], // 不删除任何调试信息
   plugins: [pathAliasPlugin], // 使用自动化的路径别名插件
+  external: [],
   // external: [
   //   // Node.js 内置模块
   //   'fs', 'path', 'os', 'worker_threads', 'crypto', 'stream', 'util',
@@ -40,7 +42,7 @@ const baseConfig = {
 // 主入口配置
 const mainConfig = {
   ...baseConfig,
-  entryPoints: ['src/entry/agent.ts'],
+  entryPoints: ['src/index.ts'],
   outfile: 'dist/index.js',
 };
 

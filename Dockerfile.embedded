@@ -1,0 +1,104 @@
+# 多阶段构建 - C++内置Node.js应用程序
+# Stage 1: 构建Node.js后端
+FROM node:18-alpine AS node-builder
+
+WORKDIR /app/node
+
+# 复制Node.js项目文件
+COPY src/node/package*.json ./
+COPY src/node/tsconfig.json ./
+
+# 安装依赖
+RUN npm ci --only=production && npm cache clean --force
+
+# 复制源代码并构建
+COPY src/node/src ./src
+RUN npm run build
+
+# 安装pkg用于打包
+RUN npm install -g pkg
+
+# 打包为独立可执行文件
+RUN pkg dist/index.js --out-path /app/binaries --targets node18-linux-x64
+
+# Stage 2: 构建C++前端
+FROM ubuntu:22.04 AS cpp-builder
+
+# 安装构建依赖
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    qt6-base-dev \
+    qt6-tools-dev \
+    qt6-tools-dev-tools \
+    libqt6network6 \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app/cpp
+
+# 复制C++项目文件
+COPY src/cpp/ ./
+
+# 从Node.js构建阶段复制二进制文件
+COPY --from=node-builder /app/binaries/ ./bin/
+
+# 创建构建目录并构建
+RUN mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release .. && \
+    make -j$(nproc)
+
+# Stage 3: 运行时镜像
+FROM ubuntu:22.04 AS runtime
+
+# 安装运行时依赖
+RUN apt-get update && apt-get install -y \
+    libqt6core6 \
+    libqt6gui6 \
+    libqt6widgets6 \
+    libqt6network6 \
+    xvfb \
+    x11vnc \
+    fluxbox \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# 创建应用用户
+RUN useradd -m -s /bin/bash appuser
+
+# 创建应用目录结构
+WORKDIR /app
+RUN mkdir -p bin data/config data/download resources && \
+    chown -R appuser:appuser /app
+
+# 从构建阶段复制应用程序
+COPY --from=cpp-builder /app/cpp/build/CppNodeApp ./bin/
+COPY --from=node-builder /app/binaries/index-linux ./resources/
+
+# 复制配置文件和启动脚本
+COPY docker/app-config.json ./data/config/app.json
+COPY docker/docker-entrypoint.sh ./entrypoint.sh
+COPY docker/start-vnc.sh ./start-vnc.sh
+
+# 设置权限
+RUN chmod +x ./bin/CppNodeApp ./entrypoint.sh ./start-vnc.sh ./resources/index-linux && \
+    chown -R appuser:appuser /app
+
+# 切换到应用用户
+USER appuser
+
+# 设置环境变量
+ENV DISPLAY=:1
+ENV NODE_DIR=/app/data
+ENV QT_QPA_PLATFORM=xcb
+
+# 暴露端口
+EXPOSE 3000 5900
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+# 启动脚本
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["--mode", "gui"] 

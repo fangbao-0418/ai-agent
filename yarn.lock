@@ -3605,6 +3605,10 @@ jiti@^2.4.2:
   version "2.4.2"
   resolved "https://registry.npmmirror.com/jiti/-/jiti-2.4.2.tgz#d19b7732ebb6116b06e2038da74a55366faef560"
 
+jotai@^2.12.5:
+  version "2.12.5"
+  resolved "https://registry.npmmirror.com/jotai/-/jotai-2.12.5.tgz#2decdf41dfcad5e4afc7278da81c45646d4ae8ad"
+
 jpeg-js@^0.4.4:
   version "0.4.4"
   resolved "https://registry.npmmirror.com/jpeg-js/-/jpeg-js-0.4.4.tgz"

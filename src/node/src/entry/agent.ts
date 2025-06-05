@@ -20,26 +20,28 @@ async function main () {
     messages: [
       // Message.userMessage('What model are you using now?')
       // Message.userMessage('帮我打开boss直聘并登录')
-      Message.userMessage('帮我打开钉钉')
+      Message.userMessage('帮我浏览器打开boss直聘并登录后下载已沟通人选前三份简历并进行下载后分析')
     ],
+    mcpServerKeys: ['browser', 'filesystem', 'commands'],
     requestId: 'test',
+    toolChoice: 'required',
     tools: [
-      {
-        type: 'function',
-        function: {
-          name: 'get_model_name',
-          description: 'Get the name of the current model',
-          parameters: {
-            type: 'object',
-            properties: {
-              model: {
-                type: 'string',
-                description: 'The name of the model',
-              },
-            },
-          },
-        },
-      },
+      // {
+      //   type: 'function',
+      //   function: {
+      //     name: 'get_model_name',
+      //     description: 'Get the name of the current model',
+      //     parameters: {
+      //       type: 'object',
+      //       properties: {
+      //         model: {
+      //           type: 'string',
+      //           description: 'The name of the model',
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
     ],
   });
 

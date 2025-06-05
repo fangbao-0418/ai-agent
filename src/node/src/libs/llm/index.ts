@@ -14,6 +14,8 @@ import { mapToolKeysToAzureTools } from '../mcp/tools';
 import { logger } from '../../utils/logger';
 import { maskSensitiveData } from '@src/utils/maskSensitiveData';
 
+export { LLMConfig } from './interfaces/LLMProvider';
+
 export class LLM {
   private provider: LLMProvider;
   private config: LLMConfig;

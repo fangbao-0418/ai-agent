@@ -1,0 +1,76 @@
+{
+  "name": "browser-use-server",
+  "version": "1.0.0",
+  "description": "Browser Use Node.js Server with Socket Support",
+  "main": "server.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "web-server": "ts-node web-server.ts",
+    "tcp-server": "ts-node tcp-server.ts",
+    "build": "node build.js",
+    "build:esbuild": "node build.js",
+    "build:watch": "echo 'Watch mode not implemented yet for esbuild'",
+    "dev": "NODE_ENV=development nodemon",
+    "dev:build": "NODE_ENV=development npm run build",
+    "build:tsc": "tsc",
+    "build:tsc:watch": "tsc --watch",
+    "build:rsbuild": "rsbuild build --env production",
+    "build:rsbuild:dev": "rsbuild build --env development",
+    "build:rsbuild:watch": "rsbuild build --env development --watch",
+    "build:legacy": "tsc",
+    "tsc:watch": "tsc --watch",
+    "index": "ts-node index.ts",
+    "agent": "ts-node agent.ts",
+    "tcp": "ts-node tcp-server.ts",
+    "tcp-build": "tsc && node dist/tcp-server.js",
+    "build:tcp": "npx ncc build dist2/index.js -o dist2",
+    "build:mac": "pkg ./dist2/index.js --targets node18-macos-arm64 --output dist3/index.app",
+    "test": "NODE_ENV=test npm run build",
+    "test:env": "node scripts/test-worker-environment.js",
+    "clean": "rm -rf dist dist2 dist3",
+    "postbuild": "echo '🎉 Build completed! Environment info:'",
+    "prebuild": "npm run clean"
+  },
+  "dependencies": {
+    "@computer-use/nut-js": "4.2.0",
+    "@ui-tars/operator-browser": "*",
+    "@ui-tars/operator-nut-js": "1.2.1",
+    "@ui-tars/sdk": "1.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "electron": "36.3.1",
+    "esbuild": "^0.25.5",
+    "express": "^4.18.2",
+    "jimp": "1.6.0",
+    "pdf-parse": "^1.1.1",
+    "robotjs": "^0.6.0",
+    "socket.io": "^4.7.4",
+    "systeminformation": "5.27.1"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.3.22",
+    "@types/async-retry": "1.4.9",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "@types/pdf-parse": "^1.1.5",
+    "@vercel/ncc": "^0.38.3",
+    "ncc": "^0.3.6",
+    "nodemon": "^3.1.10",
+    "pkg": "^5.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "pkg": {
+    "scripts": [
+      "dist2/**/*.js"
+    ],
+    "assets": [
+      "dist2/**/*"
+    ],
+    "targets": [
+      "node18-macos-arm64"
+    ],
+    "outputPath": "dist3"
+  }
+}
