@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { SearchEngineForSettings, VLMProviderV2 } from '@src/types';
 import { AppSettings } from '@agent-infra/shared';
+import { logger } from '../logger';
+const Conf = require('conf').default;
 
 const PresetSourceSchema = z.object({
   type: z.enum(['local', 'remote']),
@@ -26,13 +28,60 @@ export const PresetSchema = z.object({
   reportStorageBaseUrl: z.string().url().optional(),
   utioBaseUrl: z.string().url().optional(),
   presetSource: PresetSourceSchema.optional(),
+  model: z.object({
+    provider: z.string(),
+    model: z.string(),
+    apiKey: z.string(),
+    apiVersion: z.string(),
+    baseURL: z.string(),
+  }),
 });
 
 export type LocalStore = z.infer<typeof PresetSchema>;
 
+export const DEFAULT_SETTING: LocalStore = {
+  language: 'en',
+  vlmProvider: VLMProviderV2.doubao_1_5,
+  vlmBaseUrl: '',
+  vlmApiKey: '',
+  vlmModelName: '',
+  maxLoopCount: 100,
+  loopIntervalInMs: 1000,
+  searchEngineForBrowser: SearchEngineForSettings.GOOGLE,
+  operator: 'browser',
+  reportStorageBaseUrl: '',
+  utioBaseUrl: '',
+  model: {
+    provider: 'openai',
+    model: 'deepseek',
+    apiKey: '',
+    apiVersion: '',
+    baseURL: '',
+  },
+};
+
 export class SettingStore {
-  public static getInstance(): any {
-    return {}
+  
+  private static instance: any;
+
+  public static getInstance() {
+    // const config = new Conf({projectName: 'foo'});
+    if (!SettingStore.instance) {
+      SettingStore.instance = new Conf({
+        projectName: 'ui_tars.setting',
+        defaults: DEFAULT_SETTING,
+      });
+      SettingStore.instance.onDidAnyChange((newValue: any, oldValue: any) => {
+        logger.log(
+          `SettingStore: ${JSON.stringify(oldValue)} changed to ${JSON.stringify(newValue)}`,
+        );
+        // Notify that value updated
+        // BrowserWindow.getAllWindows().forEach((win) => {
+        //   win.webContents.send('setting-updated', newValue);
+        // });
+      });
+    }
+    return SettingStore.instance;
   }
 
   public static get<K extends keyof AppSettings>(key: K): AppSettings[K] {
@@ -40,7 +89,7 @@ export class SettingStore {
   }
 
   static set(key: string, value: string) {
-    //
+    SettingStore.getInstance().set(key, value);
   }
   mcpServers: any[] = [];
 }

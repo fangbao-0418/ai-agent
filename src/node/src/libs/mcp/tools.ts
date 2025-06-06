@@ -2,7 +2,7 @@ import { MCPServerName } from '@agent-infra/shared';
 import { MCPServer, MCPTool } from '@agent-infra/mcp-client';
 import { ChatCompletionTool } from 'openai/resources/index.mjs';
 import { logger } from '@utils/logger';
-import { SettingStore } from '@utils/store/setting';
+import { SettingStore } from '@src/utils/store/setting.js';
 
 export function mcpToolsToAzureTools(
   mcpTools: MCPTool[],

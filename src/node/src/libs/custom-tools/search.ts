@@ -2,7 +2,7 @@ import { SearchProvider, SearchSettings, ToolCall } from '@agent-infra/shared';
 import { SearchClient, SearchResult } from '@agent-infra/search';
 import { MCPToolResult } from '@src/types';
 import { tavily as tavilyCore } from '@tavily/core';
-import { SettingStore } from '@utils/store/setting';
+import { SettingStore } from '@src/utils/store/setting.js';
 import { logger } from '@utils/logger';
 import { maskSensitiveData } from '@utils/maskSensitiveData';
 const { jsonrepair } = require('jsonrepair');

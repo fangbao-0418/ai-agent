@@ -109,6 +109,12 @@ After \`web_search\` called, then you must select web page from the search resul
 
 </after_web_search>
 
+<after_browser_use>
+
+After calling \`browser_use\`, you tell the \`browser_use\` user what to do and how it involves summarizing. Please don't let \`browser_use\` know. Block the summary information. The summary is to be processed by other tools. Don't let \`browser_use\` obtain the summary instruction
+
+</after_browser_use>
+
 <write_file>
 
 When you want to write file, you should list allowed directories and write the file to the allowed directory.

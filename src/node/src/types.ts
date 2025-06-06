@@ -349,15 +349,15 @@ export interface EventItem {
 
 
 export interface AppContext {
-  chatUtils: ReturnType<any>;
+  chatUtils?: ReturnType<any>;
   request: {
     inputText: string;
     inputFiles: InputFile[];
   };
   agentFlowId: string;
-  setEventId: (eventId: string) => void;
-  setEvents: React.Dispatch<React.SetStateAction<EventItem[]>>;
-  setAgentStatusTip: (status: string) => void;
-  setPlanTasks: (tasks: PlanTask[]) => void;
-  setShowCanvas: (show: boolean) => void;
+  setEventId?: (eventId: string) => void;
+  setEvents?: React.Dispatch<React.SetStateAction<EventItem[]>>;
+  setAgentStatusTip?: (status: string) => void;
+  setPlanTasks?: (tasks: PlanTask[]) => void;
+  setShowCanvas?: (show: boolean) => void;
 }

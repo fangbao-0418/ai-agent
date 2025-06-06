@@ -1,6 +1,6 @@
 import { Memory } from '@agent-infra/shared';
 import { ChatMessageUtil } from '@utils/chat-message-util';
-import { AppContext } from '@src/hooks/use-agent-flow';
+import { AppContext } from '@src/types';
 import { Aware, AwareResult } from './aware';
 import { Executor } from './executor';
 import {
@@ -46,24 +46,24 @@ export class AgentFlow {
   }
 
   async run() {
-    this.appContext.setPlanTasks([]);
-    const chatUtils = this.appContext.chatUtils;
+    // this.appContext.setPlanTasks([]);
+    // const chatUtils = this.appContext.chatUtils;
     const { setAgentStatusTip } = this.appContext;
     this.eventManager.addLoadingStatus('Thinking');
-    chatUtils.addMessage(
-      ChatMessageUtil.assistantOmegaMessage({
-        events: this.eventManager.getAllEvents(),
-      }),
-      {
-        shouldSyncStorage: true,
-      },
-    );
+    // chatUtils.addMessage(
+    //   ChatMessageUtil.assistantOmegaMessage({
+    //     events: this.eventManager.getAllEvents(),
+    //   }),
+    //   {
+    //     shouldSyncStorage: true,
+    //   },
+    // );
     // this.appContext.setEvents([
     //   ...this.eventManager.getHistoryEvents(),
     //   ...this.eventManager.getAllEvents(),
     // ]);
     // return;
-    setAgentStatusTip('Thinking');
+    // setAgentStatusTip('Thinking');
     // First, we give a loading ui to the user to indicate that the agent is thinking
     const agentContext: AgentContext = {
       plan: [],
@@ -98,38 +98,38 @@ export class AgentFlow {
     );
     const preparePromise = greeter.run().then(async () => {
       // Run planner agent
-      const omegaMessage = await chatUtils.addMessage(
-        ChatMessageUtil.assistantOmegaMessage({
-          events: this.eventManager.getAllEvents(),
-        }),
-        {
-          shouldSyncStorage: true,
-        },
-      );
+      // const omegaMessage = await chatUtils.addMessage(
+      //   ChatMessageUtil.assistantOmegaMessage({
+      //     events: this.eventManager.getAllEvents(),
+      //   }),
+      //   {
+      //     shouldSyncStorage: true,
+      //   },
+      // );
       // Bind event data and ui, when event added, the ui will be updated automatically
       // In other words, reactive ui programming
       this.eventManager.setUpdateCallback(async (events) => {
-        this.appContext.setEvents((preEvents: EventItem[]) => {
-          // Show canvas automatically when tool used
-          if (preEvents.find((e) => e.type === EventType.ToolUsed)) {
-            this.appContext.setShowCanvas(true);
-          }
-          const latestToolUsedEvent = [...events]
-            .reverse()
-            .find((e) => e.type === EventType.ToolUsed);
-          console.log('latestToolUsedEvent', latestToolUsedEvent);
-          latestToolUsedEvent &&
-            this.appContext.setEventId(latestToolUsedEvent.id);
-          return [...this.eventManager.getHistoryEvents(), ...events];
-        });
-        await chatUtils.updateMessage(
-          ChatMessageUtil.assistantOmegaMessage({ events }),
-          {
-            messageId: omegaMessage!.id,
-            shouldSyncStorage: true,
-            shouldScrollToBottom: true,
-          },
-        );
+        // this.appContext.setEvents((preEvents: EventItem[]) => {
+        //   // Show canvas automatically when tool used
+        //   if (preEvents.find((e) => e.type === EventType.ToolUsed)) {
+        //     this.appContext.setShowCanvas(true);
+        //   }
+        //   const latestToolUsedEvent = [...events]
+        //     .reverse()
+        //     .find((e) => e.type === EventType.ToolUsed);
+        //   console.log('latestToolUsedEvent', latestToolUsedEvent);
+        //   latestToolUsedEvent &&
+        //     this.appContext.setEventId(latestToolUsedEvent.id);
+        //   return [...this.eventManager.getHistoryEvents(), ...events];
+        // });
+        // await chatUtils.updateMessage(
+        //   ChatMessageUtil.assistantOmegaMessage({ events }),
+        //   {
+        //     messageId: omegaMessage!.id,
+        //     shouldSyncStorage: true,
+        //     shouldScrollToBottom: true,
+        //   },
+        // );
       });
 
       globalEventEmitter.addListener(
@@ -139,15 +139,15 @@ export class AgentFlow {
             case 'user-interrupt':
               await this.eventManager.addUserInterruptionInput(event.text);
               this.interruptController.abort();
-              await chatUtils.updateMessage(
-                ChatMessageUtil.assistantOmegaMessage({
-                  events: this.eventManager.getAllEvents(),
-                }),
-                {
-                  messageId: omegaMessage!.id,
-                  shouldSyncStorage: true,
-                },
-              );
+              // await chatUtils.updateMessage(
+              //   ChatMessageUtil.assistantOmegaMessage({
+              //     events: this.eventManager.getAllEvents(),
+              //   }),
+              //   {
+              //     messageId: omegaMessage!.id,
+              //     shouldSyncStorage: true,
+              //   },
+              // );
               break;
             default:
               break;
@@ -187,7 +187,12 @@ export class AgentFlow {
           );
           const awareResult = await aware.run();
           this.loadingStatusTip = 'Thinking';
-          await preparePromise;
+          try {
+            await preparePromise;
+          } catch (error) {
+            console.log(error);
+          }
+
           if (this.abortController.signal.aborted) {
             break;
           }
@@ -207,7 +212,7 @@ export class AgentFlow {
             aware.updateSignal(this.interruptController.signal);
             executor.updateSignal(this.interruptController.signal);
             await this.eventManager.addLoadingStatus(this.loadingStatusTip);
-            this.appContext.setAgentStatusTip(this.loadingStatusTip);
+            // this.appContext.setAgentStatusTip(this.loadingStatusTip);
             continue;
           }
           console.log('aware result', awareResult);
@@ -218,7 +223,7 @@ export class AgentFlow {
             awareResult.step,
             agentContext.plan,
           );
-          this.appContext.setPlanTasks(agentContext.plan);
+          // this.appContext.setPlanTasks(agentContext.plan);
           if (agentContext.plan.length === 0) {
             this.hasFinished = true;
             break;
@@ -238,7 +243,7 @@ export class AgentFlow {
           }
 
           await this.eventManager.addLoadingStatus(this.loadingStatusTip);
-          this.appContext.setAgentStatusTip(this.loadingStatusTip);
+          // this.appContext.setAgentStatusTip(this.loadingStatusTip);
 
           const toolCallList = (await executor.run(awareResult.status)).filter(
             Boolean,
@@ -419,8 +424,9 @@ Current task: ${currentTask}
   }
 
   private parseHistoryEvents() {
-    const events = extractHistoryEvents(this.appContext.chatUtils.messages);
-    this.appContext.setEvents(events);
-    return events;
+    // const events = extractHistoryEvents(this.appContext.chatUtils.messages);
+    // this.appContext.setEvents(events);
+    // return events;
+    return [];
   }
 }

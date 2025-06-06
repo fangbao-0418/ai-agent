@@ -1,3 +1,5 @@
+import { ActionStatus, PlanTask } from './agent';
+
 export enum EventType {
   UserMessage = 'user-message',
   LoadingStatus = 'loading-status',

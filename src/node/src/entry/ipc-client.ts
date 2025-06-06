@@ -8,8 +8,11 @@ import { logger } from "@src/utils/logger";
 import { maskSensitiveData } from "@src/utils/maskSensitiveData";
 import { ChatCompletionTool } from 'openai/resources/index.mjs';
 import { createLLM, LLMConfig } from '@src/libs/llm';
-import { SettingStore } from "@src/utils/store/setting";
+import { SettingStore } from "@src/utils/store/setting.js";
 import { extractToolNames } from "@src/utils/helper";
+import { getActiveMcpSettings } from "@src/libs/mcp/tools";
+import { EventManager } from "./event-manager";
+const EventEmitter = require('events');
 
 /**
  * Get the current provider configuration based on settings
@@ -33,10 +36,32 @@ export const currentLLMConfigRef: {
 };
 
 class IPCClient {
+  getFileSystemSettings () {
+    const settings = SettingStore.get('fileSystem');
+    logger.info(
+      '[settingsRoute.getFileSystemSettings] result',
+      maskSensitiveData(settings),
+    );
+    return settings;
+  }
+  listCustomTools (): any {
+    return {}
+  }
+  listMcpTools (): any[] {
+    return []
+  }
   listTools () {
     return ['browser', 'filesystem', 'commands'];
   }
-  askLLMTool (input: {
+
+  getActiveMcpSettings () {
+    return getActiveMcpSettings();
+  }
+
+  abortRequest (input: { requestId: string}) {
+    logger.info('[llmRoute.abortRequest] requestId', input.requestId);
+  }
+  async askLLMTool (input: {
       messages: MessageData[];
       tools: ChatCompletionTool[];
       mcpServerKeys?: (MCPServerName | string)[];
@@ -80,11 +105,56 @@ class IPCClient {
       }
     }
 
-  askLLMTextStream (options: any) {
+  askLLMTextStream (
+    input: {
+      messages: MessageData[];
+      // tools: ChatCompletionTool[];
+      // mcpServerKeys?: (MCPServerName | string)[];
+      requestId: string;
+    }
+  ) {
+    logger.info('[llmRoute.askLLMTextStream] input', input);
+    const messages = input.messages.map((msg) => new Message(msg));
+    const { requestId } = input;
+    logger.info(
+      '[llmRoute.askLLMTextStream] Current LLM Config',
+      maskSensitiveData(currentLLMConfigRef.current),
+    );
+    const llm = createLLM(currentLLMConfigRef.current);
 
+    (async () => {
+      // const windows = BrowserWindow.getAllWindows();
+      try {
+        const stream = llm.askLLMTextStream({ messages, requestId });
+        logger.info('[llmRoute.askLLMTextStream] stream', !!stream);
+
+        // for await (const chunk of stream) {
+        //   // if (!windows.length) {
+        //   //   return;
+        //   // }
+
+        //   // windows.forEach((win) => {
+        //   //   win.webContents.send(`llm:stream:${requestId}:data`, chunk);
+        //   // });
+        // }
+
+        // windows.forEach((win) => {
+        //   win.webContents.send(`llm:stream:${requestId}:end`);
+        // });
+      } catch (error) {
+        // windows.forEach((win) => {
+        //   win.webContents.send(`llm:stream:${requestId}:error`, error);
+        // });
+      }
+    })();
+
+    return requestId;
   }
 }
 
+
+class MyEmitter extends EventEmitter {}
+const emitter = new MyEmitter();
 
 export const onMainStreamEvent = (
   streamId: string,
@@ -98,15 +168,15 @@ export const onMainStreamEvent = (
   const errorListener = (error: Error) => handlers.onError(error);
   const endListener = () => handlers.onEnd();
 
-  // window.api.on(`llm:stream:${streamId}:data`, dataListener);
-  // window.api.on(`llm:stream:${streamId}:error`, errorListener);
-  // window.api.on(`llm:stream:${streamId}:end`, endListener);
+  emitter.on(`llm:stream:${streamId}:data`, dataListener);
+  emitter.on(`llm:stream:${streamId}:error`, errorListener);
+  emitter.on(`llm:stream:${streamId}:end`, endListener);
 
-  // return () => {
-  //   window.api.off(`llm:stream:${streamId}:data`, dataListener);
-  //   window.api.off(`llm:stream:${streamId}:error`, errorListener);
-  //   window.api.off(`llm:stream:${streamId}:end`, endListener);
-  // };
+  return () => {
+    emitter.off(`llm:stream:${streamId}:data`, dataListener);
+    emitter.off(`llm:stream:${streamId}:error`, errorListener);
+    emitter.off(`llm:stream:${streamId}:end`, endListener);
+  };
 };
 
 export const ipcClient = new IPCClient();

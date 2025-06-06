@@ -58,15 +58,15 @@ export class Greeter {
               return;
             }
             greetMessage += chunk;
-            await this.appContext.chatUtils.updateMessage(
-              {
-                type: MessageType.PlainText,
-                content: greetMessage,
-              },
-              {
-                shouldSyncStorage: true,
-              },
-            );
+            // await this.appContext.chatUtils.updateMessage(
+            //   {
+            //     type: MessageType.PlainText,
+            //     content: greetMessage,
+            //   },
+            //   {
+            //     shouldSyncStorage: true,
+            //   },
+            // );
           },
           onError: (error: Error) => {
             reject(error);

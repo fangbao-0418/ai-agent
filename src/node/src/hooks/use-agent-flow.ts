@@ -1,47 +1,33 @@
-import { useCallback } from 'react';
 import { useAppChat } from './use-app-chat';
 import { InputFile, MessageRole } from '@src/types/chat-message';
 import { AgentFlow } from '../entry/agent-flow';
 import { EventItem } from '@src/types/event';
 import { useAtom } from 'jotai';
-import {
-  agentStatusTipAtom,
-  currentAgentFlowIdRefAtom,
-  currentEventIdAtom,
-  eventsAtom,
-  planTasksAtom,
-} from '@utils/state/chat';
+// import {
+//   agentStatusTipAtom,
+//   currentAgentFlowIdRefAtom,
+//   currentEventIdAtom,
+//   eventsAtom,
+//   planTasksAtom,
+// } from '@utils/state/chat';
 import { v4 as uuid } from 'uuid';
 import { PlanTask } from '@src/types/agent';
 import { showCanvasAtom } from '@utils/state/canvas';
 // import { useChatSessions } from './use-chat-session';
 import { ipcClient } from '../entry/ipc-client';
 import { Message } from '@agent-infra/shared';
+import { AppContext } from '@src/types';
 
 export const DEFAULT_APP_ID = 'omega-agent';
 
-export interface AppContext {
-  chatUtils: ReturnType<typeof useAppChat>;
-  request: {
-    inputText: string;
-    inputFiles: InputFile[];
-  };
-  agentFlowId: string;
-  setEventId: (eventId: string) => void;
-  setEvents: React.Dispatch<React.SetStateAction<EventItem[]>>;
-  setAgentStatusTip: (status: string) => void;
-  setPlanTasks: (tasks: PlanTask[]) => void;
-  setShowCanvas: (show: boolean) => void;
-}
-
 export function useAgentFlow() {
-  const chatUtils = useAppChat();
-  const [, setEvents] = useAtom(eventsAtom);
-  const [, setAgentStatusTip] = useAtom(agentStatusTipAtom);
-  const [currentAgentFlowIdRef] = useAtom(currentAgentFlowIdRefAtom);
-  const [, setShowCanvas] = useAtom(showCanvasAtom);
-  const [, setEventId] = useAtom(currentEventIdAtom);
-  const [, setPlanTasks] = useAtom(planTasksAtom);
+  // const chatUtils = useAppChat();
+  // const [, setEvents] = useAtom(eventsAtom);
+  // const [, setAgentStatusTip] = useAtom(agentStatusTipAtom);
+  // const [currentAgentFlowIdRef] = useAtom(currentAgentFlowIdRefAtom);
+  // const [, setShowCanvas] = useAtom(showCanvasAtom);
+  // const [, setEventId] = useAtom(currentEventIdAtom);
+  // const [, setPlanTasks] = useAtom(planTasksAtom);
   // const { updateChatSession, currentSessionId } = useChatSessions({
   //   appId: DEFAULT_APP_ID,
   // });
@@ -74,28 +60,27 @@ export function useAgentFlow() {
   //   [currentSessionId, updateChatSession, chatUtils.messages],
   // );
 
-  return useCallback(
+  return (
     async (inputText: string, inputFiles: InputFile[]) => {
       const agentFlowId = uuid();
-      currentAgentFlowIdRef.current = agentFlowId;
+      // currentAgentFlowIdRef.current = agentFlowId;
       const agentFlow = new AgentFlow({
-        chatUtils,
-        setEvents,
-        setEventId,
-        setAgentStatusTip,
-        setPlanTasks,
-        setShowCanvas,
+        // chatUtils,
+        // setEvents,
+        // setEventId,
+        // setAgentStatusTip,
+        // setPlanTasks,
+        // setShowCanvas,
         agentFlowId,
         request: {
           inputText,
           inputFiles,
         },
       });
-      // await Promise.all([agentFlow.run(), updateSessionTitle(inputText)]);
-    },
-    [
-      chatUtils, setEvents,
-      // updateSessionTitle
-    ],
+      await Promise.all([
+        agentFlow.run(),
+        // updateSessionTitle(inputText)
+      ]);
+    }
   );
 }

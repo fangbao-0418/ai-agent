@@ -1,11 +1,12 @@
-import { AppContext } from '@renderer/hooks/useAgentFlow';
-import { AgentContext } from '../AgentFlow';
-import { ipcClient } from '@renderer/api';
+import { AppContext } from '@src/types';
+import { AgentContext } from '../agent-flow';
+import { ipcClient } from '../ipc-client';
 import { MCPServerName, Message, ToolCall } from '@agent-infra/shared';
 import { chatMessageTool, idleTool } from './tools';
 import { CompatibilityCallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { interceptToolCalls } from '@renderer/api/fileSystemInterceptor';
+import { interceptToolCalls } from '@src/utils/file-system-interceptor';
+// import { interceptToolCalls } from '@renderer/api/fileSystemInterceptor';
 
 export class Executor {
   constructor(
@@ -71,10 +72,10 @@ You should use the same language as the user input by default.
   }
 
   async run(status: string) {
-    const environmentInfo = await this.agentContext.getEnvironmentInfo(
-      this.appContext,
-      this.agentContext,
-    );
+    // const environmentInfo = await this.agentContext.getEnvironmentInfo(
+    //   this.appContext,
+    //   this.agentContext,
+    // );
 
     if (this.abortSignal.aborted) {
       return [];
@@ -88,18 +89,14 @@ You should use the same language as the user input by default.
       };
 
       const activeMcpSettings = await ipcClient
-        .getActiveMcpSettings()
-        .catch((e) => {
-          console.error('Error getting active MCP settings', e);
-          return {};
-        });
+        .getActiveMcpSettings();
       try {
         this.abortSignal.addEventListener('abort', abortHandler);
 
         const result = await ipcClient.askLLMTool({
           messages: [
             Message.systemMessage(this.systemPrompt),
-            Message.userMessage(environmentInfo),
+            // Message.userMessage(environmentInfo),
             Message.userMessage(`Aware status: ${status}`),
           ],
           tools: [idleTool, chatMessageTool],
@@ -140,17 +137,17 @@ You should use the same language as the user input by default.
           this.abortSignal.addEventListener('abort', abortHandler);
 
           // Intercept tool calls to check file permissions - this will block if permission is needed
-          const interceptedToolCalls = await interceptToolCalls(toolCalls);
+          // const interceptedToolCalls = await interceptToolCalls(toolCalls);
 
-          const result = await ipcClient.executeTool({
-            toolCalls: interceptedToolCalls,
-          });
+          // const result = await ipcClient.executeTool({
+          //   toolCalls: interceptedToolCalls,
+          // });
 
-          console.log('Execute result', JSON.stringify(result));
+          // console.log('Execute result', JSON.stringify(result));
           if (this.abortSignal.aborted) {
             throw new DOMException('Aborted', 'AbortError');
           }
-          resolve(result);
+          // resolve(result);
         } catch (error) {
           reject(error);
         } finally {
