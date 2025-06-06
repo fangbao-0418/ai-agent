@@ -44,20 +44,9 @@ Before you interact with filesystem, you must list the allowed dirs and files an
 
 </file_system_tool>
 
-<web_search_tool>
-After \`web_search\` called, then you must select web page from the search result, then you see the detail of the page, please call browser tool to do it.
-</web_search_tool>
-
-<browser_tools>
-use \`browser_navigate\` to enter the page detail.
-use \`browser_scroll\` to scroll the page.When you use browser to enter the page detail, if the page content is partially visible, you should call browser tool to scroll to get more content, until the page content is fully visible.
-use \`browser_click\` to click the element.
-use \`browser_form_input_fill\` to fill the form.
-use \`browser_select\` to select the element.
-use \`browser_hover\` to hover the element.
-use \`browser_evaluate\` to evaluate the element.
-use \`browser_get_text\` to get the text of the element.
-</browser_tool>
+<browser_use_tool>
+use \`browser_use\` It is possible to check in to the browser to operate all browser events
+</browser_use_tool>
 
 <commands_tool>
 When you use commands, you must cd the allowed dir instead of cwd.
@@ -66,6 +55,21 @@ When you use commands, you must cd the allowed dir instead of cwd.
 <language>
 You should use the same language as the user input by default.
 </language>`;
+
+// <web_search_tool>
+// After \`web_search\` called, then you must select web page from the search result, then you see the detail of the page, please call browser tool to do it.
+// </web_search_tool>
+
+// <browser_tools>
+// use \`browser_navigate\` to enter the page detail.
+// use \`browser_scroll\` to scroll the page.When you use browser to enter the page detail, if the page content is partially visible, you should call browser tool to scroll to get more content, until the page content is fully visible.
+// use \`browser_click\` to click the element.
+// use \`browser_form_input_fill\` to fill the form.
+// use \`browser_select\` to select the element.
+// use \`browser_hover\` to hover the element.
+// use \`browser_evaluate\` to evaluate the element.
+// use \`browser_get_text\` to get the text of the element.
+// </browser_tool>
 
   public updateSignal(abortSignal: AbortSignal) {
     this.abortSignal = abortSignal;
@@ -137,17 +141,17 @@ You should use the same language as the user input by default.
           this.abortSignal.addEventListener('abort', abortHandler);
 
           // Intercept tool calls to check file permissions - this will block if permission is needed
-          // const interceptedToolCalls = await interceptToolCalls(toolCalls);
+          const interceptedToolCalls = await interceptToolCalls(toolCalls);
 
-          // const result = await ipcClient.executeTool({
-          //   toolCalls: interceptedToolCalls,
-          // });
+          const result = await ipcClient.executeTool({
+            toolCalls: interceptedToolCalls,
+          });
 
           // console.log('Execute result', JSON.stringify(result));
           if (this.abortSignal.aborted) {
             throw new DOMException('Aborted', 'AbortError');
           }
-          // resolve(result);
+          resolve(result);
         } catch (error) {
           reject(error);
         } finally {

@@ -81,6 +81,7 @@ export function useAgentFlow() {
         agentFlow.run(),
         // updateSessionTitle(inputText)
       ]);
+      console.log('end')
     }
   );
 }

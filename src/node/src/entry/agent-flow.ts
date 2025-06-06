@@ -289,13 +289,13 @@ export class AgentFlow {
                 const params = JSON.parse(
                   toolCall.function.arguments,
                 ) as ToolCallParam['edit_file'];
-                originalFileContent = await ipcClient.getFileContent({
-                  filePath: params.path,
-                });
+                // originalFileContent = await ipcClient.getFileContent({
+                //   filePath: params.path,
+                // });
               }
               // Execute tool in the main thread
               const callResult = (await executor.executeTools([toolCall]))[0];
-              this.appContext.setAgentStatusTip('Executing Tool');
+              // this.appContext.setAgentStatusTip('Executing Tool');
 
               await this.eventManager.handleToolExecution({
                 toolName,
@@ -311,11 +311,11 @@ export class AgentFlow {
               this.eventManager.updateFileContentForEdit(originalFileContent);
             }
 
-            if (SNAPSHOT_BROWSER_ACTIONS.includes(toolName as ToolCallType)) {
-              const screenshotPath = await ipcClient.saveBrowserSnapshot();
-              console.log('screenshotPath', screenshotPath);
-              this.eventManager.updateScreenshot(screenshotPath.filepath);
-            }
+            // if (SNAPSHOT_BROWSER_ACTIONS.includes(toolName as ToolCallType)) {
+            //   const screenshotPath = await ipcClient.saveBrowserSnapshot();
+            //   console.log('screenshotPath', screenshotPath);
+            //   this.eventManager.updateScreenshot(screenshotPath.filepath);
+            // }
 
             if (toolName === ExecutorToolType.ChatMessage) {
               const params = JSON.parse(toolCall.function.arguments);

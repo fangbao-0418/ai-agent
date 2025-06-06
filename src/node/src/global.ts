@@ -7,7 +7,7 @@ interface AppStateDataProps {
 
 class AppState {
   data: AppStateDataProps = {
-    'node-dir': '',
+    'node-dir': process.cwd() + '/file',
     'download-dir': '',
     'session-id': '',
     'temp-download-dir': '',
@@ -17,7 +17,9 @@ class AppState {
   
   get(key: keyof AppStateDataProps): string {
     if (key === 'download-dir') {
-      return this.data['node-dir'] + '/download';
+      return this.get('node-dir') + '/download';
+    } else if (key === 'node-dir') {
+      return this.data['node-dir'] || process.cwd() + '/file';
     } else if (key === 'temp-download-dir') {
       return this.get('download-dir') + '/' + (this.get('session-id') ?? '');
     }

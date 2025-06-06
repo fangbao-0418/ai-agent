@@ -1,11 +1,13 @@
 import { ToolCall } from '@agent-infra/shared';
 import { search } from './search';
+import * as browserUse from './browser-use';
 
 export function executeCustomTool(toolCall: ToolCall) {
   if (toolCall.function.name === 'web_search') {
     return search(toolCall);
+  } else if (toolCall.function.name === 'browser_use') {
+    return browserUse.search(toolCall);
   }
-
   return null;
 }
 
@@ -14,7 +16,7 @@ export function listCustomTools() {
     {
       type: 'function',
       function: {
-        name: 'browser_user',
+        name: 'browser_use',
         description: 'Open the browser and operate it.',
         parameters: {
           type: 'object',

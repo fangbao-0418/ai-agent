@@ -54,16 +54,16 @@ export const createMcpClient = async () => {
       description: 'commands tool',
       mcpServer: createCommandServer(),
     },
-    [MCPServerName.Browser]: {
-      type: 'builtin',
-      name: MCPServerName.Browser,
-      description: 'browser tools',
-      mcpServer: createBrowserServer({
-        launchOptions: {
-          headless: true,
-        },
-      }),
-    },
+    // [MCPServerName.Browser]: {
+    //   type: 'builtin',
+    //   name: MCPServerName.Browser,
+    //   description: 'browser tools',
+    //   mcpServer: createBrowserServer({
+    //     launchOptions: {
+    //       headless: true,
+    //     },
+    //   }),
+    // },
     ...getActiveMcpSettings(),
   };
 
