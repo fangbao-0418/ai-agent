@@ -46,8 +46,8 @@ interface Message {
   type: 'user' | 'agent' | 'system';
   content: string;
   timestamp: Date;
-  status?: 'pending' | 'success' | 'error';
-  screenshotBase64?: string
+  status?: 'pending' | 'success' | 'error' | 'streaming';
+  screenshotBase64?: string;
 }
 
 interface AgentStatus {
@@ -72,8 +72,16 @@ const App: React.FC = () => {
     isThinking: false,
   });
   const [autoMode, setAutoMode] = useState(false);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null); // 跟踪当前流式传输的消息ID
+  const streamingMessageIdRef = useRef<string | null>(null); // 使用ref来避免状态更新延迟
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketService = useRef<SocketService | null>(null);
+
+  // 同步更新ref和state
+  const setStreamingId = (id: string | null) => {
+    streamingMessageIdRef.current = id;
+    setStreamingMessageId(id);
+  };
 
   useEffect(() => {
     // 初始化 Socket 连接
@@ -94,34 +102,87 @@ const App: React.FC = () => {
     });
 
     socketService.current.on('agent_message', (data: any) => {
-      console.log(data, 'data')
+      console.log('📨 收到消息:', data, 'streamingId:', streamingMessageIdRef.current)
       
       // 处理简历解析相关的消息
       if (data?.data?.conclusion !== undefined) {
         if (data.data.status === 'running') {
-          // 状态为 running 时显示 "开始解析简历"
-          addMessage({
-            id: Date.now().toString(),
-            type: 'agent',
-            content: '开始解析简历',
-            timestamp: new Date(),
-            status: 'pending',
-          });
-        } else if (data.data.status === 'end') {
-          // 状态为 end 时显示 conclusion 的内容
-          if (data.data.conclusion) {
+          // 状态为 running 时：如果已有流式消息就更新，否则创建新的
+          if (streamingMessageIdRef.current) {
+            console.log('🔄 更新running消息:', streamingMessageIdRef.current);
+            updateMessage(streamingMessageIdRef.current, {
+              content: '开始解析文件',
+              status: 'pending',
+            });
+          } else {
+            console.log('🆕 创建running消息');
+            const messageId = `parse-${Date.now()}`;
             addMessage({
-              id: Date.now().toString(),
+              id: messageId,
+              type: 'agent',
+              content: '开始解析文件',
+              timestamp: new Date(),
+              status: 'pending',
+            });
+            setStreamingId(messageId);
+          }
+        } else if (data.data.status === 'streaming') {
+          // 流式状态：如果没有流式消息ID就创建，有的话就更新
+          if (streamingMessageIdRef.current) {
+            console.log('🔄 更新streaming消息:', streamingMessageIdRef.current);
+            // 更新现有消息内容
+            updateMessage(streamingMessageIdRef.current, {
+              content: data.data.conclusion,
+              status: 'streaming',
+            });
+          } else {
+            console.log('🆕 创建streaming消息');
+            // 第一个streaming消息：创建新的流式消息
+            const messageId = `stream-${Date.now()}`;
+            addMessage({
+              id: messageId,
               type: 'agent',
               content: data.data.conclusion,
               timestamp: new Date(),
+              status: 'streaming',
+            });
+            setStreamingId(messageId);
+          }
+        } else if (data.data.status === 'end') {
+          // 流式结束：更新最终状态
+          if (streamingMessageIdRef.current) {
+            console.log('✅ 完成streaming消息:', streamingMessageIdRef.current);
+            updateMessage(streamingMessageIdRef.current, {
+              content: data.data.conclusion || '文档解析完成',
               status: 'success',
             });
+            setStreamingId(null); // 清除流式消息ID
           } else {
+            console.log('🆕 创建end消息（非流式模式）');
+            // 如果没有流式消息ID，说明是非流式模式，创建新消息
             addMessage({
               id: Date.now().toString(),
               type: 'agent',
-              content: '简历解析完成，但未生成分析结果',
+              content: data.data.conclusion || '文档解析完成',
+              timestamp: new Date(),
+              status: 'success',
+            });
+          }
+        } else if (data.data.status === 'error') {
+          // 错误状态
+          if (streamingMessageIdRef.current) {
+            console.log('❌ 错误更新streaming消息:', streamingMessageIdRef.current);
+            updateMessage(streamingMessageIdRef.current, {
+              content: data.data.conclusion || '文档解析发生错误',
+              status: 'error',
+            });
+            setStreamingId(null); // 清除流式消息ID
+          } else {
+            console.log('🆕 创建error消息');
+            addMessage({
+              id: Date.now().toString(),
+              type: 'agent',
+              content: data.data.conclusion || '文档解析发生错误',
               timestamp: new Date(),
               status: 'error',
             });
@@ -161,13 +222,6 @@ const App: React.FC = () => {
          
         });
       }
-      // addMessage({
-      //   id: Date.now().toString(),
-      //   type: 'agent',
-      //   content: data.message,
-      //   timestamp: new Date(),
-      //   status: data.status || 'success',
-      // });
     });
 
     socketService.current.on('agent_progress', (data: any) => {
@@ -193,6 +247,8 @@ const App: React.FC = () => {
       setAgentStatus(prev => ({ ...prev, isRunning: false, isPaused: false, isThinking: false }));
       // 移除思考中消息
       setMessages(prev => prev.filter(msg => !msg.id.startsWith('thinking-')));
+      // 清除流式消息ID
+      setStreamingId(null);
     });
 
     // 监听思考开始
@@ -241,6 +297,13 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, message]);
   };
 
+  // 新增：更新已存在的消息
+  const updateMessage = (messageId: string, updates: Partial<Message>) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? { ...msg, ...updates } : msg
+    ));
+  };
+
   const addSystemMessage = (content: string) => {
     addMessage({
       id: Date.now().toString(),
@@ -263,6 +326,9 @@ const App: React.FC = () => {
     addMessage(userMessage);
     setInputValue('');
     setIsLoading(true);
+    
+    // 清理之前的流式消息ID，确保新请求从干净状态开始
+    setStreamingId(null);
 
     try {
       // 如果代理正在运行但被暂停，先停止它
@@ -298,6 +364,8 @@ const App: React.FC = () => {
     setAgentStatus(prev => ({ ...prev, isRunning: false, isPaused: false, isThinking: false }));
     // 移除思考中消息
     setMessages(prev => prev.filter(msg => !msg.id.startsWith('thinking-')));
+    // 清除流式消息ID
+    setStreamingId(null);
     addSystemMessage('已停止代理运行');
   };
 
@@ -315,6 +383,7 @@ const App: React.FC = () => {
 
   const handleClearMessages = () => {
     setMessages([]);
+    setStreamingId(null); // 清除流式消息ID
   };
 
   const getStatusColor = (status?: string) => {
@@ -322,17 +391,22 @@ const App: React.FC = () => {
       case 'success': return 'success';
       case 'error': return 'error';
       case 'pending': return 'processing';
+      case 'streaming': return 'cyan';
       default: return 'default';
     }
   };
 
-  const getMessageIcon = (type: string, isThinking?: boolean, content?: string) => {
-    if (isThinking) {
+  const getMessageIcon = (type: string, isThinking?: boolean, content?: string, status?: string) => {
+    if (isThinking || status === 'pending') {
       return <LoadingOutlined spin />;
     }
     
+    if (status === 'streaming') {
+      return <LoadingOutlined spin style={{ color: '#1890ff' }} />;
+    }
+    
     // 检查是否是简历解析相关消息
-    if (content?.includes('开始解析简历') || content?.includes('简历分析')) {
+    if (content?.includes('开始解析') || content?.includes('文档分析') || content?.includes('简历分析')) {
       return <FileTextOutlined style={{ color: '#1890ff' }} />;
     }
     
@@ -470,29 +544,12 @@ const App: React.FC = () => {
               </Space>
             </Card>
 
-            <Card size="small" title="快速指令">
-              <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                <Button 
-                  size="small" 
-                  block 
-                  onClick={() => setInputValue('打开百度搜索')}
-                >
-                  打开百度
-                </Button>
-                <Button 
-                  size="small" 
-                  block 
-                  onClick={() => setInputValue('帮我搜索最新的AI新闻')}
-                >
-                  搜索AI新闻
-                </Button>
-                <Button 
-                  size="small" 
-                  block 
-                  onClick={() => setInputValue('打开GitHub，搜索React项目')}
-                >
-                  搜索GitHub
-                </Button>
+            <Card size="small" title="使用提示">
+              <Space direction="vertical" style={{ width: '100%', fontSize: 12 }}>
+                <Text type="secondary">• 支持流式文档解析</Text>
+                <Text type="secondary">• 自动检测简历和文档类型</Text>
+                <Text type="secondary">• 实时显示解析进度</Text>
+                <Text type="secondary">• 自定义分析提示词</Text>
               </Space>
             </Card>
           </div>
@@ -541,10 +598,11 @@ const App: React.FC = () => {
                         <List.Item.Meta
                           avatar={
                             <Avatar 
-                              icon={getMessageIcon(message.type, message.status === 'pending', message.content)} 
+                              icon={getMessageIcon(message.type, message.status === 'pending', message.content, message.status)} 
                               style={{
                                 backgroundColor: message.type === 'user' ? '#1890ff' : 
-                                                message.type === 'agent' ? '#52c41a' : '#faad14'
+                                                message.type === 'agent' ? 
+                                                  (message.status === 'streaming' ? '#13c2c2' : '#52c41a') : '#faad14'
                               }}
                             />
                           }
@@ -559,7 +617,7 @@ const App: React.FC = () => {
                               </Text>
                               {message.status && (
                                 <Tag color={getStatusColor(message.status)}>
-                                  {message.status}
+                                  {message.status === 'streaming' ? '实时传输中' : message.status}
                                 </Tag>
                               )}
                             </Space>
@@ -568,7 +626,9 @@ const App: React.FC = () => {
                             <div style={{ 
                               background: message.status === 'pending' ? 
                                 'linear-gradient(45deg, #f0f9ff, #e0f2fe)' : 
-                                (message.content?.includes('开始解析简历') || message.content?.includes('简历分析')) ?
+                                message.status === 'streaming' ?
+                                'linear-gradient(45deg, #e6fffb, #f0f9ff)' :
+                                (message.content?.includes('开始解析') || message.content?.includes('文档分析') || message.content?.includes('简历分析')) ?
                                 'linear-gradient(45deg, #f6ffed, #f0f9ff)' : '#fff', 
                               padding: 12, 
                               borderRadius: 8,
@@ -576,9 +636,11 @@ const App: React.FC = () => {
                               boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
                               border: message.status === 'pending' ? 
                                 '1px dashed #1890ff' : 
-                                (message.content?.includes('开始解析简历') || message.content?.includes('简历分析')) ?
+                                message.status === 'streaming' ?
+                                '1px dashed #13c2c2' :
+                                (message.content?.includes('开始解析') || message.content?.includes('文档分析') || message.content?.includes('简历分析')) ?
                                 '1px solid #52c41a' : 'none',
-                              animation: message.status === 'pending' ? 
+                              animation: (message.status === 'pending' || message.status === 'streaming') ? 
                                 'pulse 2s infinite' : 'none',
                             }}>
                               {message.status === 'pending' ? (
@@ -591,6 +653,21 @@ const App: React.FC = () => {
                                   }}>
                                     {message.content}
                                   </Text>
+                                </Space>
+                              ) : message.status === 'streaming' ? (
+                                <Space>
+                                  <LoadingOutlined spin style={{ color: '#13c2c2' }} />
+                                  <div style={{ 
+                                    color: '#13c2c2',
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-word'
+                                  }}>
+                                    {message.content}
+                                    <span style={{ 
+                                      animation: 'blink 1s infinite',
+                                      marginLeft: 2
+                                    }}>|</span>
+                                  </div>
                                 </Space>
                               ) : message.content === '<image>' && message.screenshotBase64 ? (
                                 <div style={{ textAlign: 'center' }}>
@@ -624,46 +701,39 @@ const App: React.FC = () => {
                                     点击图片查看大图
                                   </div>
                                 </div>
-                              ) : (message.content?.includes('开始解析简历') || message.content?.includes('简历分析')) ? (
+                              ) : (
                                 <div>
                                   <Space>
                                     <FileTextOutlined style={{ color: '#52c41a' }} />
                                     <Text style={{ 
-                                      color: '#52c41a',
-                                      fontWeight: 'bold'
+                                      color: message.status === 'success' ? '#52c41a' : '#333',
+                                      fontWeight: message.content?.includes('开始解析') ? 'bold' : 'normal'
                                     }}>
-                                      {message.content?.includes('开始解析简历') ? '🔍 ' : '📋 '}
-                                      {message.content}
+                                      {message.content?.includes('开始解析') ? '🔍 ' : '📋 '}
+                                      {message.content.length > 100 ? (
+                                        <div style={{ 
+                                          whiteSpace: 'pre-wrap',
+                                          wordBreak: 'break-word',
+                                          maxHeight: '400px',
+                                          overflowY: 'auto'
+                                        }}>
+                                          {message.content}
+                                        </div>
+                                      ) : message.content}
                                     </Text>
                                   </Space>
-                                  {message.content?.includes('开始解析简历') && (
+                                  {message.content?.includes('开始解析') && (
                                     <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
-                                      正在处理PDF简历文件，请稍候...
-                                    </div>
-                                  )}
-                                  {message.content?.includes('简历分析') && message.content.length > 20 && (
-                                    <div style={{ 
-                                      marginTop: 8, 
-                                      padding: 8, 
-                                      background: '#f9f9f9', 
-                                      borderRadius: 4,
-                                      fontSize: 12,
-                                      whiteSpace: 'pre-wrap',
-                                      maxHeight: '300px',
-                                      overflowY: 'auto'
-                                    }}>
-                                      {message.content}
+                                      正在处理PDF文档文件，请稍候...
                                     </div>
                                   )}
                                 </div>
-                              ) : (
-                                <Text>{message.content}</Text>
                               )}
                             </div>
                           }
                         />
                       </List.Item>
-                    )
+                    );
                   }}
                 />
               )}

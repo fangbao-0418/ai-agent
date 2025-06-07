@@ -5,10 +5,12 @@ import globalData from './global';
 import * as fs from 'fs';
 import { Worker } from 'worker_threads';
 import * as path from 'path';
+import { SettingStore } from './utils/store/setting';
+import { useAgentFlow } from './hooks/use-agent-flow';
 
 class AgentMessageServer {
 
-  private agent: AgentServer;
+  private agent?: AgentServer;
 
   private socket: any;
 
@@ -16,14 +18,14 @@ class AgentMessageServer {
     // 初始化时生成会话ID
     this.generateSessionId();
     
-    this.agent = new AgentServer({
-      onData: (e) => {
-        this.socket.emit('agent_message', e)
-      },
-      onError: (e) => {
-        this.socket.emit('agent_error', e)
-      }
-    });
+    // this.agent = new AgentServer({
+    //   onData: (e) => {
+    //     this.socket.emit('agent_message', e)
+    //   },
+    //   onError: (e) => {
+    //     this.socket.emit('agent_error', e)
+    //   }
+    // });
   }
 
   // 生成会话ID
@@ -84,6 +86,7 @@ class AgentMessageServer {
 
   // 清除会话ID和临时文件
   private clearSession() {
+    return
     const sessionId = globalData.get('session-id');
     const tempDir = globalData.get('temp-download-dir');
     
@@ -105,9 +108,9 @@ class AgentMessageServer {
     }
   }
 
-  // 使用Worker执行简历解析
-  private async executeParseProfilesInWorker(): Promise<string> {
-    return parseProfiles();
+  // 使用Worker执行文档解析
+  private async executeParseProfilesInWorker(userPrompt?: string): Promise<string> {
+    return parseProfiles(userPrompt);
   }
 
   emitThoughtStart () {
@@ -124,35 +127,15 @@ class AgentMessageServer {
         return;
       }
       this.emitThoughtStart();
-      await this.agent.run(data.command, data.type)
+
+      const launchAgentFlow = useAgentFlow();
+      await launchAgentFlow(
+        // '帮我浏览器打开boss直聘并登录后下载已沟通人选前三份简历并进行下载后分析',
+        data?.command,
+        []
+      )
+      // await this.agent.run(data.command, data.type)
       this.emitThoughtEnd();
-      if (checkDownloadFilesExist()) {
-        this.socket.emit('agent_message', {
-          data: {
-            conclusion: "开始解析简历文件",
-            status: "running"
-          }
-        })
-        
-        // 使用Worker执行简历解析
-        try {
-          const result = await this.executeParseProfilesInWorker();
-          this.socket.emit('agent_message', {
-            data: {
-              conclusion: result,
-              status: "end"
-            }
-          });
-        } catch (error) {
-          console.error('Worker执行简历解析失败:', error);
-          this.socket.emit('agent_message', {
-            data: {
-              conclusion: null,
-              status: "end"
-            }
-          });
-        }
-      }
     } catch (error) {
       //
     }
@@ -160,6 +143,7 @@ class AgentMessageServer {
 
   listen (socket: any) {
     this.socket = socket;
+    globalData.set('socket', socket)
     this.socket.on('execute_command', async (data: string) => {
       this.onExecuteCommand(JSON.parse(data))
     })
@@ -179,18 +163,18 @@ class AgentMessageServer {
 
     // 处理暂停代理
     socket.on('pause_agent', () => {
-      this.agent.pause();
+      this.agent?.pause();
       this.socket.emit('agent_paused');
     });
 
     // 处理恢复代理
     socket.on('resume_agent', () => {
-      this.agent.resume();
+      this.agent?.resume();
       this.socket.emit('agent_resumed');
     });
 
     socket.on('disconnect', () => {
-      this.agent.pause();
+      this.agent?.pause();
       // 断开连接时也清除会话
       this.clearSession();
       // console.log('🔌 客户端断开连接:', socket.id);

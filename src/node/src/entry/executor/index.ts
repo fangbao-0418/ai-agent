@@ -76,10 +76,10 @@ You should use the same language as the user input by default.
   }
 
   async run(status: string) {
-    // const environmentInfo = await this.agentContext.getEnvironmentInfo(
-    //   this.appContext,
-    //   this.agentContext,
-    // );
+    const environmentInfo = await this.agentContext.getEnvironmentInfo(
+      this.appContext,
+      this.agentContext,
+    );
 
     if (this.abortSignal.aborted) {
       return [];
@@ -100,7 +100,7 @@ You should use the same language as the user input by default.
         const result = await ipcClient.askLLMTool({
           messages: [
             Message.systemMessage(this.systemPrompt),
-            // Message.userMessage(environmentInfo),
+            Message.userMessage(environmentInfo),
             Message.userMessage(`Aware status: ${status}`),
           ],
           tools: [idleTool, chatMessageTool],

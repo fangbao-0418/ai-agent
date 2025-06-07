@@ -35,8 +35,8 @@ class WorkerManager {
     }
   }
 
-  // 执行Worker任务
-  public async executeTask(data: { downloadDir: string; sessionId: string }): Promise<string> {
+  // 执行Worker任务（非流式）
+  public async executeTask(data: { downloadDir: string; sessionId: string; userPrompt?: string }): Promise<string> {
     return new Promise((resolve, reject) => {
       const workerPath = this.getWorkerPath();
       
@@ -49,6 +49,9 @@ class WorkerManager {
       }
 
       environmentManager.log(`Starting worker: ${workerPath}`);
+      if (data.userPrompt) {
+        environmentManager.log(`Using custom user prompt`);
+      }
 
       const worker = new Worker(workerPath);
 
@@ -59,7 +62,10 @@ class WorkerManager {
         reject(new Error(`Worker task timed out after ${timeoutMs / 1000}s`));
       }, timeoutMs);
 
-      worker.postMessage(data);
+      worker.postMessage({
+        ...data,
+        enableStream: true
+      });
 
       worker.on('message', (result) => {
         clearTimeout(timeout);
@@ -78,6 +84,89 @@ class WorkerManager {
         clearTimeout(timeout);
         worker.terminate();
         environmentManager.logError('Worker error', error);
+        reject(error);
+      });
+
+      worker.on('exit', (code) => {
+        clearTimeout(timeout);
+        if (code !== 0) {
+          environmentManager.logError(`Worker exited with code ${code}`);
+          reject(new Error(`Worker exited with code ${code}`));
+        }
+      });
+    });
+  }
+
+  // 执行Worker任务（流式）
+  public async executeStreamTask(
+    data: { downloadDir: string; sessionId: string; userPrompt?: string },
+    onChunk: (chunk: string) => void
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const workerPath = this.getWorkerPath();
+      
+      // 验证文件是否存在
+      if (!fs.existsSync(workerPath)) {
+        const errorMsg = `Worker file not found: ${workerPath}`;
+        environmentManager.logError(errorMsg);
+        reject(new Error(errorMsg));
+        return;
+      }
+
+      environmentManager.log(`Starting stream worker: ${workerPath}`);
+      if (data.userPrompt) {
+        environmentManager.log(`Using custom user prompt for stream`);
+      }
+
+      const worker = new Worker(workerPath);
+
+      // 使用环境管理器的超时设置
+      const timeoutMs = environmentManager.getWorkerTimeout();
+      const timeout = setTimeout(() => {
+        worker.terminate();
+        reject(new Error(`Worker stream task timed out after ${timeoutMs / 1000}s`));
+      }, timeoutMs);
+
+      worker.postMessage({
+        ...data,
+        enableStream: true
+      });
+
+      worker.on('message', (result) => {
+        if (result.type === 'chunk') {
+          // 处理流式数据块
+          onChunk(result.data);
+        } else if (result.type === 'complete') {
+          // 流式处理完成
+          clearTimeout(timeout);
+          worker.terminate();
+          
+          if (result.success) {
+            environmentManager.log('Worker stream task completed successfully');
+            resolve(result.data);
+          } else {
+            environmentManager.logError('Worker stream task failed', result.error);
+            reject(new Error(result.error || 'Worker stream task failed'));
+          }
+        } else if (result.success !== undefined) {
+          // 兼容旧格式（非流式）
+          clearTimeout(timeout);
+          worker.terminate();
+          
+          if (result.success) {
+            environmentManager.log('Worker task completed successfully');
+            resolve(result.data);
+          } else {
+            environmentManager.logError('Worker task failed', result.error);
+            reject(new Error(result.error || 'Worker task failed'));
+          }
+        }
+      });
+
+      worker.on('error', (error) => {
+        clearTimeout(timeout);
+        worker.terminate();
+        environmentManager.logError('Worker stream error', error);
         reject(error);
       });
 

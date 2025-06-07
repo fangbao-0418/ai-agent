@@ -1,4 +1,4 @@
-// import WebServer from './web-server';
+import WebServer from './web-server';
 import TcpServer from './tcp-server';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -38,10 +38,10 @@ function init () {
 // 初始化应用目录
 init();
 
-TcpServer.start();
+// TcpServer.start();
 
-// const webServer = new WebServer();
-// webServer.start();
+const webServer = new WebServer();
+webServer.start();
 
 
 

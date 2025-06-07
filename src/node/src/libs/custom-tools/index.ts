@@ -1,13 +1,24 @@
 import { ToolCall } from '@agent-infra/shared';
 import { search } from './search';
 import * as browserUse from './browser-use';
+import * as resumeAnalysis from './resume-analysis';
 
 export function executeCustomTool(toolCall: ToolCall) {
   if (toolCall.function.name === 'web_search') {
     return search(toolCall);
-  } else if (toolCall.function.name === 'browser_use') {
-    return browserUse.search(toolCall);
   }
+  // else if (toolCall.function.name === 'browser_use') {
+  //   return browserUse.search(toolCall);
+  // } 
+  else if (toolCall.function.name === 'resume_analysis') {
+    return resumeAnalysis.run(toolCall);
+  }
+  return [
+    {
+      isError: false,
+      content: '继续',
+    },
+  ];
   return null;
 }
 
@@ -18,6 +29,23 @@ export function listCustomTools() {
       function: {
         name: 'browser_use',
         description: 'Open the browser and operate it.',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'The search query',
+            },
+          },
+          required: ['query'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'resume_analysis',
+        description: 'Analyze the downloaded PDF format resume.',
         parameters: {
           type: 'object',
           properties: {

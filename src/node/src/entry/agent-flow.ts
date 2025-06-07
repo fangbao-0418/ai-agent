@@ -296,14 +296,15 @@ export class AgentFlow {
               // Execute tool in the main thread
               const callResult = (await executor.executeTools([toolCall]))[0];
               // this.appContext.setAgentStatusTip('Executing Tool');
-
-              await this.eventManager.handleToolExecution({
-                toolName,
-                toolCallId: toolCall.id,
-                params: toolCall.function.arguments,
-                result: callResult.content,
-                isError: callResult.isError as boolean,
-              });
+              if (callResult) {
+                await this.eventManager.handleToolExecution({
+                  toolName,
+                  toolCallId: toolCall.id,
+                  params: toolCall.function.arguments,
+                  result: callResult.content,
+                  isError: callResult.isError as boolean,
+                });
+              }
             }
 
             if (originalFileContent) {
@@ -355,7 +356,7 @@ export class AgentFlow {
     executor.updateSignal(this.interruptController.signal);
     this.loadingStatusTip = 'Replanning';
     await this.eventManager.addLoadingStatus(this.loadingStatusTip);
-    this.appContext.setAgentStatusTip(this.loadingStatusTip);
+    // this.appContext.setAgentStatusTip(this.loadingStatusTip);
   }
 
   private getEnvironmentInfo(

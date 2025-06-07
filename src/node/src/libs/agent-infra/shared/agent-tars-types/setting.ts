@@ -35,4 +35,5 @@ export interface AppSettings {
   fileSystem: FileSystemSettings;
   search: SearchSettings;
   mcp: MCPSettings;
+  socket: any;
 }

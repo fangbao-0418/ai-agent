@@ -75,6 +75,16 @@ body {
   }
 }
 
+/* 流式传输光标闪烁动画 */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
 /* 思考气泡动画 */
 @keyframes thinking-dots {
   0%, 20% {

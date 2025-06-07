@@ -6,6 +6,7 @@ import { logger } from '@utils/logger';
 import { maskSensitiveData } from '@utils/maskSensitiveData';
 import AgentServer from '@src/agent';
 const { jsonrepair } = require('jsonrepair');
+import globalData from '@src/global';
 
 /**
  * FIXME: `MCPToolResult` missing explicit type here, we need to refine it later.
@@ -29,7 +30,15 @@ export async function search(
     // );
 
     let results: SearchResult;
-    const agent = new AgentServer();
+    const socket = globalData.get('socket');
+    const agent = new AgentServer({
+      onData: (e) => {
+        socket.emit('agent_message', e)
+      },
+      onError: (e) => {
+        socket.emit('agent_error', e)
+      }
+    });
     await agent.run(args.query);
     
     // if (!currentSearchConfig) {
