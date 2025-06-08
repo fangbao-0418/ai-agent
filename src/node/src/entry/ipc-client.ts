@@ -9,7 +9,7 @@ import { logger } from "@src/utils/logger";
 import { maskSensitiveData } from "@src/utils/maskSensitiveData";
 import { ChatCompletionTool } from 'openai/resources/index.mjs';
 import { createLLM, LLMConfig } from '@src/libs/llm';
-import { SettingStore } from "@src/utils/store/setting.js";
+import { SettingStore } from "@src/utils/store/setting";
 import { extractToolNames } from "@src/utils/helper";
 import { getActiveMcpSettings } from "@src/libs/mcp/tools";
 import { EventManager } from "./event-manager";

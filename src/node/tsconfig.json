@@ -13,7 +13,12 @@
     "paths": {
       "@src/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
-      "@agent-infra/*": ["./src/libs/agent-infra/*"]
+      "@agent-infra/browser": ["./src/libs/agent-infra/browser"],
+    "@agent-infra/logger": ["./src/libs/agent-infra/logger"],
+    "@agent-infra/mcp-client": ["./src/libs/agent-infra/mcp-client"],
+    "@agent-infra/mcp-servers": ["./src/libs/agent-infra/mcp-servers"],
+    "@agent-infra/mcp-server": ["./src/libs/agent-infra/mcp-server"],
+    "@agent-infra/shared": ["./src/libs/agent-infra/shared"]
     }
   },
   "include": ["src/**/*"],

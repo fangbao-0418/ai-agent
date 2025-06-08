@@ -11,7 +11,9 @@
     "build": "node build.mjs",
     "build:bundle": "node build.js",
     "build:watch": "node build.mjs --watch",
-    "dev": "NODE_ENV=development nodemon",
+    "build:windows": "node build.mjs --windows",
+    "build:win-env": "TARGET_PLATFORM=win32 node build.mjs",
+    "dev": "nodemon --exec tsx src/index.ts",
     "dev:build": "NODE_ENV=development npm run build",
     "build:tsc": "tsc && tsc-alias",
     "build:tsc-only": "tsc",
@@ -22,14 +24,34 @@
     "tcp-build": "tsc && node dist/tcp-server.js",
     "tcp-build:with-paths": "tsc && node -r ./scripts/register-paths.js dist/tcp-server.js",
     "build:tcp": "npx ncc build dist2/index.js -o dist2",
-    "build:mac": "pkg ./dist2/index.js --targets node18-macos-arm64 --output dist3/index.app",
+    "build:mac": "pkg ./dist/index.js --targets node18-macos-arm64 --output dist3/index.app",
+    "build:win": "pkg ./dist/index.js --targets node18-win-x64 --output dist3/index.exe",
+    "build:win-arm": "pkg ./dist/index.js --targets node18-win-arm64 --output dist3/index-arm.exe",
+    "build:all-platforms": "npm run build:mac && npm run build:win && npm run build:win-arm",
+    "package:prepare": "npm run build:tsc && npm run build:tcp",
+    "package:prepare-esbuild": "npm run build",
+    "package:prepare-windows": "npm run build:windows",
+    "package:mac": "npm run package:prepare && npm run build:mac",
+    "package:win": "npm run package:prepare && npm run build:win",
+    "package:win-arm": "npm run package:prepare && npm run build:win-arm",
+    "package:all": "npm run package:prepare && npm run build:all-platforms",
+    "package:win-esbuild": "npm run package:prepare-windows && npm run build:win",
+    "package:win-arm-esbuild": "npm run package:prepare-windows && npm run build:win-arm",
+    "build-packages": "node scripts/build-packages.js",
+    "build-packages:mac": "node scripts/build-packages.js mac",
+    "build-packages:win": "node scripts/build-packages.js win",
+    "build-packages:win-arm": "node scripts/build-packages.js win-arm",
+    "build-packages:esbuild": "USE_ESBUILD=true node scripts/build-packages.js",
+    "build-packages:win-esbuild": "node scripts/build-packages.js win --esbuild",
+    "build-packages:all-esbuild": "USE_ESBUILD=true node scripts/build-packages.js",
     "test": "NODE_ENV=test npm run build",
     "test:build": "node scripts/test-build.js",
     "test:tsc": "npm run build:tsc && node scripts/test-tsc-build.js",
     "test:tsc-runtime": "npm run build:tsc-only && node -r ./scripts/register-paths.js scripts/test-tsc-build.js",
     "test:env": "node scripts/test-worker-environment.js",
-    "clean": "rm -rf dist dist2 dist3",
-    "prebuild": "npm run clean"
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "lint": "eslint src --ext .ts,.js --fix"
   },
   "dependencies": {
     "@agent-infra/browser-use": "^0.1.0",
@@ -91,7 +113,9 @@
       "dist2/**/*"
     ],
     "targets": [
-      "node18-macos-arm64"
+      "node18-macos-arm64",
+      "node18-win-x64",
+      "node18-win-arm64"
     ],
     "outputPath": "dist3"
   }
