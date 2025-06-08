@@ -33,6 +33,7 @@ import {
   SYSTEM_PROMPT_TEMPLATE,
 } from './constants';
 import { InternalServerError } from 'openai';
+import { DefaultBrowserOperator } from '@src/browser-use/operator-browser';
 
 export class GUIAgent<T extends Operator> extends BaseGUIAgent<
   GUIAgentConfig<T>
@@ -469,8 +470,18 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
     this.isPaused = false;
   }
 
-  public stop() {
+  public async stop() {
     this.isStopped = true;
+    
+    // 尝试关闭浏览器
+    try {
+      this.logger.info('[GUIAgent] Stopping and cleaning up browser...');
+      
+      // 检查operator是否有cleanup方法（BrowserOperator有这个方法）
+      DefaultBrowserOperator.destroyInstance();
+    } catch (error) {
+      this.logger.error('[GUIAgent] Error during browser cleanup:', error);
+    }
   }
 
   private buildSystemPrompt() {

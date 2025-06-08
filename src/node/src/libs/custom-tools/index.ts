@@ -7,18 +7,18 @@ export function executeCustomTool(toolCall: ToolCall) {
   if (toolCall.function.name === 'web_search') {
     return search(toolCall);
   }
-  // else if (toolCall.function.name === 'browser_use') {
-  //   return browserUse.search(toolCall);
-  // } 
+  else if (toolCall.function.name === 'browser_use') {
+    return browserUse.search(toolCall);
+  } 
   else if (toolCall.function.name === 'resume_analysis') {
     return resumeAnalysis.run(toolCall);
   }
-  return [
-    {
-      isError: false,
-      content: '继续',
-    },
-  ];
+  // return [
+  //   {
+  //     isError: false,
+  //     content: '继续',
+  //   },
+  // ];
   return null;
 }
 

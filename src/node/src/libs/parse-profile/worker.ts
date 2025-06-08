@@ -32,6 +32,59 @@ interface WorkerData {
   sessionId: string;
   userPrompt?: string; // 用户自定义提示词
   enableStream?: boolean; // 是否启用流式输出
+  type?: 'pause' | 'resume' | 'stop'; // 控制消息类型
+}
+
+// 添加worker状态管理
+let workerState = {
+  isPaused: false,
+  isStopped: false,
+  pausePromise: null as Promise<void> | null,
+  resolvePause: null as (() => void) | null,
+};
+
+// 暂停worker
+function pauseWorker() {
+  console.log('📋 Worker: 收到暂停信号');
+  workerState.isPaused = true;
+  workerState.pausePromise = new Promise((resolve) => {
+    workerState.resolvePause = resolve;
+  });
+}
+
+// 恢复worker
+function resumeWorker() {
+  console.log('📋 Worker: 收到恢复信号');
+  if (workerState.resolvePause) {
+    workerState.resolvePause();
+    workerState.pausePromise = null;
+    workerState.resolvePause = null;
+  }
+  workerState.isPaused = false;
+}
+
+// 停止worker
+function stopWorker() {
+  console.log('📋 Worker: 收到停止信号');
+  workerState.isStopped = true;
+  // 如果正在暂停中，先恢复再停止
+  if (workerState.resolvePause) {
+    workerState.resolvePause();
+    workerState.pausePromise = null;
+    workerState.resolvePause = null;
+  }
+  workerState.isPaused = false;
+}
+
+// 检查是否应该暂停（在关键点调用）
+async function checkPause() {
+  if (workerState.isStopped) {
+    throw new Error('Worker已被停止');
+  }
+  if (workerState.isPaused && workerState.pausePromise) {
+    console.log('📋 Worker: 等待恢复...');
+    await workerState.pausePromise;
+  }
 }
 
 // PDF文本提取函数
@@ -274,7 +327,7 @@ async function *parseDocumentsWorkerStream(data: WorkerData) {
     }
     
     // 4. 清理会话文件
-    // clearSessionFiles(data.downloadDir, data.sessionId);
+    clearSessionFiles(data.downloadDir, data.sessionId);
     
   } catch (error) {
     console.error('流式文档解析过程中发生错误:', (error as Error).message);
@@ -326,12 +379,33 @@ async function parseDocumentsWorker(data: WorkerData): Promise<string> {
 
 // Worker主逻辑
 if (parentPort) {
-  parentPort.on('message', async (data: WorkerData) => {
+  parentPort.on('message', async (data: WorkerData | { type: 'pause' | 'resume' | 'stop' }) => {
+    // 处理控制消息
+    if ('type' in data && data.type && ['pause', 'resume', 'stop'].includes(data.type)) {
+      switch (data.type) {
+        case 'pause':
+          pauseWorker();
+          return;
+        case 'resume':
+          resumeWorker();
+          return;
+        case 'stop':
+          stopWorker();
+          return;
+      }
+      return;
+    }
+
+    // 处理正常的工作数据
+    const workData = data as WorkerData;
     try {
-      if (data.enableStream) {
+      if (workData.enableStream) {
         // 流式处理
         let fullContent = '';
-        for await (const chunk of parseDocumentsWorkerStream(data)) {
+        for await (const chunk of parseDocumentsWorkerStream(workData)) {
+          // 在每个chunk之间检查是否需要暂停或停止
+          await checkPause();
+          
           fullContent += chunk;
           // 发送流式数据到主线程
           parentPort!.postMessage({ 
@@ -347,7 +421,7 @@ if (parentPort) {
         });
       } else {
         // 非流式处理
-        const result = await parseDocumentsWorker(data);
+        const result = await parseDocumentsWorker(workData);
         parentPort!.postMessage({ 
           success: true, 
           data: result 

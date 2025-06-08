@@ -32,6 +32,9 @@ export function useAgentFlow() {
   //   appId: DEFAULT_APP_ID,
   // });
 
+  // 保存当前的AgentFlow实例
+  let currentAgentFlow: AgentFlow | null = null;
+
   // const updateSessionTitle = useCallback(
   //   async (input: string) => {
   //     if (!currentSessionId) {
@@ -60,28 +63,39 @@ export function useAgentFlow() {
   //   [currentSessionId, updateChatSession, chatUtils.messages],
   // );
 
-  return (
-    async (inputText: string, inputFiles: InputFile[]) => {
-      const agentFlowId = uuid();
-      // currentAgentFlowIdRef.current = agentFlowId;
-      const agentFlow = new AgentFlow({
-        // chatUtils,
-        // setEvents,
-        // setEventId,
-        // setAgentStatusTip,
-        // setPlanTasks,
-        // setShowCanvas,
-        agentFlowId,
-        request: {
-          inputText,
-          inputFiles,
-        },
-      });
-      await Promise.all([
-        agentFlow.run(),
-        // updateSessionTitle(inputText)
-      ]);
-      console.log('end')
-    }
-  );
+  const runAgentFlow = async (inputText: string, inputFiles: InputFile[]) => {
+    const agentFlowId = uuid();
+    // currentAgentFlowIdRef.current = agentFlowId;
+    const agentFlow = new AgentFlow({
+      // chatUtils,
+      // setEvents,
+      // setEventId,
+      // setAgentStatusTip,
+      // setPlanTasks,
+      // setShowCanvas,
+      agentFlowId,
+      request: {
+        inputText,
+        inputFiles,
+      },
+    });
+    
+    // 保存当前实例
+    currentAgentFlow = agentFlow;
+    
+    await Promise.all([
+      agentFlow.run(),
+      // updateSessionTitle(inputText)
+    ]);
+    console.log('end')
+  };
+
+  // 返回控制对象
+  return {
+    run: runAgentFlow,
+    pause: () => currentAgentFlow?.pause(),
+    resume: () => currentAgentFlow?.resume(), 
+    stop: () => currentAgentFlow?.stop(),
+    getCurrentFlow: () => currentAgentFlow,
+  };
 }

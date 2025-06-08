@@ -37,6 +37,12 @@ export class AgentFlow {
   private interruptController: AbortController;
   private hasFinished = false;
   private loadingStatusTip = '';
+  
+  // 添加pause相关的属性
+  private isPaused = false;
+  private resumePromise: Promise<void> | null = null;
+  private resolveResume: (() => void) | null = null;
+  private isStopped = false;
 
   constructor(private appContext: AppContext) {
     const omegaHistoryEvents = this.parseHistoryEvents();
@@ -175,6 +181,18 @@ export class AgentFlow {
     this.loadingStatusTip = 'Thinking';
     try {
       while (!this.abortController.signal.aborted && !this.hasFinished) {
+        // 检查pause状态
+        if (this.isPaused && this.resumePromise) {
+          await this.eventManager.addLoadingStatus('Paused');
+          await this.resumePromise;
+          await this.eventManager.addLoadingStatus(this.loadingStatusTip);
+        }
+
+        // 检查是否被停止
+        if (this.isStopped || this.abortController.signal.aborted) {
+          break;
+        }
+
         // The environment includes
         // - The current event stream context
         // - The current task
@@ -265,10 +283,10 @@ export class AgentFlow {
           for (const toolCall of toolCallList) {
             const toolName = toolCall.function.name;
             const isMCPToolCall = mcpTools.some(
-              (tool) => tool.name === toolCall.function.name,
+              (tool: any) => tool.name === toolCall.function.name,
             );
             const isCustomServerToolCall = customServerTools.some(
-              (tool) => tool.function.name === toolCall.function.name,
+              (tool: any) => tool.function.name === toolCall.function.name,
             );
 
             await this.eventManager.addToolCallStart(
@@ -429,5 +447,29 @@ Current task: ${currentTask}
     // this.appContext.setEvents(events);
     // return events;
     return [];
+  }
+
+  // 添加pause方法
+  public pause() {
+    this.isPaused = true;
+    this.resumePromise = new Promise((resolve) => {
+      this.resolveResume = resolve;
+    });
+  }
+
+  // 添加resume方法
+  public resume() {
+    if (this.resolveResume) {
+      this.resolveResume();
+      this.resumePromise = null;
+      this.resolveResume = null;
+    }
+    this.isPaused = false;
+  }
+
+  // 添加stop方法
+  public stop() {
+    this.isStopped = true;
+    this.abortController.abort();
   }
 }

@@ -1,3 +1,5 @@
+import path from "path";
+
 interface AppStateDataProps {
   'node-dir': string;
   'download-dir': string;
@@ -19,12 +21,12 @@ class AppState {
 
   get <K extends keyof AppStateDataProps>(key: K): AppStateDataProps[K] {
     if (key === 'download-dir') {
-      return this.get('node-dir') + '/download';
+      return path.join(this.get('node-dir'), 'download');
     } else if (key === 'node-dir') {
-      return this.data['node-dir'] || process.cwd() + '/file';
+      return path.join((this.data['node-dir'] || process.cwd()), 'file');
     } else if (key === 'temp-download-dir') {
-      return this.get('download-dir') 
-      // + '/' + (this.get('session-id') ?? '');
+      return path.join(this.get('download-dir'), (this.get('session-id') ?? ''));
+      // return path.join(this.get('download-dir'), 'test');
     }
     return this.data[key];
   }

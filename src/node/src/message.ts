@@ -1,16 +1,14 @@
 import AgentServer, { AgentType } from './agent';
-import parseProfiles from './libs/parse-profile';
-import { checkDownloadFilesExist, createUniqueID } from './utils/helper';
+import { createUniqueID } from './utils/helper';
 import globalData from './global';
 import * as fs from 'fs';
-import { Worker } from 'worker_threads';
-import * as path from 'path';
-import { SettingStore } from './utils/store/setting';
 import { useAgentFlow } from './hooks/use-agent-flow';
+import emitter from './utils/emitter'; // 导入全局emitter
 
 class AgentMessageServer {
 
   private agent?: AgentServer;
+  private agentFlowController: any = null; // 保存AgentFlow控制器
 
   private socket: any;
 
@@ -33,7 +31,7 @@ class AgentMessageServer {
     const sessionId = createUniqueID();
     
     // 在创建新会话目录前，先清理其他会话目录
-    this.cleanupOldSessionDirs();
+    // this.cleanupOldSessionDirs();
     
     globalData.set('session-id', sessionId);
     console.log('生成会话ID:', sessionId);
@@ -48,12 +46,8 @@ class AgentMessageServer {
 
   // 清理旧的会话目录
   private cleanupOldSessionDirs() {
-    const baseDownloadDir = globalData.get('node-dir');
-    if (!baseDownloadDir) return;
-    
-    const downloadDir = baseDownloadDir + '/download';
+    const downloadDir = globalData.get('download-dir');
     if (!fs.existsSync(downloadDir)) return;
-    
     try {
       const items = fs.readdirSync(downloadDir, { withFileTypes: true });
       
@@ -86,7 +80,6 @@ class AgentMessageServer {
 
   // 清除会话ID和临时文件
   private clearSession() {
-    return
     const sessionId = globalData.get('session-id');
     const tempDir = globalData.get('temp-download-dir');
     
@@ -108,10 +101,6 @@ class AgentMessageServer {
     }
   }
 
-  // 使用Worker执行文档解析
-  private async executeParseProfilesInWorker(userPrompt?: string): Promise<string> {
-    return parseProfiles(userPrompt);
-  }
 
   emitThoughtStart () {
     this.socket.emit('thought-start')
@@ -128,8 +117,10 @@ class AgentMessageServer {
       }
       this.emitThoughtStart();
 
-      const launchAgentFlow = useAgentFlow();
-      await launchAgentFlow(
+      // 获取AgentFlow控制器
+      this.agentFlowController = useAgentFlow();
+      
+      await this.agentFlowController.run(
         // '帮我浏览器打开boss直聘并登录后下载已沟通人选前三份简历并进行下载后分析',
         data?.command,
         []
@@ -155,7 +146,15 @@ class AgentMessageServer {
 
     // 处理停止代理
     socket.on('stop_agent', () => {
-      this.agent?.stop?.();
+      // 触发全局stop事件
+      emitter.emit('agent:stop');
+      
+      // 优先使用AgentFlow的stop方法
+      if (this.agentFlowController) {
+        this.agentFlowController.stop();
+      } else {
+        this.agent?.stop?.();
+      }
       // 停止时清除会话ID
       this.clearSession();
       this.socket.emit('agent_stopped');
@@ -163,18 +162,39 @@ class AgentMessageServer {
 
     // 处理暂停代理
     socket.on('pause_agent', () => {
-      this.agent?.pause();
+      // 触发全局pause事件
+      emitter.emit('agent:pause');
+      
+      // 优先使用AgentFlow的pause方法
+      if (this.agentFlowController) {
+        this.agentFlowController.pause();
+      } else {
+        this.agent?.pause();
+      }
       this.socket.emit('agent_paused');
     });
 
     // 处理恢复代理
     socket.on('resume_agent', () => {
-      this.agent?.resume();
+      // 触发全局resume事件
+      emitter.emit('agent:resume');
+      
+      // 优先使用AgentFlow的resume方法
+      if (this.agentFlowController) {
+        this.agentFlowController.resume();
+      } else {
+        this.agent?.resume();
+      }
       this.socket.emit('agent_resumed');
     });
 
     socket.on('disconnect', () => {
-      this.agent?.pause();
+      // 优先使用AgentFlow的pause方法
+      if (this.agentFlowController) {
+        this.agentFlowController.pause();
+      } else {
+        this.agent?.pause();
+      }
       // 断开连接时也清除会话
       this.clearSession();
       // console.log('🔌 客户端断开连接:', socket.id);
