@@ -45,13 +45,13 @@ export function listCustomTools() {
       type: 'function',
       function: {
         name: 'resume_analysis',
-        description: 'Analyze the downloaded PDF format resume.',
+        description: 'Analyze, summarize, review, extract, evaluate, and comprehensively assess downloaded PDF format documents including resumes, reports, or any other files. This tool can perform document analysis, content summarization, information extraction, data compilation, and detailed evaluation. Use this when you need to analyze, summarize, review, assess, extract information from, or provide insights about any downloaded document files. 分析、总结、汇总、评估、提取已下载的PDF格式文档（包括简历、报告或其他文件）的内容和信息。',
         parameters: {
           type: 'object',
           properties: {
             query: {
               type: 'string',
-              description: 'The search query',
+              description: 'Analysis requirements or custom prompt for document processing',
             },
           },
           required: ['query'],

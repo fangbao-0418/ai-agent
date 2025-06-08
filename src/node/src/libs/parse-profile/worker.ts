@@ -274,7 +274,7 @@ async function *parseDocumentsWorkerStream(data: WorkerData) {
     }
     
     // 4. 清理会话文件
-    clearSessionFiles(data.downloadDir, data.sessionId);
+    // clearSessionFiles(data.downloadDir, data.sessionId);
     
   } catch (error) {
     console.error('流式文档解析过程中发生错误:', (error as Error).message);
