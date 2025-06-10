@@ -131,11 +131,11 @@ export abstract class BaseBrowser implements BrowserInterface {
           }
         });
 
-        // page.on('download', (download) => {
+        // page.on('download', (download: any) => {
         //   console.log('Download started:', download);
-        //   // download.on('end', () => {
-        //   //   this.logger.info('Download completed:', download.url());
-        //   // });
+        //   download.on('end', () => {
+        //     this.logger.info('Download completed:', download.url());
+        //   });
         // });
 
         // page.on('response', async (response) => {

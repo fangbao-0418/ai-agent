@@ -8,6 +8,7 @@ import AgentServer from '@src/agent';
 import emitter from '@src/utils/emitter';
 const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
+import { getSystemPromptV1_5_Custom } from '@src/prompts';
 
 // 存储事件监听器的引用，用于后续销毁
 let agentEventListeners: { [key: string]: (...args: any[]) => void } = {};

@@ -27,7 +27,6 @@ wait() # Sleep for 5s and take a screenshot to check for any changes.
 finished()
 call_user() # Submit the task and call the user when the task is unsolvable, or when you need the user's help.
 
-
 ## Note
 - Use ${language === 'zh' ? 'Chinese' : 'English'} in \`Thought\` part.
 - ${useCase === 'normal' ? 'Generate a well-defined and practical strategy in the `Thought` section, summarizing your next move and its objective.' : 'Compose a step-by-step approach in the `Thought` part, specifying your next action and its focus.'}
@@ -53,19 +52,31 @@ hotkey(key='')
 type(content='') #If you want to submit your input, use "\n" at the end of \`content\`.
 scroll(start_box='[x1, y1, x2, y2]', direction='down or up or right or left')
 wait() #Sleep for 5s and take a screenshot to check for any changes.
-finished(content='xxx') # Use escape characters \\', \\", and \\n in content part to ensure we can parse the content in normal python string format.
+finished(content='xxx') #Use escape characters \\', \\", and \\n in content part to ensure we can parse the content in normal python string format.
+check_download() #Confirm whether the file has been downloaded successfully. Use when you need to "确认文件是否保存到本地", "打开下载文件夹", "检查下载状态", "验证文件下载", "确保文件已下载", or any task about verifying download completion.
 
 ## Note
 - Use Chinese in \`Thought\` part.
 - Write a small plan and finally summarize your next action (with its target element) in one sentence in \`Thought\` part.
 - Try not to repeat lines and get stuck in a loop of thinking
-- **CRITICAL: When downloading files, follow this process:**
-  1. After clicking download button, use wait() to check for download start
-  2. Continue wait() until you see clear completion signs (progress bar gone, file size complete, "download complete" message)  
-  3. Maximum 6-8 wait() cycles before timeout
-  4. If no progress after 3 wait() cycles, or stuck in loop, use finished() to end
+- **🚨 CRITICAL: Download File Management - MUST USE check_download() 🚨**
+  **When ANY download button is clicked, IMMEDIATELY follow this process:**
+  1. After clicking download button, IMMEDIATELY use check_download() to check download status  
+  2. Continue using check_download() (NOT wait()) until download completion is confirmed
+  3. check_download() will show real-time download progress and completion status
+  4. Maximum 6-8 check_download() cycles before timeout
+  5. Once check_download() shows completion, immediately use finished() to report success
+- **NEVER use wait() for download checking - ALWAYS use check_download() instead**
+- **IMPORTANT: check_download() is the ONLY reliable way to verify download status**
 - **Never infinitely retry downloads - report issues and move on**
-- **IMPORTANT: Once download is complete (progress bar gone, file shows complete size, or success message), immediately use finished() - do NOT continue waiting or clicking**
+- **🔍 DOWNLOAD VERIFICATION TRIGGERS - Use check_download() when you see these phrases:**
+  - "确认文件是否已经成功保存到本地"
+  - "打开下载文件夹看看" 
+  - "检查下载状态"
+  - "验证文件下载"
+  - "确保文件已下载"
+  - "查看下载情况"
+  - Any mention of verifying/checking/confirming download status
 
 ## User Instruction
 `;

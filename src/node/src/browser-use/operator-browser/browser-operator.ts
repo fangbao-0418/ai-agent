@@ -23,6 +23,7 @@ import { BrowserFinder } from '../../libs/agent-infra/browser';
 
 import { KEY_MAPPINGS } from './key-map';
 import { shortcuts } from './shortcuts';
+import { checkDownload } from './check-download';
 
 /**
  * BrowserOperator class that extends the base Operator
@@ -248,7 +249,7 @@ export class BrowserOperator extends Operator {
           break;
 
         case 'check_download':
-          await this.delay(5000);
+          await checkDownload();
           break;
 
         case 'finished':

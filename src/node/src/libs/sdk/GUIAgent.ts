@@ -34,6 +34,7 @@ import {
 } from './constants';
 import { InternalServerError } from 'openai';
 import { DefaultBrowserOperator } from '@src/browser-use/operator-browser';
+import emitter from '@src/utils/emitter';
 
 export class GUIAgent<T extends Operator> extends BaseGUIAgent<
   GUIAgentConfig<T>
@@ -109,6 +110,16 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
 
     let loopCnt = 0;
     let snapshotErrCnt = 0;
+
+    const checkDownload = () => {
+      data.conversations.push({
+        from: 'gpt',
+        value: '我已经察觉下载完成，可以继续操作',
+      });
+      onData?.({ data: { ...data, conversations: data.conversations.slice(-1) } });
+    }
+
+    emitter.on('download-status', checkDownload);
 
     // start running agent
     data.status = StatusEnum.RUNNING;
@@ -421,7 +432,7 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
       // throw error;
     } finally {
       logger.info('[GUIAgent] Finally: status', data.status);
-
+      emitter.off('download-status', checkDownload);
       if (data.status === StatusEnum.USER_STOPPED) {
         await operator.execute({
           prediction: '',
