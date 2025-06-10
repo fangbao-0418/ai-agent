@@ -38,10 +38,10 @@ function init () {
 // 初始化应用目录
 init();
 
-TcpServer.start();
+// TcpServer.start();
 
-// const webServer = new WebServer();
-// webServer.start();
+const webServer = new WebServer();
+webServer.start();
 
 
 

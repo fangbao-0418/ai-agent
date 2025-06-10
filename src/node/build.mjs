@@ -15,10 +15,13 @@ const baseConfig = {
   target: 'node18',
   format: 'cjs',
   bundle: true,
-  sourcemap: !isProduction,
+  // sourcemap: !isProduction,
+  sourcemap: false,
   minify: isProduction,
   drop: [], // 不删除任何调试信息
-  plugins: [pathAliasPlugin], // 使用自动化的路径别名插件
+  plugins: [
+    pathAliasPlugin,
+  ], // 使用自动化的路径别名插件
   external: [],
   // Windows 特定优化
   ...(process.platform === 'win32' || targetPlatform === 'win32' ? {
@@ -32,24 +35,7 @@ const baseConfig = {
     'process.platform': JSON.stringify(targetPlatform === 'win32' ? 'win32' : process.platform),
     __PLATFORM__: JSON.stringify(targetPlatform),
   },
-  // external: [
-  //   // Node.js 内置模块
-  //   'fs', 'path', 'os', 'worker_threads', 'crypto', 'stream', 'util',
-  //   // 需要保持外部的依赖
-  //   'pdf-parse',
-  //   'axios',
-  //   'express',
-  //   'socket.io',
-  //   'cors',
-  //   'jimp',
-  //   'robotjs',
-  //   'electron',
-  //   'systeminformation',
-  //   '@computer-use/nut-js',
-  //   '@ui-tars/operator-browser',
-  //   '@ui-tars/operator-nut-js',
-  //   '@ui-tars/sdk'
-  // ],
+  external: [],
 };
 
 // 主入口配置
@@ -66,6 +52,15 @@ const workerConfig = {
     'src/libs/parse-profile/worker.ts'
   ],
   outfile: 'dist/libs/parse-profile/worker.js',
+};
+
+// Worker配置
+const workerManagerConfig = {
+  ...baseConfig,
+  entryPoints: [
+    'src/libs/parse-profile/WorkerManager.ts'
+  ],
+  outfile: 'dist/libs/parse-profile/WorkerManager.js',
 };
 
 // MCP服务器列表
@@ -112,6 +107,7 @@ const createWindowsBuildConfigs = () => {
   return {
     main: createWindowsConfig(mainConfig),
     worker: createWindowsConfig(workerConfig),
+    workerManager: createWindowsConfig(workerManagerConfig),
     mcpServers: mcpServerConfigs.map(({ name, config }) => ({
       name,
       config: createWindowsConfig(config)
@@ -134,6 +130,7 @@ async function buildForWindows() {
     // 构建worker (Windows 优化)
     console.log('📦 Building worker for Windows...');
     await esbuild.build(windowsConfigs.worker);
+    await esbuild.build(windowsConfigs.workerManager);
     console.log('✅ Windows worker built successfully');
     
     // 构建所有MCP服务器 (Windows 优化)
@@ -163,6 +160,7 @@ async function build() {
     // 构建worker
     console.log('📦 Building worker...');
     await esbuild.build(workerConfig);
+    await esbuild.build(workerManagerConfig);
     console.log('✅ Worker built successfully');
     
     // 构建所有MCP服务器

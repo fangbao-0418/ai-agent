@@ -247,6 +247,10 @@ export class BrowserOperator extends Operator {
           await this.delay(5000);
           break;
 
+        case 'check_download':
+          await this.delay(5000);
+          break;
+
         case 'finished':
           if (this.options.onFinalAnswer && parsedPrediction.thought) {
             await this.options.onFinalAnswer(parsedPrediction.thought);

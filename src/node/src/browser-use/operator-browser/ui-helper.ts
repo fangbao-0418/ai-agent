@@ -419,9 +419,12 @@ export class UIHelper {
           }
         }
       `;
-
-      document.head.appendChild(style);
-      document.body.appendChild(waterFlow);
+      try {
+        document.head.appendChild(style);
+        document.body.appendChild(waterFlow);
+      } catch (e) {
+        console.error('Error showing water flow effect:', e);
+      }
     }, this.waterFlowId);
 
     this.logger.info('Water flow effect shown.');

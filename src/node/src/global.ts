@@ -26,7 +26,7 @@ class AppState {
       return path.join((this.data['node-dir'] || process.cwd()), 'file');
     } else if (key === 'temp-download-dir') {
       return path.join(this.get('download-dir'), (this.get('session-id') ?? ''));
-      // return path.join(this.get('download-dir'), 'test');
+      // return path.join(this.get('download-dir'));
     }
     return this.data[key];
   }

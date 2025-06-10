@@ -159,8 +159,8 @@ class IPCClient {
   listTools () {
     return [
       // 'browser',
-      'filesystem',
-      'commands'
+      // 'filesystem',
+      // 'commands'
     ];
   }
 

@@ -13,7 +13,7 @@
     "build:watch": "node build.mjs --watch",
     "build:windows": "node build.mjs --windows",
     "build:win-env": "TARGET_PLATFORM=win32 node build.mjs",
-    "dev": "nodemon --exec tsx src/index.ts",
+    "dev": "nodemon",
     "dev:build": "NODE_ENV=development npm run build",
     "build:tsc": "tsc && tsc-alias",
     "build:tsc-only": "tsc",

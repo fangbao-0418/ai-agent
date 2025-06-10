@@ -73,33 +73,33 @@ export const createMcpClient = async () => {
   }
   
   try {
-    const commandModule = await dynamicImport(getMcpServerPath('commands'));
-    const fsModule = await dynamicImport(getMcpServerPath('filesystem'));
-    const browserModule = await dynamicImport(getMcpServerPath('browser'));
+    // const commandModule = await dynamicImport(getMcpServerPath('commands'));
+    // const fsModule = await dynamicImport(getMcpServerPath('filesystem'));
+    // const browserModule = await dynamicImport(getMcpServerPath('browser'));
 
-    const { createServer: createCommandServer } = commandModule.default || commandModule;
-    const { createServer: createFileSystemServer } = fsModule.default || fsModule;
-    const { createServer: createBrowserServer } = browserModule.default || browserModule;
+    // const { createServer: createCommandServer } = commandModule.default || commandModule;
+    // const { createServer: createFileSystemServer } = fsModule.default || fsModule;
+    // const { createServer: createBrowserServer } = browserModule.default || browserModule;
 
-    fsMcpServerModule = fsModule.default || fsModule;
+    // fsMcpServerModule = fsModule.default || fsModule;
 
     const omegaDir = await getOmegaDir();
 
     const toolsMap: Record<MCPServerName, MCPServer<MCPServerName>> = {
-      [MCPServerName.FileSystem]: {
-        type: 'builtin',
-        name: MCPServerName.FileSystem,
-        description: 'filesystem tool',
-        mcpServer: createFileSystemServer({
-          allowedDirectories: [omegaDir],
-        }),
-      },
-      [MCPServerName.Commands]: {
-        type: 'builtin',
-        name: MCPServerName.Commands,
-        description: 'commands tool',
-        mcpServer: createCommandServer(),
-      },
+      // [MCPServerName.FileSystem]: {
+      //   type: 'builtin',
+      //   name: MCPServerName.FileSystem,
+      //   description: 'filesystem tool',
+      //   mcpServer: createFileSystemServer({
+      //     allowedDirectories: [omegaDir],
+      //   }),
+      // },
+      // [MCPServerName.Commands]: {
+      //   type: 'builtin',
+      //   name: MCPServerName.Commands,
+      //   description: 'commands tool',
+      //   mcpServer: createCommandServer(),
+      // },
       // [MCPServerName.Browser]: {
       //   type: 'builtin',
       //   name: MCPServerName.Browser,

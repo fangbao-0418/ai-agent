@@ -26,15 +26,15 @@ class WorkerManager {
   private getWorkerPath(): string {
     if (this.environment === 'development') {
       // 开发环境：优先使用TypeScript编译的worker.js，如果不存在则使用源文件
-      const compiledWorkerPath = path.resolve(process.cwd(), 'dist/libs/parse-profile/worker.js');
-      if (fs.existsSync(compiledWorkerPath)) {
-        return compiledWorkerPath;
-      }
+      // const compiledWorkerPath = path.resolve(process.cwd(), './libs/parse-profile/worker.js');
+      // if (fs.existsSync(compiledWorkerPath)) {
+      //   return compiledWorkerPath;
+      // }
       // 回退到源文件
-      return path.resolve(process.cwd(), 'src/libs/parse-profile/worker.ts');
+      return path.join(__dirname, 'worker.js');
     } else {
       // 生产环境：使用编译后的文件
-      return path.resolve(process.cwd(), 'dist/libs/parse-profile/worker.js');
+      return path.join(__dirname, 'worker.js');
     }
   }
 

@@ -4,7 +4,7 @@
  */
 
 export enum MCPServerName {
-  FileSystem = 'filesystem',
-  Commands = 'commands',
+  // FileSystem = 'filesystem',
+  // Commands = 'commands',
   // Browser = 'browser',
 }

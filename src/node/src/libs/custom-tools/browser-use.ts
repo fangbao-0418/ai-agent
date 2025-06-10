@@ -111,31 +111,21 @@ export async function search(
     //   'Search query:',
     //   maskSensitiveData({ query: args.query, count: args.count }),
     // );
+    let isError = false;
+    let content = "继续";
+    try {
+      await agent.run(args.query);
+    } catch (e: any) {
+      isError = true;
+      content = e?.message || "执行失败";
+    }
 
-    await agent.run(args.query);
     destroyAgentEventListeners();
-    // if (!currentSearchConfig) {
-    //   const client = new SearchClient({
-    //     logger,
-    //     provider: SearchProvider.DuckduckgoSearch,
-    //     providerConfig: {},
-    //   });
-    //   results = await client.search({
-    //     query: args.query,
-    //     count,
-    //   });
-    //   return [
-    //     {
-    //       isError: false,
-    //       content: results,
-    //     },
-    //   ];
-    // }
 
     return [
       {
-        isError: false,
-        content: '继续',
+        isError: isError,
+        content: [content],
       },
     ];
   } catch (e) {

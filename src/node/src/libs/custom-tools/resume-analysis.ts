@@ -116,23 +116,30 @@ export async function run(
     // );
 
     let results: SearchResult;
+    let isError = false;
     // const agent = new AgentServer();
     // await agent.run(args.query);
     const socket = globalData.get('socket');
+    let content = "继续";
     if (checkDownloadFilesExist()) {
       try {
         if (enableStream) {
           // 流式处理：直接开始流式输出，不发送running消息
           console.log('🚀 开始流式解析...');
           let currentContent = '';
-          
+          socket.emit('agent_message', {
+            data: {
+              conclusion: "开始解析文件，请稍等...",
+              status: "start"
+            }
+          });
           const result = await parseProfilesStream(args.query, (chunk: string) => {
             currentContent += chunk;
             console.log('📤 发送streaming消息，累计长度:', currentContent.length);
             // 实时发送流式数据到前端
             socket.emit('agent_message', {
               data: {
-                conclusion: currentContent,
+                conclusion: chunk,
                 status: "streaming"
               }
             });
@@ -173,6 +180,8 @@ export async function run(
         });
       }
     } else {
+      isError = true;
+      content = "未找到待分析的文档文件";
       socket.emit('agent_message', {
         data: {
           conclusion: "未找到待分析的文档文件",
@@ -186,8 +195,8 @@ export async function run(
     
     return [
       {
-        isError: false,
-        content: '继续',
+        isError: isError,
+        content: [content],
       },
     ];
   } catch (e) {

@@ -54,9 +54,19 @@ type(content='') #If you want to submit your input, use "\n" at the end of \`con
 scroll(start_box='[x1, y1, x2, y2]', direction='down or up or right or left')
 wait() #Sleep for 5s and take a screenshot to check for any changes.
 finished(content='xxx') # Use escape characters \\', \\", and \\n in content part to ensure we can parse the content in normal python string format.
+
 ## Note
 - Use Chinese in \`Thought\` part.
 - Write a small plan and finally summarize your next action (with its target element) in one sentence in \`Thought\` part.
+- Try not to repeat lines and get stuck in a loop of thinking
+- **CRITICAL: When downloading files, follow this process:**
+  1. After clicking download button, use wait() to check for download start
+  2. Continue wait() until you see clear completion signs (progress bar gone, file size complete, "download complete" message)  
+  3. Maximum 6-8 wait() cycles before timeout
+  4. If no progress after 3 wait() cycles, or stuck in loop, use finished() to end
+- **Never infinitely retry downloads - report issues and move on**
+- **IMPORTANT: Once download is complete (progress bar gone, file shows complete size, or success message), immediately use finished() - do NOT continue waiting or clicking**
+
 ## User Instruction
 `;
 
@@ -126,7 +136,7 @@ const ThoughtExamplesZH = `- Example1. Thought: 第一行、第三列出现了�
 - Example5. Thought: 经过我不懈的努力，在我的仔细观察选中的策略下，我成功地获得了胜利。这验证了我之前的猜想，移动按键只有我的头部移动到含数字的区域才会改变移动按键，蛇的身体移动到含数字的区域并不会影响移动按键。
 - Example6. Thought: 小蛇还是没动，我再次选择让它向右一步，希望这一次能成功移动，并且我猜测移动的间隔应该是蛇的长度，按动的次数也应该是蛇的长度。我或许需要将它记录下来，如果按一次它因为前方有障碍而动不了，但前方需要移动的话，需要按两次或者以上，按照蛇的长度来计算要按几次。
 - Example7. Thought: 我觉得我的猜测是正确的，小蛇的移动是根据手部的长度是否能达成这一条件进行前进，这对我之后的操作提供了很多帮助，也是游戏的通性。不过现在小蛇离苹果拿走只有一个格子，太过去了，所以后面还需要。再次往前走我们应该先走出道这个限制然后来到中间这个地方然后我们应该是绕一圈然后把这两道门选择开阔住然后使得这样才能让这个墙消失。那么我可以现在向左，尝试不触碰障碍的迈进，这似乎能改变小蛇的操作，使其改变路数。
-- Example8. Thought: 我观察到在出口管道里面，红苹果的前方还有一个阻挡物。那个阻挡物是一张带有浅褐和深褐色的老鼠皮，看起来随着红苹果的自然移动，它也在向着出口移动，但是对比旁边的方块框架显得很慢。目前这些都是我猜测的，我要看看推动这个老鼠皮要多少的力道。就在这时我刚好要按向右了，现在我按住 “D”键。
+- Example8. Thought: 我观察到在出口管道里面，红苹果的前方还有一个阻挡物。那个阻挡物是一张带有浅褐和深褐色的老鼠皮，看起来随着红苹果的自然移动，它也在向着出口移动，但是对比旁边的方块框架显得很慢。目前这些都是我猜测的，我要看看推动这个老鼠皮要多少的力道。就在这时我刚好要按向右了，现在我按住 "D"键。
 - Example9. Thought: 太好了，我的做法是正确的，但是我发现激光点发射出来的激光这个时候并没有发光，看来我刚刚的猜测是不太全面的，还有新的知识，需要我再次了解一下激光的规则，回忆起来，刚刚似乎这个红色激光点发射出来的激光，别上是黄色，但上面的并没有什么波动，我需要新的条件，才能发现它的规律，将上一步的最后一格步骤拿出来，我发现刚刚不仅是激光颜色改变了，重要的是上面的箭头也改变了方向，也就是说激光点跟着太阳光一样，会有方向改变，这应该会是个关键消息，那我需要思考一下。
 - Example10. Thought: 我继续观察发光装置箭头方向和角度，我猜测离发射装置近的那个白方块，只能被移动到与发射装置相邻的中上方蓝色方块位置，那么此时下方的白方块只能位于最右边一列蓝色方块中的其中一个位置并与位于一条直线上的左下方的黑色圆圈重合，我只能在右下角和正下方的两个蓝色方块中选择，似乎，看起来右下角的这个方块的位置更能满足与两列黑色圆圈的距离的重合，但是到底是否正确的呢，那么我一定要去验证了。
 - Example11. Thought: 我们第一关是一个四边形,这个四边形内部的红绳是交织在一起的,我们根据以上经验如果要挪动一个毛线团的话,没有办法挪动任何一个上方有绳子限制的毛线团。所以从解题思路上我们可以打破这四边形的限制方向，那我们就可以挪动上方的毛线团。
