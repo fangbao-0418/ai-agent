@@ -117,7 +117,11 @@ export async function search(
     let content = "继续";
     try {
       await agent.run(args.query);
-      DefaultBrowserOperator.destroyInstance();
+      try {
+        agent.stop();
+      } catch (e) {
+        console.log('❌ Browser-use: 销毁浏览器实例失败', e);
+      }
     } catch (e: any) {
       isError = true;
       content = e?.message || "执行失败";
