@@ -7,6 +7,6 @@ export async function checkDownload () {
       setTimeout(() => {
         resolve(true);
       }, 300);
-    }, 3000);
+    }, 5000);
   });
 }

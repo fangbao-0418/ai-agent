@@ -25,16 +25,10 @@ class WorkerManager {
   // 获取worker脚本路径（写死地址，优先使用TypeScript编译结果）
   private getWorkerPath(): string {
     if (this.environment === 'development') {
-      // 开发环境：优先使用TypeScript编译的worker.js，如果不存在则使用源文件
-      // const compiledWorkerPath = path.resolve(process.cwd(), './libs/parse-profile/worker.js');
-      // if (fs.existsSync(compiledWorkerPath)) {
-      //   return compiledWorkerPath;
-      // }
       // 回退到源文件
       return path.join(__dirname, 'worker.js');
     } else {
-      // 生产环境：使用编译后的文件
-      return path.join(__dirname, 'worker.js');
+      return path.join(__dirname, 'libs', 'parse-profile', 'worker.js');
     }
   }
 

@@ -180,7 +180,7 @@ export async function run(
         });
       }
     } else {
-      isError = true;
+      isError = false;
       content = "未找到待分析的文档文件";
       socket.emit('agent_message', {
         data: {
@@ -195,7 +195,7 @@ export async function run(
     
     return [
       {
-        isError: isError,
+        isError: false,
         content: [content],
       },
     ];
@@ -206,7 +206,7 @@ export async function run(
     destroyAnalysisEventListeners();
     return [
       {
-        isError: true,
+        isError: false,
         content: [rawErrorMessage],
       },
     ];

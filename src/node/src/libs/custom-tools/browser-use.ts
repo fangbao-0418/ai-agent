@@ -9,6 +9,7 @@ import emitter from '@src/utils/emitter';
 const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
 import { getSystemPromptV1_5_Custom } from '@src/prompts';
+import { DefaultBrowserOperator } from '@src/browser-use/operator-browser';
 
 // 存储事件监听器的引用，用于后续销毁
 let agentEventListeners: { [key: string]: (...args: any[]) => void } = {};
@@ -116,6 +117,7 @@ export async function search(
     let content = "继续";
     try {
       await agent.run(args.query);
+      DefaultBrowserOperator.destroyInstance();
     } catch (e: any) {
       isError = true;
       content = e?.message || "执行失败";

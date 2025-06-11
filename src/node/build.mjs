@@ -32,17 +32,24 @@ const baseConfig = {
   } : {}),
   // 跨平台兼容性设置
   define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
     'process.platform': JSON.stringify(targetPlatform === 'win32' ? 'win32' : process.platform),
     __PLATFORM__: JSON.stringify(targetPlatform),
   },
-  external: [],
 };
 
 // 主入口配置
 const mainConfig = {
   ...baseConfig,
   entryPoints: ['src/index.ts'],
-  outfile: 'dist/index.js',
+  outfile: 'dist/index.js'
+};
+
+// 主入口配置
+const testConfig = {
+  ...baseConfig,
+  entryPoints: ['src/env-test.ts'],
+  outfile: 'dist2/index.js'
 };
 
 // Worker配置
@@ -54,7 +61,7 @@ const workerConfig = {
   outfile: 'dist/libs/parse-profile/worker.js',
 };
 
-// Worker配置
+// WorkerManager配置
 const workerManagerConfig = {
   ...baseConfig,
   entryPoints: [
@@ -91,6 +98,8 @@ const createWindowsConfig = (baseConfig) => ({
   target: 'node18',
   platform: 'node',
   format: 'cjs',
+  // 确保external配置被保留
+  external: baseConfig.external || [],
   // Windows 特定设置
   define: {
     ...baseConfig.define,
@@ -108,6 +117,7 @@ const createWindowsBuildConfigs = () => {
     main: createWindowsConfig(mainConfig),
     worker: createWindowsConfig(workerConfig),
     workerManager: createWindowsConfig(workerManagerConfig),
+    test: createWindowsConfig(testConfig),
     mcpServers: mcpServerConfigs.map(({ name, config }) => ({
       name,
       config: createWindowsConfig(config)
@@ -126,7 +136,6 @@ async function buildForWindows() {
     console.log('📦 Building main entry for Windows...');
     await esbuild.build(windowsConfigs.main);
     console.log('✅ Windows main entry built successfully');
-    
     // 构建worker (Windows 优化)
     console.log('📦 Building worker for Windows...');
     await esbuild.build(windowsConfigs.worker);
@@ -139,6 +148,8 @@ async function buildForWindows() {
       await esbuild.build(config);
       console.log(`✅ Windows ${name} server built successfully`);
     }
+    
+    await esbuild.build(windowsConfigs.test);
     
     console.log('🎉 Windows build completed!');
     

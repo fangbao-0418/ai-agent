@@ -74,7 +74,11 @@ export class BrowserOperator extends Operator {
    * @throws Error if no active page is found
    */
   private async getActivePage(): Promise<Page> {
-    const page = await this.browser.getActivePage();
+    let page: Page | undefined;
+    try {
+      page = await this.browser.getActivePage();
+    } catch (error) {}
+
     if (!page) {
       throw new Error('No active page found');
     }
