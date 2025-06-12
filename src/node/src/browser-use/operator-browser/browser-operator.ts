@@ -3,7 +3,7 @@
  * Copyright (c) 2025 Bytedance, Inc. and its affiliates.
  * SPDX-License-Identifier: Apache-2.0
  */
-import { LocalBrowser } from '../../libs/agent-infra/browser';
+import { LocalBrowser } from '@agent-infra/browser';
 import { ConsoleLogger, Logger, defaultLogger } from '@agent-infra/logger';
 import { Operator, parseBoxToScreenCoords } from '@ui-tars/sdk/core';
 import type {
@@ -11,7 +11,7 @@ import type {
   KeyInput,
   BrowserType,
   BrowserInterface,
-} from '../../libs/agent-infra/browser';
+} from '@agent-infra/browser';
 import type {
   ScreenshotOutput,
   ExecuteParams,
@@ -19,7 +19,7 @@ import type {
 } from '@ui-tars/sdk/core';
 import { BrowserOperatorOptions, SearchEngine } from './types';
 import { UIHelper } from './ui-helper';
-import { BrowserFinder } from '../../libs/agent-infra/browser';
+import { BrowserFinder } from '@agent-infra/browser';
 
 import { KEY_MAPPINGS } from './key-map';
 import { shortcuts } from './shortcuts';

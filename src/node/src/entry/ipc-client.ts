@@ -68,7 +68,8 @@ class IPCClient {
         );
         try {
           const result = await mcpClient.callTool({
-            client: mcpTool.serverName as MCPServerName,
+            // client: mcpTool.serverName as MCPServerName,
+            client: mcpTool.serverName as any,
             name: mcpTool.name as string,
             args: mcpTool.inputSchema || {},
           });

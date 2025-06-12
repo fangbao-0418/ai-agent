@@ -11,6 +11,7 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { createServer, getAllowedDirectories } from './server.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { logger } from '@src/utils/logger.js';
 
 // Command line argument parsinggetAllowedDirectories,
 const args = process.argv.slice(2);
@@ -37,6 +38,6 @@ async function runServer() {
 }
 
 runServer().catch((error) => {
-  console.error('Fatal error running server:', error);
+  logger.error('Fatal error running server:', error);
   process.exit(1);
 });

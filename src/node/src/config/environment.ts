@@ -1,10 +1,11 @@
-export type Environment = 'development' | 'production' | 'test';
+import { logger } from "@src/utils/logger";
+
+export type Environment = 'development' | 'production';
 
 export interface EnvironmentConfig {
   environment: Environment;
   isDevelopment: boolean;
   isProduction: boolean;
-  isTest: boolean;
   workerTimeout: number;
   enableSourceMap: boolean;
   enableDebugLogs: boolean;
@@ -43,16 +44,14 @@ class EnvironmentManager {
 
     const isDevelopment = environment === 'development';
     const isProduction = environment === 'production';
-    const isTest = environment === 'test';
 
     return {
       environment,
       isDevelopment,
       isProduction,
-      isTest,
       workerTimeout: isProduction ? 600000 : 300000, // 10分钟 vs 5分钟
       enableSourceMap: isDevelopment,
-      enableDebugLogs: isDevelopment || isTest,
+      enableDebugLogs: isDevelopment,
     };
   }
 
@@ -72,10 +71,10 @@ class EnvironmentManager {
       return 'production';
     }
     
-    // 检查是否在Jest测试环境中
-    if (process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test') {
-      return 'test';
-    }
+    // // 检查是否在Jest测试环境中
+    // if (process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test') {
+    //   return 'test';
+    // }
     
     // 默认为开发环境
     return 'development';
@@ -97,10 +96,6 @@ class EnvironmentManager {
     return this.config.isProduction;
   }
 
-  public isTest(): boolean {
-    return this.config.isTest;
-  }
-
   public getWorkerTimeout(): number {
     return this.config.workerTimeout;
   }
@@ -116,7 +111,7 @@ class EnvironmentManager {
   }
 
   public logError(message: string, error?: any): void {
-    console.error(`[${this.config.environment.toUpperCase()}] ERROR: ${message}`, error);
+    logger.error(`[${this.config.environment.toUpperCase()}] ERROR: ${message}`, error);
   }
 
   public logWarning(message: string, ...args: any[]): void {

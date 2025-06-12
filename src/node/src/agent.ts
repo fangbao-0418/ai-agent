@@ -6,6 +6,7 @@ import { LocalBrowser } from '@agent-infra/browser';
 import globalData from './global';
 import { createUniqueID } from './utils/helper';
 import * as fs from 'fs';
+import { logger } from './utils/logger';
 
 export type AgentType = 'browser' | 'computer';
 
@@ -28,7 +29,7 @@ class AgentServer {
     if (!sessionId) {
       sessionId = createUniqueID();
       globalData.set('session-id', sessionId);
-      console.log('Agent执行时生成会话ID:', sessionId);
+      logger.info('Agent执行时生成会话ID:', sessionId);
       
       // 创建会话临时目录
       const tempDir = globalData.get('temp-download-dir');
@@ -109,10 +110,14 @@ class AgentServer {
     });
     this.guiAgent = guiAgent;
     try {
+      this.socket()?.emit('hide_window');
+      this.socket()?.emit('open_thought_window');
       await this.guiAgent.run(command);
     } catch (error) {
-      console.log(error);
+      logger.info(error);
     }
+    this.socket()?.emit('open_window');
+    this.socket()?.emit('hide_thought_window');
   }
 
   pause () {
@@ -128,7 +133,8 @@ class AgentServer {
   }
 
   socket () {
-    //
+    const socket = globalData.get('socket');
+    return socket
   }
 }
 

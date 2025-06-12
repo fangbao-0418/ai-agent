@@ -26,7 +26,10 @@ export function mapToolKeysToAzureTools(
 ) {
   return mcpToolsToAzureTools(
     mcpTools.filter((tool) =>
-      toolKeys.includes(tool.serverName as MCPServerName),
+      toolKeys.includes(
+        tool.serverName
+        // tool.serverName as MCPServerName
+      ),
     ),
   );
 }

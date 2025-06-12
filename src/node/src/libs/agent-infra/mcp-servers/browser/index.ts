@@ -7,6 +7,7 @@ import { program } from 'commander';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 // import { createServer, getBrowser } from './server.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { logger } from '@src/utils/logger';
 
 declare global {
   interface Window {
@@ -83,7 +84,7 @@ program
       // const transport = new StdioServerTransport();
       // await server.connect(transport);
     } catch (error) {
-      console.error('Error: ', error);
+      logger.error('Error: ', error);
       process.exit(1);
     }
   });

@@ -6,8 +6,28 @@ import * as puppeteer from 'puppeteer-core';
 import { BrowserFinder } from './browser-finder';
 import { BaseBrowser } from './base-browser';
 import globalData from '../../../global';
-
+import si from 'systeminformation';
 import type { BrowserType, LaunchOptions } from './types';
+
+
+async function getScreenResolution() {
+  try {
+    const { displays } = await si.graphics();
+    const primaryDisplay = displays.find(display => display.main);
+    
+    if (!primaryDisplay) {
+      throw new Error('未找到主显示器');
+    }
+    
+    return {
+      width: primaryDisplay.resolutionX ?? 1920,
+      height: primaryDisplay.resolutionY ?? 1080
+    };
+  } catch (error) {
+    console.error('获取分辨率失败:', error);
+    return { width: 1920, height: 1080 }; // 默认值
+  }
+}
 
 /**
  * LocalBrowser class for controlling locally installed browsers
@@ -26,21 +46,27 @@ export class LocalBrowser extends BaseBrowser {
     this.logger.info('Launching browser with options:', options);
     const downloadDir = globalData.get('temp-download-dir');
     const { path, type } = this.getBrowserInfo(options);
-    const viewportWidth = options?.defaultViewport?.width ?? 1280;
-    const viewportHeight = options?.defaultViewport?.height ?? 600;
+    //
+
+    // 获取主屏幕的宽高
+    const { width, height } = await getScreenResolution();
+
+    const viewportWidth = options?.defaultViewport?.width ?? width;
+    const viewportHeight = options?.defaultViewport?.height ?? height;
 
     const puppeteerLaunchOptions: puppeteer.LaunchOptions = {
       browser: type,
       executablePath: path,
       dumpio: options?.dumpio ?? false,
       headless: options?.headless ?? false,
-      defaultViewport: {
-        width: viewportWidth,
-        height: viewportHeight,
-        // Setting this value to 0 will reset this value to the system default.
-        // This parameter combined with `captureBeyondViewport: false`, will resolve the screenshot blinking issue.
-        deviceScaleFactor: 0,
-      },
+      // defaultViewport: {
+      //   width: viewportWidth,
+      //   height: viewportHeight,
+      //   // Setting this value to 0 will reset this value to the system default.
+      //   // This parameter combined with `captureBeyondViewport: false`, will resolve the screenshot blinking issue.
+      //   deviceScaleFactor: 0,
+      // },
+      defaultViewport: null,
       args: [
         '--no-sandbox',
         '--mute-audio',
@@ -58,7 +84,7 @@ export class LocalBrowser extends BaseBrowser {
         '--disable-web-security', // disable CORS
         '--disable-features=IsolateOrigins,site-per-process',
         '--disable-site-isolation-trials',
-        `--window-size=${viewportWidth},${viewportHeight + 90}`,
+        `--window-size=${viewportWidth},${viewportHeight}`,
         options?.proxy ? `--proxy-server=${options.proxy}` : '',
         options?.profilePath
           ? `--profile-directory=${options.profilePath}`

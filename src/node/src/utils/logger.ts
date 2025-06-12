@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import globalData from '@src/global';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -17,8 +18,8 @@ class Logger implements ILogger {
 
   constructor(
     logLevel: LogLevel = 'info', 
-    enableFileLogging: boolean = false,
-    logDir: string = 'logs'
+    enableFileLogging: boolean = true,
+    logDir: string = globalData.get("log-dir")
   ) {
     this.logLevel = logLevel;
     this.enableFileLogging = enableFileLogging;
@@ -114,7 +115,7 @@ class Logger implements ILogger {
 }
 
 // 创建默认日志器实例
-export const logger: any = new Logger();
+export const logger = new Logger();
 
 // 导出类供其他模块使用
 export { Logger };

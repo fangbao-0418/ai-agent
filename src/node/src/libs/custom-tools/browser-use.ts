@@ -107,16 +107,17 @@ export async function search(
   };
   const count = args?.count ?? 10;
   try {
-    // logger.info(
-    //   'Search provider: ',
-    //   currentSearchConfig.provider,
-    //   'Search query:',
-    //   maskSensitiveData({ query: args.query, count: args.count }),
-    // );
+    logger.info(
+      'Search provider: ',
+      'browser-use',
+      'Search query:',
+      maskSensitiveData({ query: args.query, count: args.count }),
+    );
     let isError = false;
-    let content = "继续";
+    let content = "";
     try {
       await agent.run(args.query);
+      content = "操作成功";
       try {
         agent.stop();
       } catch (e) {

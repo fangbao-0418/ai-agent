@@ -4,6 +4,7 @@ import globalData from './global';
 import * as fs from 'fs';
 import { useAgentFlow } from './hooks/use-agent-flow';
 import emitter from './utils/emitter'; // 导入全局emitter
+import { logger } from './utils/logger';
 
 class AgentMessageServer {
 
@@ -13,8 +14,8 @@ class AgentMessageServer {
   private socket: any;
 
   constructor () {
-    // 初始化时生成会话ID
-    this.generateSessionId();
+    // // 初始化时生成会话ID
+    // this.generateSessionId();
     
     // this.agent = new AgentServer({
     //   onData: (e) => {
@@ -115,6 +116,10 @@ class AgentMessageServer {
       if (!data?.command) {
         return;
       }
+      
+      // 初始化时生成会话ID
+      this.generateSessionId();
+    
       this.emitThoughtStart();
 
       // 获取AgentFlow控制器
@@ -136,7 +141,11 @@ class AgentMessageServer {
     this.socket = socket;
     globalData.set('socket', socket)
     this.socket.on('execute_command', async (data: string) => {
-      this.onExecuteCommand(JSON.parse(data))
+      try {
+        this.onExecuteCommand(JSON.parse(data))
+      } catch (error) {
+        logger.error('execute_command error', error);
+      }
     })
 
     // 心跳检测

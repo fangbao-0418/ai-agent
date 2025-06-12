@@ -85,37 +85,39 @@ export const createMcpClient = async () => {
 
     const omegaDir = await getOmegaDir();
 
-    const toolsMap: Record<MCPServerName, MCPServer<MCPServerName>> = {
-      // [MCPServerName.FileSystem]: {
-      //   type: 'builtin',
-      //   name: MCPServerName.FileSystem,
-      //   description: 'filesystem tool',
-      //   mcpServer: createFileSystemServer({
-      //     allowedDirectories: [omegaDir],
-      //   }),
-      // },
-      // [MCPServerName.Commands]: {
-      //   type: 'builtin',
-      //   name: MCPServerName.Commands,
-      //   description: 'commands tool',
-      //   mcpServer: createCommandServer(),
-      // },
-      // [MCPServerName.Browser]: {
-      //   type: 'builtin',
-      //   name: MCPServerName.Browser,
-      //   description: 'browser tools',
-      //   mcpServer: createBrowserServer({
-      //     launchOptions: {
-      //       headless: true,
-      //     },
-      //   }),
-      // },
-      ...getActiveMcpSettings(),
-    };
+    // const toolsMap: Record<MCPServerName, MCPServer<MCPServerName>> = {
+    //   // [MCPServerName.FileSystem]: {
+    //   //   type: 'builtin',
+    //   //   name: MCPServerName.FileSystem,
+    //   //   description: 'filesystem tool',
+    //   //   mcpServer: createFileSystemServer({
+    //   //     allowedDirectories: [omegaDir],
+    //   //   }),
+    //   // },
+    //   // [MCPServerName.Commands]: {
+    //   //   type: 'builtin',
+    //   //   name: MCPServerName.Commands,
+    //   //   description: 'commands tool',
+    //   //   mcpServer: createCommandServer(),
+    //   // },
+    //   // [MCPServerName.Browser]: {
+    //   //   type: 'builtin',
+    //   //   name: MCPServerName.Browser,
+    //   //   description: 'browser tools',
+    //   //   mcpServer: createBrowserServer({
+    //   //     launchOptions: {
+    //   //       headless: true,
+    //   //     },
+    //   //   }),
+    //   // },
+    //   ...getActiveMcpSettings(),
+    // };
 
-    logger.info('toolsMap', toolsMap);
 
-    const client = new MCPClient(Object.values(toolsMap));
+    const client = new MCPClient(
+      // Object.values(toolsMap)
+      []
+    );
     mapClientRef.current = client;
     return client;
   } catch (error) {

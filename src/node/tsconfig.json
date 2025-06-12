@@ -14,11 +14,16 @@
       "@src/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
       "@agent-infra/browser": ["./src/libs/agent-infra/browser"],
-    "@agent-infra/logger": ["./src/libs/agent-infra/logger"],
-    "@agent-infra/mcp-client": ["./src/libs/agent-infra/mcp-client"],
-    "@agent-infra/mcp-servers": ["./src/libs/agent-infra/mcp-servers"],
-    "@agent-infra/mcp-server": ["./src/libs/agent-infra/mcp-server"],
-    "@agent-infra/shared": ["./src/libs/agent-infra/shared"]
+      "@agent-infra/logger": ["./src/libs/agent-infra/logger"],
+      "@agent-infra/mcp-client": ["./src/libs/agent-infra/mcp-client"],
+      "@agent-infra/mcp-servers": ["./src/libs/agent-infra/mcp-servers"],
+      "@agent-infra/shared/agent": ["./src/libs/agent-infra/shared/agent"],
+      "@agent-infra/shared/agent-tars-type": ["./src/libs/agent-infra/shared/agent-tars-type"],
+      "@agent-infra/shared/browser": ["./src/libs/agent-infra/shared/browser"],
+      "@agent-infra/shared/common": ["./src/libs/agent-infra/shared/common"],
+      "@agent-infra/shared/mcp": ["./src/libs/agent-infra/shared/mcp"],
+      "@agent-infra/mcp-shared/client": ["./src/libs/agent-infra/mcp-shared/client"],
+      "@agent-infra/search": ["./src/libs/agent-infra/search"]
     }
   },
   "include": ["src/**/*"],

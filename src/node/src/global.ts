@@ -5,6 +5,7 @@ interface AppStateDataProps {
   'download-dir': string;
   'session-id': string;
   'temp-download-dir': string;
+  'log-dir': string;
   socket?: any
 }
 
@@ -15,6 +16,7 @@ class AppState {
     'download-dir': '',
     'session-id': '',
     'temp-download-dir': '',
+    'log-dir': '',
   };
   constructor() {
   }
@@ -27,6 +29,8 @@ class AppState {
     } else if (key === 'temp-download-dir') {
       return path.join(this.get('download-dir'), (this.get('session-id') ?? ''));
       // return path.join(this.get('download-dir'));
+    } else if (key === 'log-dir') {
+      return path.join(this.get('node-dir'), 'logs');
     }
     return this.data[key];
   }

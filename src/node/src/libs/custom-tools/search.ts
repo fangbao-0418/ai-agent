@@ -63,7 +63,7 @@ export async function search(
 
     if (!currentSearchConfig) {
       const client = new SearchClient({
-        logger,
+        logger: logger as any,
         provider: SearchProvider.DuckduckgoSearch,
         providerConfig: {},
       });
@@ -88,7 +88,7 @@ export async function search(
       currentSearchConfig.provider === SearchProvider.DuckduckgoSearch
     ) {
       const client = new SearchClient({
-        logger,
+        logger: logger as any,
         provider: SearchProvider.DuckduckgoSearch,
         providerConfig: {},
       });

@@ -1,5 +1,6 @@
-import WorkerManager from './WorkerManager';
+import WorkerManager from './worker-manager';
 import globalData from '../../global';
+import { logger } from '@src/utils/logger';
 
 // 使用Worker执行文档解析的包装函数（非流式）
 export async function parseProfiles(userPrompt?: string): Promise<string> {
@@ -47,7 +48,7 @@ export async function parseProfilesStream(
     }, onChunk || (() => {}));
     return result;
   } catch (error) {
-    console.error('Worker流式执行失败:', error);
+    logger.error('Worker流式执行失败:', error);
     throw error;
   }
 }

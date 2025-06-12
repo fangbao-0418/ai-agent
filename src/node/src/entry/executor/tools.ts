@@ -1,9 +1,9 @@
 import { MCPServerName } from '@agent-infra/shared';
-import type { ChatCompletionTool } from 'openai/resources/chat';
+import type { ChatCompletionTool } from 'openai/resources/chat/completions';
 
 export enum ExecutorToolType {
-  FileSystem = MCPServerName.FileSystem,
-  Commands = MCPServerName.Commands,
+  // FileSystem = MCPServerName.FileSystem,
+  // Commands = MCPServerName.Commands,
   Idle = 'idle',
   ChatMessage = 'chat-message',
 }

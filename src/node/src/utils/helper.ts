@@ -1,5 +1,6 @@
 import globalData from '../global';
 import { ChatCompletionTool } from 'openai/resources/index.mjs';
+import { logger } from './logger';
 
 const fs = require('fs');
 
@@ -8,6 +9,7 @@ export function checkDownloadFilesExist () {
   try {
     const files = fs.readdirSync(downloadDir);
     const pdfFiles = files.filter((file: any) => file.toLowerCase().endsWith('.pdf'));
+    logger.info('checkDownloadFilesExist:', downloadDir, pdfFiles);
     return pdfFiles.length > 0
   } catch (error) {
     return false;

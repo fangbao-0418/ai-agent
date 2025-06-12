@@ -1,6 +1,7 @@
 import * as net from 'net';
 import * as dotenv from 'dotenv';
 import AgentMessageServer from './message';
+import { logger } from './utils/logger';
 
 // 加载环境变量
 dotenv.config();
@@ -20,7 +21,7 @@ function _calculateCRC32(data: Buffer) {
 
 // 当有新客户端连接时
 server.on('connection', (socket: net.Socket) => {
-  console.log(`C++客户端已连接: ${socket.remoteAddress}:${socket.remotePort}`);
+  logger.info(`C++客户端已连接: ${socket.remoteAddress}:${socket.remotePort}`);
   let buffer: Buffer = Buffer.alloc(0);
 
   const newSocket: any = {
@@ -71,7 +72,7 @@ server.on('connection', (socket: net.Socket) => {
 
   socket.on('data', async (data: Buffer) => {
     buffer = Buffer.concat([buffer, data])
-    console.log(data.toString());
+    // console.log(data.toString());
     while (buffer.length >= 4) {
       const length = buffer.readUInt32BE(0);
       const fullMessageLength = 4 + 2 + length + 4; // 长度头+类型+数据+CRC
@@ -103,45 +104,45 @@ server.on('connection', (socket: net.Socket) => {
   })
   // 客户端断开连接
   socket.on('close', () => {
-    console.log('C++客户端已断开');
+    logger.info('C++客户端已断开');
     newSocket.exec('disconnect')
   });
   
   // 连接错误处理
   socket.on('error', (err: Error) => {
-    console.error('连接错误:', err);
+    logger.error('连接错误:', err);
   });
 });
 
 // 服务器错误处理
 server.on('error', (err: NodeJS.ErrnoException) => {
-  console.error('服务器错误:', err);
+  logger.error('服务器错误:', err);
   if (err.code === 'EADDRINUSE') {
-    console.error(`端口 ${PORT} 已被占用，请确保没有其他服务正在使用该端口`);
-    process.exit(1);
+    logger.error(`端口 ${PORT} 已被占用，请确保没有其他服务正在使用该端口`);
+    process.exit(0);
   }
 });
 
 // 优雅关闭处理
 process.on('SIGTERM', () => {
-  console.log('收到SIGTERM信号，准备关闭服务器...');
+  logger.info('收到SIGTERM信号，准备关闭服务器...');
   server.close(() => {
-    console.log('TCP服务器已关闭，退出进程');
+    logger.info('TCP服务器已关闭，退出进程');
     process.exit(0);
   });
   
   // 如果5秒内服务器没有正常关闭，强制退出
   setTimeout(() => {
-    console.log('服务器关闭超时，强制退出');
-    process.exit(1);
+    logger.info('服务器关闭超时，强制退出');
+    process.exit(0);
   }, 5000);
 });
 
 const start = () => {
   // 启动服务器
   server.listen(PORT, HOST, () => {
-    console.log(`Node.js TCP服务器启动成功，监听 ${HOST}:${PORT}`);
-    console.log('等待C++客户端连接...');
+    logger.info(`Node.js TCP服务器启动成功，监听 ${HOST}:${PORT}`);
+    logger.info('等待C++客户端连接...');
   });
 }
 

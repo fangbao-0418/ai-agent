@@ -7,7 +7,7 @@ import { maskSensitiveData } from '@utils/maskSensitiveData';
 import AgentServer from '@src/agent';
 import { checkDownloadFilesExist } from '@src/utils/helper';
 import parseProfiles, { parseProfilesStream } from '../parse-profile';
-import WorkerManager from '../parse-profile/WorkerManager'; // 导入WorkerManager
+import WorkerManager from '../parse-profile/worker-manager'; // 导入WorkerManager
 import emitter from '@src/utils/emitter'; // 导入全局emitter
 const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
@@ -120,7 +120,7 @@ export async function run(
     // const agent = new AgentServer();
     // await agent.run(args.query);
     const socket = globalData.get('socket');
-    let content = "继续";
+    let content = "";
     if (checkDownloadFilesExist()) {
       try {
         if (enableStream) {
@@ -170,8 +170,9 @@ export async function run(
             }
           });
         }
+        content = "解析完成";
       } catch (error) {
-        console.error('Worker执行文档解析失败:', error);
+        logger.error('Worker执行文档解析失败:', error);
         socket.emit('agent_message', {
           data: {
             conclusion: `文档解析失败: ${(error as Error).message}`,
@@ -192,7 +193,7 @@ export async function run(
     
     // 执行完成后销毁监听器
     destroyAnalysisEventListeners();
-    
+    logger.info('resume-analysis result', content);
     return [
       {
         isError: false,

@@ -6,6 +6,7 @@ import { chatMessageTool, idleTool } from './tools';
 import { CompatibilityCallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { interceptToolCalls } from '@src/utils/file-system-interceptor';
+import { logger } from '@src/utils/logger';
 // import { interceptToolCalls } from '@renderer/api/fileSystemInterceptor';
 
 export class Executor {
@@ -146,6 +147,8 @@ You should use the same language as the user input by default.
           const result = await ipcClient.executeTool({
             toolCalls: interceptedToolCalls,
           });
+
+          logger.info('Execute result', JSON.stringify(result));
 
           // console.log('Execute result', JSON.stringify(result));
           if (this.abortSignal.aborted) {

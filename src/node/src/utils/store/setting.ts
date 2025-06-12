@@ -72,7 +72,7 @@ export class SettingStore {
         defaults: DEFAULT_SETTING,
       });
       SettingStore.instance.onDidAnyChange((newValue: any, oldValue: any) => {
-        logger.log(
+        logger.info(
           `SettingStore: ${JSON.stringify(oldValue)} changed to ${JSON.stringify(newValue)}`,
         );
         // Notify that value updated

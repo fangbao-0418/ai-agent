@@ -65,9 +65,9 @@ const workerConfig = {
 const workerManagerConfig = {
   ...baseConfig,
   entryPoints: [
-    'src/libs/parse-profile/WorkerManager.ts'
+    'src/libs/parse-profile/worker-manager.ts'
   ],
-  outfile: 'dist/libs/parse-profile/WorkerManager.js',
+  outfile: 'dist/libs/parse-profile/worker-manager.js',
 };
 
 // MCP服务器列表
