@@ -131,10 +131,10 @@ class AgentMessageServer {
         []
       )
       // await this.agent.run(data.command, data.type)
-      this.emitThoughtEnd();
     } catch (error) {
       //
     }
+    this.emitThoughtEnd();
   }
 
   listen (socket: any) {

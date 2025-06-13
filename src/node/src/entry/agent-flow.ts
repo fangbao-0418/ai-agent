@@ -17,6 +17,8 @@ import { Greeter } from './greeter';
 import { extractHistoryEvents } from '@utils/extract-history-events';
 import { EventItem, EventType } from '@src/types/event';
 import { SNAPSHOT_BROWSER_ACTIONS } from '@src/constants';
+import { logger } from '@src/utils/logger';
+import globalData from '@src/global';
 
 export interface AgentContext {
   plan: PlanTask[];
@@ -43,6 +45,9 @@ export class AgentFlow {
   private resumePromise: Promise<void> | null = null;
   private resolveResume: (() => void) | null = null;
   private isStopped = false;
+  private retryCount: number = 0;
+  private readonly MAX_RETRIES: number = 2;
+  private lastError: Error | null = null;
 
   constructor(private appContext: AppContext) {
     const omegaHistoryEvents = this.parseHistoryEvents();
@@ -179,6 +184,7 @@ export class AgentFlow {
     preparePromise: Promise<void>,
   ) {
     this.loadingStatusTip = 'Thinking';
+    const socket = globalData.get('socket')
     try {
       while (!this.abortController.signal.aborted && !this.hasFinished) {
         // 检查pause状态
@@ -209,6 +215,11 @@ export class AgentFlow {
             await preparePromise;
           } catch (error) {
             console.log(error);
+            this.handleError(error);
+            if (this.shouldEndTask()) {
+              break;
+            }
+            continue;
           }
 
           if (this.abortController.signal.aborted) {
@@ -279,85 +290,73 @@ export class AgentFlow {
           const mcpTools = await ipcClient.listMcpTools();
           const customServerTools = await ipcClient.listCustomTools();
           this.loadingStatusTip = 'Executing Tool';
+          
           // Execute the tools
           for (const toolCall of toolCallList) {
-            const toolName = toolCall.function.name;
-            const isMCPToolCall = mcpTools.some(
-              (tool: any) => tool.name === toolCall.function.name,
-            );
-            const isCustomServerToolCall = customServerTools.some(
-              (tool: any) => tool.function.name === toolCall.function.name,
-            );
-
-            await this.eventManager.addToolCallStart(
-              toolName,
-              toolCall.function.arguments,
-            );
-
-            await this.eventManager.addToolExecutionLoading(toolCall);
-
-            // Set up permission check interval for this specific tool execution
-            let originalFileContent: string | null = null;
-
-            if (isMCPToolCall || isCustomServerToolCall) {
-              if (
-                toolName === ToolCallType.EditFile ||
-                toolName === ToolCallType.WriteFile
-              ) {
-                const params = JSON.parse(
-                  toolCall.function.arguments,
-                ) as ToolCallParam['edit_file'];
-                // originalFileContent = await ipcClient.getFileContent({
-                //   filePath: params.path,
-                // });
-              }
-              // Execute tool in the main thread
-              const callResult = (await executor.executeTools([toolCall]))[0];
-              // this.appContext.setAgentStatusTip('Executing Tool');
-              if (callResult) {
-                await this.eventManager.handleToolExecution({
-                  toolName,
-                  toolCallId: toolCall.id,
-                  params: toolCall.function.arguments,
-                  result: callResult.content,
-                  isError: callResult.isError as boolean,
-                });
-              }
-            }
-
-            if (originalFileContent) {
-              // Add the missing original file content for diff code display
-              this.eventManager.updateFileContentForEdit(originalFileContent);
-            }
-
-            // if (SNAPSHOT_BROWSER_ACTIONS.includes(toolName as ToolCallType)) {
-            //   const screenshotPath = await ipcClient.saveBrowserSnapshot();
-            //   console.log('screenshotPath', screenshotPath);
-            //   this.eventManager.updateScreenshot(screenshotPath.filepath);
-            // }
-
-            if (toolName === ExecutorToolType.ChatMessage) {
-              const params = JSON.parse(toolCall.function.arguments);
-              await this.eventManager.addChatText(
-                params.text,
-                params.attachments,
+            try {
+              const toolName = toolCall.function.name;
+              const isMCPToolCall = mcpTools.some(
+                (tool: any) => tool.name === toolCall.function.name,
               );
-            }
-
-            if (toolName === ExecutorToolType.Idle) {
-              this.hasFinished = true;
-              this.eventManager.addPlanUpdate(
-                agentContext.plan.length,
-                this.flagPlanDone(agentContext.plan),
+              const isCustomServerToolCall = customServerTools.some(
+                (tool: any) => tool.function.name === toolCall.function.name,
               );
-              break;
+
+              await this.eventManager.addToolCallStart(
+                toolName,
+                toolCall.function.arguments,
+              );
+
+              await this.eventManager.addToolExecutionLoading(toolCall);
+
+              if (isMCPToolCall || isCustomServerToolCall) {
+                const callResult = (await executor.executeTools([toolCall]))[0];
+                if (callResult) {
+                  if (callResult.isError) {
+                    this.handleError(new Error(callResult?.content as string));
+                    if (this.shouldEndTask()) {
+                      break;
+                    }
+                    continue;
+                  }
+                  await this.eventManager.handleToolExecution({
+                    toolName,
+                    toolCallId: toolCall.id,
+                    params: toolCall.function.arguments,
+                    result: callResult.content,
+                    isError: callResult.isError as boolean,
+                  });
+                }
+              }
+
+              // Reset retry count on successful execution
+              this.retryCount = 0;
+              this.lastError = null;
+
+            } catch (error) {
+              this.handleError(error);
+              if (this.shouldEndTask()) {
+                break;
+              }
+              continue;
             }
           }
           this.loadingStatusTip = 'Thinking';
-        } catch (e) {
-          console.log(e);
-          break;
+        } catch (error) {
+          this.handleError(error);
+          if (this.shouldEndTask()) {
+            break;
+          }
+          continue;
         }
+      }
+      if (this.lastError) {
+        // this.eventManager.addAgentStatus(`Task ended after ${this.MAX_RETRIES} failed attempts. Last error: ${this.lastError.message}`);
+        socket.emit('agent_message', {
+          message: this.lastError?.message,
+          status: 'error'
+        });
+        throw this.lastError;
       }
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -471,5 +470,22 @@ Current task: ${currentTask}
   public stop() {
     this.isStopped = true;
     this.abortController.abort();
+  }
+
+  private handleError(error: unknown) {
+    this.retryCount++;
+    this.lastError = error instanceof Error ? error : new Error(String(error));
+    logger.error(`Error occurred (Attempt ${this.retryCount}/${this.MAX_RETRIES}):`, this.lastError);
+    this.eventManager.addAgentStatus(`Error occurred: ${this.lastError.message}`);
+  }
+
+  private shouldEndTask(): boolean {
+    if (this.retryCount >= this.MAX_RETRIES) {
+      console.error(`Maximum retry attempts (${this.MAX_RETRIES}) reached. Ending task.`);
+      this.eventManager.addAgentStatus(`Task ended after ${this.MAX_RETRIES} failed attempts. Last error: ${this.lastError?.message}`);
+      this.hasFinished = true;
+      return true;
+    }
+    return false;
   }
 }
