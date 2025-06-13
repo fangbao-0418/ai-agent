@@ -117,7 +117,7 @@ class AgentServer {
       logger.info(error);
     }
     this.socket()?.emit('open_window');
-    this.socket()?.emit('hide_thought_window');
+    this.socket()?.emit('close_thought_window');
   }
 
   pause () {
