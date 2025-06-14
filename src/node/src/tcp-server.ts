@@ -88,6 +88,7 @@ server.on('connection', (socket: net.Socket) => {
         // 解析消息内容
         const type = message.readUInt16BE(0);
         const payload = message.slice(2);
+        logger.info(payload.toString(), "payload")
         const obj = JSON.parse(payload.toString())
         newSocket.exec(obj.event, obj.data)
         buffer = buffer.slice(fullMessageLength);
