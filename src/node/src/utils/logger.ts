@@ -19,11 +19,11 @@ class Logger implements ILogger {
   constructor(
     logLevel: LogLevel = 'info', 
     enableFileLogging: boolean = true,
-    logDir: string = globalData.get("log-dir")
+    logDir?: string
   ) {
     this.logLevel = logLevel;
     this.enableFileLogging = enableFileLogging;
-    this.logDir = logDir;
+    this.logDir = logDir ?? globalData.get("log-dir");
     
     if (enableFileLogging) {
       this.ensureLogDir();

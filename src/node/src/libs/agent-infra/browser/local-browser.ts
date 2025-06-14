@@ -70,7 +70,7 @@ export class LocalBrowser extends BaseBrowser {
       args: [
         '--no-sandbox',
         '--mute-audio',
-        // '--disable-gpu',
+        '--disable-gpu',
         '--disable-http2',
         '--disable-blink-features=AutomationControlled',
         '--disable-infobars',
@@ -95,7 +95,7 @@ export class LocalBrowser extends BaseBrowser {
           // firefox not support rules
           if (
             item === '--disable-features=IsolateOrigins,site-per-process' ||
-            item === `--window-size=${viewportWidth},${viewportHeight + 90}`
+            item === `--window-size=${viewportWidth},${viewportHeight}`
           ) {
             return false;
           }

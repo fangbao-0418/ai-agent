@@ -9,16 +9,19 @@ interface AppStateDataProps {
   socket?: any
 }
 
+const defaultData: AppStateDataProps = {
+  'socket': null,
+  'node-dir': '',
+  'download-dir': '',
+  'session-id': '',
+  'temp-download-dir': '',
+  'log-dir': '',
+}
+
 class AppState {
-  data: AppStateDataProps = {
-    'socket': null,
-    'node-dir': process.cwd() + '/file',
-    'download-dir': '',
-    'session-id': '',
-    'temp-download-dir': '',
-    'log-dir': '',
-  };
+  data: AppStateDataProps = defaultData;
   constructor() {
+    console.log(this.data, "constructor")
   }
 
   get <K extends keyof AppStateDataProps>(key: K): AppStateDataProps[K] {

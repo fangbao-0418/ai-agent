@@ -17,7 +17,7 @@ const baseConfig = {
   bundle: true,
   // sourcemap: !isProduction,
   sourcemap: false,
-  minify: isProduction,
+  minify: true,
   drop: [], // 不删除任何调试信息
   plugins: [
     pathAliasPlugin,

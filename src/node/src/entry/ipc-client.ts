@@ -198,7 +198,7 @@ class IPCClient {
         const response = await llm.askTool({
           messages,
           tools: input.tools,
-          mcpServerKeys: input.mcpServerKeys,
+          mcpServerKeys: input.mcpServerKeys as any,
           requestId: input.requestId,
         });
         logger.info(

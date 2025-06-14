@@ -1,5 +1,3 @@
-import WebServer from './web-server';
-import TcpServer from './tcp-server';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -27,6 +25,8 @@ function init () {
         console.log(`✓ 应用目录已存在: ${absolutePath}`);
       }
       globalData.set('node-dir', absolutePath);
+      const WebServer = require('./web-server').default;
+      WebServer.start();
     } catch (error) {
       console.error(`创建应用目录失败: ${(error as Error).message}`);
     }
@@ -37,11 +37,6 @@ function init () {
 
 // 初始化应用目录
 init();
-
-// TcpServer.start();
-
-const webServer = new WebServer();
-webServer.start();
 
 
 
