@@ -1,5 +1,5 @@
 import AgentServer, { AgentType } from './agent';
-import { createUniqueID } from './utils/helper';
+import { cleanupOldSessionDirs, createUniqueID } from './utils/helper';
 import globalData from './global';
 import * as fs from 'fs';
 import { useAgentFlow } from './hooks/use-agent-flow';
@@ -27,12 +27,18 @@ class AgentMessageServer {
     // });
   }
 
+  initData() {
+    globalData.set('download-number', 0)
+  }
+
   // 生成会话ID
   private generateSessionId() {
     const sessionId = createUniqueID();
+
+    this.initData()
     
     // 在创建新会话目录前，先清理其他会话目录
-    // this.cleanupOldSessionDirs();
+    cleanupOldSessionDirs();
     
     globalData.set('session-id', sessionId);
     console.log('生成会话ID:', sessionId);
@@ -42,40 +48,6 @@ class AgentMessageServer {
     if (tempDir && !fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
       console.log('创建会话临时目录:', tempDir);
-    }
-  }
-
-  // 清理旧的会话目录
-  private cleanupOldSessionDirs() {
-    const downloadDir = globalData.get('download-dir');
-    if (!fs.existsSync(downloadDir)) return;
-    try {
-      const items = fs.readdirSync(downloadDir, { withFileTypes: true });
-      
-      // 查找所有目录（可能是旧的会话目录）
-      const sessionDirs = items.filter(item => 
-        item.isDirectory() && 
-        // 简单的会话ID格式检查：数字+随机字符
-        /^\d+[a-z0-9]+$/i.test(item.name)
-      );
-      
-      if (sessionDirs.length > 0) {
-        console.log(`发现 ${sessionDirs.length} 个旧会话目录，开始清理...`);
-        
-        sessionDirs.forEach(dir => {
-          const dirPath = `${downloadDir}/${dir.name}`;
-          try {
-            fs.rmSync(dirPath, { recursive: true, force: true });
-            console.log(`✓ 删除旧会话目录: ${dir.name}`);
-          } catch (error) {
-            console.error(`✗ 删除旧会话目录失败: ${dir.name} - ${(error as Error).message}`);
-          }
-        });
-        
-        console.log('旧会话目录清理完成');
-      }
-    } catch (error) {
-      console.error('清理旧会话目录时发生错误:', (error as Error).message);
     }
   }
 

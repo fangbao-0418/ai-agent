@@ -5,7 +5,7 @@ import { SettingStore } from '@src/utils/store/setting.js';
 import { logger } from '@utils/logger';
 import { maskSensitiveData } from '@utils/maskSensitiveData';
 import AgentServer from '@src/agent';
-import { checkDownloadFilesExist } from '@src/utils/helper';
+import { checkDownloadFilesExist, cleanupOldSessionDirs } from '@src/utils/helper';
 import parseProfiles, { parseProfilesStream } from '../parse-profile';
 import WorkerManager from '../parse-profile/worker-manager'; // 导入WorkerManager
 import emitter from '@src/utils/emitter'; // 导入全局emitter
@@ -73,7 +73,7 @@ function destroyAnalysisEventListeners() {
   if (!isAnalysisListening) {
     return;
   }
-  
+  cleanupOldSessionDirs();
   console.log('🗑️ Resume-analysis: 销毁agent事件监听器');
   
   // 移除所有事件监听器

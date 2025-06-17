@@ -20,6 +20,7 @@ import path from "path";
 import fs, { readFile } from 'fs-extra';
 import { MCPToolResult } from "@src/types";
 import { MCPTool } from "@src/libs/agent-infra/mcp-client";
+import globalData from "@src/global";
 
 /**
  * Get the current provider configuration based on settings
@@ -54,6 +55,9 @@ function toolUseToMcpTool(
 }
 
 class IPCClient {
+  get socket() {
+    return globalData.get('socket');
+  }
   async executeTool (input: { toolCalls: ToolCall[] }) {
     const mcpClient = await createMcpClient();
     const tools = await mcpClient.listTools();
@@ -240,7 +244,13 @@ class IPCClient {
         logger.info('[llmRoute.askLLMTextStream] stream', !!stream);
 
         for await (const chunk of stream) {
-          console.log(chunk, 'chunk')
+          console.log(chunk)
+          this.socket?.emit('agent_message', {
+            data: {
+              conclusion: chunk
+            },
+            type: 'streaming'
+          })
           emitter.emit(`llm:stream:${requestId}:data`, chunk);
         }
 

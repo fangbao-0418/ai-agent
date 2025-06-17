@@ -3,6 +3,7 @@ import callDeepSeek, { callDeepSeekSync } from "../../utils/ai-call/deepseek";
 import * as fs from 'fs';
 import * as path from 'path';
 import globalData from '../../global';
+import { logger } from '@src/utils/logger';
 const pdf = require('pdf-parse/lib/pdf-parse.js');
 
 /**
@@ -125,6 +126,7 @@ function isResumeAnalysisRequest(userPrompt?: string): boolean {
 // 读取downloads目录下的所有PDF文件
 async function readAllDocuments(downloadsPath: string): Promise<DocumentInfo[]> {
   if (!downloadsPath) {
+    logger.error("下载目录未配置")
     throw new Error('下载目录未配置');
   }
   
@@ -132,7 +134,7 @@ async function readAllDocuments(downloadsPath: string): Promise<DocumentInfo[]> 
     const files = fs.readdirSync(downloadsPath);
     const pdfFiles = files.filter(file => file.toLowerCase().endsWith('.pdf'));
     
-    console.log(`发现 ${pdfFiles.length} 份PDF文档文件`);
+    logger.info(`发现 ${pdfFiles.length} 份PDF文档文件`);
     
     if (pdfFiles.length === 0) {
       console.log(`提示：请将PDF文档文件放置到 ${downloadsPath} 目录下`);
@@ -144,7 +146,7 @@ async function readAllDocuments(downloadsPath: string): Promise<DocumentInfo[]> 
     for (const file of pdfFiles) {
       const filePath = path.join(downloadsPath, file);
       try {
-        console.log(`正在解析: ${file}`);
+        logger.info(`正在解析: ${file}`);
         const content = await extractPdfText(filePath);
         
         documents.push({
@@ -153,14 +155,15 @@ async function readAllDocuments(downloadsPath: string): Promise<DocumentInfo[]> 
           extractedAt: new Date()
         });
         
-        console.log(`✓ 成功解析: ${file} (${content.length} 字符)`);
+        logger.info(`✓ 成功解析: ${file} (${content.length} 字符)`);
       } catch (error) {
-        console.error(`✗ 解析失败: ${file} - ${(error as Error).message}`);
+        logger.error(`✗ 解析失败: ${file} - ${(error as Error).message}`);
       }
     }
     
     return documents;
   } catch (error) {
+    logger.error((error as Error)?.message)
     throw new Error(`读取文档目录失败: ${(error as Error).message}`);
   }
 }
@@ -313,10 +316,10 @@ async function *parseDocumentsWorkerStream(data: WorkerData) {
     let analysisPrompt: string;
     
     if (isResumeAnalysis) {
-      console.log('根据提示词判断为简历分析需求，使用专业简历分析模板');
+      logger.info('根据提示词判断为简历分析需求，使用专业简历分析模板');
       analysisPrompt = buildResumeAnalysisPrompt(documents);
     } else {
-      console.log('根据提示词判断为自定义分析需求，使用用户提示词');
+      logger.info('根据提示词判断为自定义分析需求，使用用户提示词');
       analysisPrompt = buildCustomAnalysisPrompt(documents, data.userPrompt || '请总结这些文档的主要内容，并提取关键信息。');
     }
     
@@ -327,10 +330,10 @@ async function *parseDocumentsWorkerStream(data: WorkerData) {
     }
     
     // 4. 清理会话文件
-    clearSessionFiles(data.downloadDir, data.sessionId);
+    // clearSessionFiles(data.downloadDir, data.sessionId);
     
   } catch (error) {
-    console.error('流式文档解析过程中发生错误:', (error as Error).message);
+    logger.error('流式文档解析过程中发生错误:', (error as Error).message);
     clearSessionFiles(data.downloadDir, data.sessionId);
     throw error;
   }

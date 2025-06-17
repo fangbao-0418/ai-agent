@@ -46,6 +46,7 @@ export class AgentFlow {
   private resolveResume: (() => void) | null = null;
   private isStopped = false;
   private retryCount: number = 0;
+  private MAX_STEP: number = 0;
   private readonly MAX_RETRIES: number = 2;
   private lastError: Error | null = null;
 
@@ -210,11 +211,16 @@ export class AgentFlow {
             this.getEnvironmentInfo(this.appContext, agentContext),
           );
           const awareResult = await aware.run();
+          this.MAX_STEP = Math.max(awareResult.step, this.MAX_STEP)
+          if (awareResult.step < this.MAX_STEP) {
+            this.retryCount++;
+          } else if (awareResult.step > this.MAX_STEP) {
+            this.retryCount = 0;
+          }
           this.loadingStatusTip = 'Thinking';
           try {
             await preparePromise;
           } catch (error) {
-            console.log(error);
             this.handleError(error);
             if (this.shouldEndTask()) {
               break;
@@ -225,6 +231,11 @@ export class AgentFlow {
           if (this.abortController.signal.aborted) {
             break;
           }
+          socket.emit('agent_message', {
+            data: awareResult,
+            type: 'plan'
+          });
+          logger.info('aware result', awareResult);
           if (
             awareResult.plan &&
             awareResult.plan.every(
@@ -258,14 +269,17 @@ export class AgentFlow {
             break;
           }
           agentContext.currentStep = awareResult.step;
-          if (awareResult.step > agentContext.currentStep) {
-            // Update UI, render new step
-            await this.eventManager.addNewPlanStep(agentContext.currentStep);
-            // Over the max task number, break the loop
-            if (awareResult.step > agentContext.plan.length) {
-              break;
-            }
+          if (awareResult.step > agentContext.plan.length) {
+            break;
           }
+          // if (awareResult.step > agentContext.currentStep) {
+          //   // Update UI, render new step
+          //   await this.eventManager.addNewPlanStep(agentContext.currentStep);
+          //   // Over the max task number, break the loop
+          //   // if (awareResult.step > agentContext.plan.length) {
+          //   //   break;
+          //   // }
+          // }
           if (awareResult.status) {
             // Update UI, render new status
             await this.eventManager.addAgentStatus(awareResult.status);
@@ -330,7 +344,7 @@ export class AgentFlow {
               }
 
               // Reset retry count on successful execution
-              this.retryCount = 0;
+              // this.retryCount = 0;
               this.lastError = null;
 
             } catch (error) {

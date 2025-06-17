@@ -1,12 +1,32 @@
 import emitter from "@src/utils/emitter";
-
+import globalData from "@src/global";
+import * as fs from 'fs';
+import { logger } from "@src/utils/logger";
 export async function checkDownload () {
+  const downloadNumber = globalData.get('download-number');
+  globalData.set('download-number', downloadNumber + 1);
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      emitter.emit('download-status');
-      setTimeout(() => {
-        resolve(true);
-      }, 300);
+      try {
+        let fileCount = 0;
+        fs.readdirSync(globalData.get('temp-download-dir')).forEach(file => {
+          if (file.endsWith('.pdf')) {
+            fileCount++;
+          }
+        });
+        if (fileCount === downloadNumber) {
+          resolve(true)
+          return;
+        } else {
+          globalData.set('download-number', downloadNumber);
+          logger.error('download number not match', downloadNumber, fileCount);
+          reject(new Error('download number not match'))
+        }
+      } catch (error) {
+        globalData.set('download-number', downloadNumber);
+        logger.error('checkDownload error', error);
+        reject(error)
+      }
     }, 5000);
   });
 }

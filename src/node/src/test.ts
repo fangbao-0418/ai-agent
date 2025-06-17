@@ -6,7 +6,7 @@ const minimist = require('minimist');
 
 const args = minimist(process.argv.slice(2));
 
-const appDir = args['node-dir'];
+const appDir = args['node-dir'] ?? path.join(process.cwd(), 'file');
 
 function init () {
   // 检查并创建 appDir 目录
@@ -26,7 +26,8 @@ function init () {
       }
       globalData.set('node-dir', absolutePath);
       const WebServer = require('./web-server').default;
-      WebServer.start();
+      const webServer = new WebServer()
+      webServer.start();
     } catch (error) {
       console.error(`创建应用目录失败: ${(error as Error).message}`);
     }

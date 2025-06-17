@@ -6,6 +6,7 @@ interface AppStateDataProps {
   'session-id': string;
   'temp-download-dir': string;
   'log-dir': string;
+  'download-number': any,
   socket?: any
 }
 
@@ -16,6 +17,7 @@ const defaultData: AppStateDataProps = {
   'session-id': '',
   'temp-download-dir': '',
   'log-dir': '',
+  'download-number': 0,
 }
 
 class AppState {

@@ -27,9 +27,11 @@ export async function search(
   const socket = globalData.get('socket');
   const agent = new AgentServer({
     onData: (e) => {
+      // logger.info('agent_message', e);
       socket.emit('agent_message', e)
     },
     onError: (e) => {
+      // logger.error('agent_error', e);
       socket.emit('agent_error', e)
     }
   });
@@ -121,7 +123,7 @@ export async function search(
       try {
         agent.stop();
       } catch (e) {
-        console.log('❌ Browser-use: 销毁浏览器实例失败', e);
+        logger.info('❌ Browser-use: 销毁浏览器实例失败', e);
       }
     } catch (e: any) {
       isError = true;
