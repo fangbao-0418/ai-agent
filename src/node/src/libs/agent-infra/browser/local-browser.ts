@@ -68,6 +68,7 @@ export class LocalBrowser extends BaseBrowser {
       // },
       defaultViewport: null,
       args: [
+        '--window-position=0,0',
         '--no-sandbox',
         '--mute-audio',
         '--disable-gpu',

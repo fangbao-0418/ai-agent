@@ -5,12 +5,15 @@ import { SettingStore } from '@src/utils/store/setting.js';
 import { logger } from '@utils/logger';
 import { maskSensitiveData } from '@utils/maskSensitiveData';
 import AgentServer from '@src/agent';
-import { checkDownloadFilesExist, cleanupOldSessionDirs, sendExecuteMessage } from '@src/utils/helper';
+import { checkPageFilesExist, cleanupOldSessionDirs } from '@src/utils/helper';
 import parseProfiles, { parseProfilesStream } from '../parse-profile';
 import WorkerManager from '../parse-profile/worker-manager'; // 导入WorkerManager
 import emitter from '@src/utils/emitter'; // 导入全局emitter
 const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
+import path from 'path';
+import fs from 'fs';
+import callDeepSeek from '@src/utils/ai-call/deepseek';
 
 // 存储事件监听器的引用，用于后续销毁
 let analysisEventListeners: { [key: string]: (...args: any[]) => void } = {};
@@ -30,7 +33,6 @@ function setupAnalysisEventListeners() {
   // 监听agent停止事件
   analysisEventListeners['stop'] = () => {
     console.log('🛑 Resume-analysis: 收到agent停止信号');
-    sendExecuteMessage('end', '解析已中止');
     // 停止文档解析流程
     workerManager.stop();
   };
@@ -38,7 +40,6 @@ function setupAnalysisEventListeners() {
   // 监听agent暂停事件
   analysisEventListeners['pause'] = () => {
     console.log('⏸️ Resume-analysis: 收到agent暂停信号');
-    sendExecuteMessage('pause', '解析已暂停');
     // 暂停文档解析流程
     workerManager.pause();
   };
@@ -110,12 +111,6 @@ export async function run(
   const enableStream = args?.stream ?? true; // 默认启用流式输出
   
   try {
-    // logger.info(
-    //   'Search provider: ',
-    //   currentSearchConfig.provider,
-    //   'Search query:',
-    //   maskSensitiveData({ query: args.query, count: args.count }),
-    // );
 
     let results: SearchResult;
     let isError = false;
@@ -123,79 +118,81 @@ export async function run(
     // await agent.run(args.query);
     const socket = globalData.get('socket');
     let content = "";
-    if (checkDownloadFilesExist()) {
-      try {
-        if (enableStream) {
-          // 流式处理：直接开始流式输出，不发送running消息
-          console.log('🚀 开始流式解析...');
-          let currentContent = '';
-          // socket.emit('agent_message', {
-          //   data: {
-          //     conclusion: "开始解析文件，请稍等...",
-          //     status: "start"
-          //   }
-          // });
-          sendExecuteMessage('running', '解析文件中...');
-          const result = await parseProfilesStream(args.query, (chunk: string) => {
-            currentContent += chunk;
-            // 实时发送流式数据到前端
-            socket.emit('agent_message', {
-              data: {
-                conclusion: chunk,
-                status: "streaming"
-              },
-              type: 'streaming'
-            });
-          });
-          sendExecuteMessage('end', '解析已完成');
-          console.log('✅ 流式解析完成，发送end消息');
-          // 发送最终完成状态
-          socket.emit('agent_message', {
-            data: {
-              conclusion: result,
-              status: "end"
-            }
-          });
-        } else {
-          // 非流式处理：发送running状态后处理
-          socket.emit('agent_message', {
-            data: {
-              conclusion: "开始解析文件",
-              status: "running"
-            }
-          });
-          sendExecuteMessage('running', '解析文件中...');
-          const result = await parseProfiles(args.query);
-          sendExecuteMessage('end', '解析已完成');
-          socket.emit('agent_message', {
-            data: {
-              conclusion: result,
-              status: "end"
-            }
-          });
-        }
-        content = "解析完成";
-      } catch (error) {
-        sendExecuteMessage('error', '解析失败');
-        logger.error('Worker执行文档解析失败:', error);
-        socket.emit('agent_message', {
-          data: {
-            conclusion: `文档解析失败: ${(error as Error).message}`,
-            status: "error"
-          }
-        });
-      }
-    } else {
-      isError = false;
-      content = "未找到待分析的文档文件";
-      sendExecuteMessage('error', '解析失败');
-      socket.emit('agent_message', {
-        data: {
-          conclusion: "未找到待分析的文档文件",
-          status: "error"
-        }
-      });
+    if (checkPageFilesExist()) {
+      const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
+      // const prompt = `
+      //   ${pageContent}
+      // `
+      // callDeepSeek(prompt)
     }
+    //   try {
+    //     if (enableStream) {
+    //       // 流式处理：直接开始流式输出，不发送running消息
+    //       console.log('🚀 开始流式解析...');
+    //       let currentContent = '';
+    //       socket.emit('agent_message', {
+    //         data: {
+    //           conclusion: "开始解析文件，请稍等...",
+    //           status: "start"
+    //         }
+    //       });
+    //       const result = await parseProfilesStream(args.query, (chunk: string) => {
+    //         currentContent += chunk;
+    //         console.log('📤 发送streaming消息，累计长度:', currentContent.length);
+    //         // 实时发送流式数据到前端
+    //         socket.emit('agent_message', {
+    //           data: {
+    //             conclusion: chunk,
+    //             status: "streaming"
+    //           }
+    //         });
+    //       });
+          
+    //       console.log('✅ 流式解析完成，发送end消息');
+    //       // 发送最终完成状态
+    //       socket.emit('agent_message', {
+    //         data: {
+    //           conclusion: result,
+    //           status: "end"
+    //         }
+    //       });
+    //     } else {
+    //       // 非流式处理：发送running状态后处理
+    //       socket.emit('agent_message', {
+    //         data: {
+    //           conclusion: "开始解析文件",
+    //           status: "running"
+    //         }
+    //       });
+          
+    //       const result = await parseProfiles(args.query);
+    //       socket.emit('agent_message', {
+    //         data: {
+    //           conclusion: result,
+    //           status: "end"
+    //         }
+    //       });
+    //     }
+    //     content = "解析完成";
+    //   } catch (error) {
+    //     logger.error('Worker执行文档解析失败:', error);
+    //     socket.emit('agent_message', {
+    //       data: {
+    //         conclusion: `文档解析失败: ${(error as Error).message}`,
+    //         status: "error"
+    //       }
+    //     });
+    //   }
+    // } else {
+    //   isError = false;
+    //   content = "未找到待分析的文档文件";
+    //   socket.emit('agent_message', {
+    //     data: {
+    //       conclusion: "未找到待分析的文档文件",
+    //       status: "error"
+    //     }
+    //   });
+    // }
     
     // 执行完成后销毁监听器
     destroyAnalysisEventListeners();
@@ -207,7 +204,6 @@ export async function run(
       },
     ];
   } catch (e) {
-    sendExecuteMessage('error', '解析失败');
     const rawErrorMessage = e instanceof Error ? e.message : JSON.stringify(e);
     logger.error('[Search] error: ' + rawErrorMessage);
     // 出错时也要销毁监听器

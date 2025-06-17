@@ -2,6 +2,7 @@ import { ToolCall } from '@agent-infra/shared';
 import { search } from './search';
 import * as browserUse from './browser-use';
 import * as resumeAnalysis from './resume-analysis';
+import * as pageAnalysis from './page-analysis';
 
 export function executeCustomTool(toolCall: ToolCall) {
   if (toolCall.function.name === 'web_search') {
@@ -12,6 +13,9 @@ export function executeCustomTool(toolCall: ToolCall) {
   } 
   else if (toolCall.function.name === 'resume_analysis') {
     return resumeAnalysis.run(toolCall);
+  }
+  else if (toolCall.function.name === 'page_analysis') {
+    return pageAnalysis.run(toolCall);
   }
   // return [
   //   {
@@ -52,6 +56,23 @@ export function listCustomTools() {
             query: {
               type: 'string',
               description: 'Analysis requirements or custom prompt for document processing',
+            },
+          },
+          required: ['query'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'page_analysis',
+        description: 'Analyze, summarize, generalize, evaluate and extract web page content and information.. 分析、总结、汇总、评估、提取网页内容和信息。',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'Analyze requirements or customize page content analysis prompts',
             },
           },
           required: ['query'],

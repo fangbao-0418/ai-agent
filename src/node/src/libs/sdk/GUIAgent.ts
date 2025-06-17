@@ -35,6 +35,9 @@ import {
 import { InternalServerError } from 'openai';
 import { DefaultBrowserOperator } from '@src/browser-use/operator-browser';
 import emitter from '@src/utils/emitter';
+import fs from 'fs';
+import globalData from '@src/global';
+import path from 'path';
 
 export class GUIAgent<T extends Operator> extends BaseGUIAgent<
   GUIAgentConfig<T>
@@ -182,7 +185,28 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
         loopCnt += 1;
         const start = Date.now();
 
-        const snapshot = await asyncRetry(() => operator.screenshot(), {
+        const snapshot = await asyncRetry(async () => {
+          const browser = DefaultBrowserOperator.browser;
+          try {
+            const page = await browser?.getActivePage();
+            if (page) {
+              //
+              // const content = await page!.content();
+              const visibleText = await page.evaluate(() => {
+                return document.body.innerText;
+              });
+              if (!fs.existsSync(globalData.get('temp-page-dir'))) {
+                fs.mkdirSync(globalData.get('temp-page-dir'), { recursive: true });
+              }
+              fs.writeFile(path.join(globalData.get('temp-page-dir'), `${globalData.get('session-id')}.txt`), visibleText + '\n', () => {
+                //
+              });
+            }
+          } catch (error) {
+            logger.error('[GUIAgent] screenshot error', error);
+          }
+          return operator.screenshot()
+        }, {
           retries: retry?.screenshot?.maxRetries ?? 0,
           onRetry: retry?.screenshot?.onRetry,
         });

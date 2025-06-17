@@ -10,6 +10,7 @@ const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
 import { getSystemPromptV1_5_Custom } from '@src/prompts';
 import { DefaultBrowserOperator } from '@src/browser-use/operator-browser';
+import { sendExecuteMessage } from '@src/utils/helper';
 
 // 存储事件监听器的引用，用于后续销毁
 let agentEventListeners: { [key: string]: (...args: any[]) => void } = {};
@@ -25,12 +26,15 @@ export async function search(
 
   let results: SearchResult;
   const socket = globalData.get('socket');
+  sendExecuteMessage('start', '开始执行');
   const agent = new AgentServer({
     onData: (e) => {
+      sendExecuteMessage('running', '正在执行');
       // logger.info('agent_message', e);
       socket.emit('agent_message', e)
     },
     onError: (e) => {
+      sendExecuteMessage('error', '执行失败');
       // logger.error('agent_error', e);
       socket.emit('agent_error', e)
     }
@@ -47,11 +51,13 @@ export async function search(
 
     // 监听agent停止事件
     agentEventListeners['stop'] = async () => {
+      sendExecuteMessage('end', '执行已中止');
       await agent.stop();
     };
 
     // 监听agent暂停事件
     agentEventListeners['pause'] = () => {
+      sendExecuteMessage('pause', '执行已暂停');
       agent.pause();
     };
 
@@ -120,6 +126,7 @@ export async function search(
     try {
       await agent.run(args.query);
       content = "操作成功";
+      sendExecuteMessage('end', '执行成功');
       try {
         agent.stop();
       } catch (e) {
@@ -128,6 +135,7 @@ export async function search(
     } catch (e: any) {
       isError = true;
       content = e?.message || "执行失败";
+      sendExecuteMessage('error', '执行失败');
     }
 
     destroyAgentEventListeners();
@@ -141,6 +149,7 @@ export async function search(
   } catch (e) {
     const rawErrorMessage = e instanceof Error ? e.message : JSON.stringify(e);
     logger.error('[Search] error: ' + rawErrorMessage);
+    sendExecuteMessage('error', '执行失败');
     return [
       {
         isError: true,
