@@ -10,7 +10,11 @@ const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
 import { getSystemPromptV1_5_Custom } from '@src/prompts';
 import { DefaultBrowserOperator } from '@src/browser-use/operator-browser';
-import { sendExecuteMessage } from '@src/utils/helper';
+import { checkPageFilesExist, sendExecuteMessage } from '@src/utils/helper';
+import * as pageAnalysis from './page-analysis';
+import fs from 'fs';
+import path from 'path';
+import callDeepSeek from '@src/utils/ai-call/deepseek';
 
 // 存储事件监听器的引用，用于后续销毁
 let agentEventListeners: { [key: string]: (...args: any[]) => void } = {};
@@ -125,6 +129,35 @@ export async function search(
     let content = "";
     try {
       await agent.run(args.query);
+      if (!args.query.includes('下载')) {
+        // sendExecuteMessage('end', '下载完成');
+        if (checkPageFilesExist()) {
+          const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
+          const propmt = `
+          ${pageContent}
+          请根据以上内容和用户输入的提示词"${args.query}",推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
+          `
+          const streams = callDeepSeek(propmt)
+          let content = ""
+          for await (const chunk of streams) {
+            content += chunk;
+            socket.emit('agent_message', {
+              data: {
+                conclusion: chunk,
+                status: "streaming"
+              },
+              type: 'streaming'
+            });
+          }
+          socket.emit('agent_message', {
+            data: {
+              conclusion: content,
+              status: "end"
+            },
+            type: 'streaming'
+          });
+        }
+      }
       content = "操作成功";
       sendExecuteMessage('end', '执行成功');
       try {

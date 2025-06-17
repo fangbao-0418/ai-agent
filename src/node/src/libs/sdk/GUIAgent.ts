@@ -419,6 +419,7 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
             data.status = StatusEnum.CALL_USER;
             break;
           } else if (actionType === INTERNAL_ACTION_SPACES_ENUM.FINISHED) {
+            logger.info('[GUIAgent] Finished', data);
             data.status = StatusEnum.END;
             break;
           }
