@@ -38,6 +38,7 @@ import emitter from '@src/utils/emitter';
 import fs from 'fs';
 import globalData from '@src/global';
 import path from 'path';
+import parsePageContent from '@src/utils/parse-page-content';
 
 export class GUIAgent<T extends Operator> extends BaseGUIAgent<
   GUIAgentConfig<T>
@@ -190,8 +191,6 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
           try {
             const page = await browser?.getActivePage();
             if (page) {
-              //
-              // const content = await page!.content();
               const visibleText = await page.evaluate(() => {
                 return document.body.innerText;
               });
@@ -234,6 +233,7 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
         let end = Date.now();
 
         if (isValidImage) {
+          // parsePageContent(snapshot.base64)
           data.conversations.push({
             from: 'human',
             value: IMAGE_PLACEHOLDER,

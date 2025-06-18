@@ -5,12 +5,15 @@ import { SettingStore } from '@src/utils/store/setting.js';
 import { logger } from '@utils/logger';
 import { maskSensitiveData } from '@utils/maskSensitiveData';
 import AgentServer from '@src/agent';
-import { checkDownloadFilesExist, cleanupOldSessionDirs, sendExecuteMessage } from '@src/utils/helper';
+import { checkDownloadFilesExist, checkPageFilesExist, cleanupOldSessionDirs, sendExecuteMessage } from '@src/utils/helper';
 import parseProfiles, { parseProfilesStream } from '../parse-profile';
 import WorkerManager from '../parse-profile/worker-manager'; // 导入WorkerManager
 import emitter from '@src/utils/emitter'; // 导入全局emitter
 const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
+import fs from 'fs';
+import path from 'path';
+import callDeepSeek from '@src/utils/ai-call/deepseek';
 
 // 存储事件监听器的引用，用于后续销毁
 let analysisEventListeners: { [key: string]: (...args: any[]) => void } = {};
@@ -185,16 +188,53 @@ export async function run(
           }
         });
       }
+    } else if (checkPageFilesExist()) {
+      sendExecuteMessage('running', '正在分析中');
+      try {
+        const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
+        const prompt = `
+          ${pageContent}
+          请根据以上内容和用户输入的提示词 "${args.query}" ,推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
+        `
+        const streams = callDeepSeek(prompt)
+        let content = ""
+        for await (const chunk of streams) {
+          content += chunk;
+          socket.emit('agent_message', {
+            data: {
+              conclusion: chunk,
+              status: "streaming"
+            },
+            type: 'streaming'
+          });
+        }
+        socket.emit('agent_message', {
+          data: {
+            conclusion: content,
+            status: "end"
+          },
+          type: 'streaming'
+        });
+        isError = false;
+        content = "解析完成";
+        sendExecuteMessage('end', '执行完成');
+      } catch (error) {
+        isError = false;
+        content = "解析完成";
+        sendExecuteMessage('end', '执行失败');
+      }
     } else {
       isError = false;
-      content = "未找到待分析的文档文件";
+      // content = "未找到待分析的文档文件";
+      logger.error('未找到待分析的文档文件');
+      content = "执行结束"
       sendExecuteMessage('error', '解析失败');
-      socket.emit('agent_message', {
-        data: {
-          conclusion: "未找到待分析的文档文件",
-          status: "error"
-        }
-      });
+      // socket.emit('agent_message', {
+      //   data: {
+      //     conclusion: "未找到待分析的文档文件",
+      //     status: "error"
+      //   }
+      // });
     }
     
     // 执行完成后销毁监听器

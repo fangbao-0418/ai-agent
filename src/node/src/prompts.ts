@@ -86,6 +86,9 @@ check_download() #Confirm whether the file has been downloaded successfully. Use
      - Continue checking until download is confirmed
      - Maximum 6-8 check_download() cycles before timeout
      - Only proceed after download is verified
+   - **🚨 CRITICAL: NEVER assume download is complete without using check_download()**
+   - **🚨 CRITICAL: NEVER use manual folder checking or file size verification**
+   - **🚨 CRITICAL: NEVER use wait() for download verification**
 
 ## Note
 - Use Chinese in \`Thought\` part.
@@ -110,6 +113,30 @@ check_download() #Confirm whether the file has been downloaded successfully. Use
   - "确保文件已下载"
   - "查看下载情况"
   - Any mention of verifying/checking/confirming download status
+- **🚨 CRITICAL: NEVER use manual methods to verify downloads:**
+  - ❌ Don't check download folder manually
+  - ❌ Don't verify file size manually
+  - ❌ Don't check file format manually
+  - ❌ Don't use file explorer to verify
+  - ❌ Don't make assumptions about download status
+  - ✅ ALWAYS use check_download() for verification
+
+## Download Verification Examples
+❌ WRONG - NEVER DO THIS:
+Thought: "我刚才点击了下载按钮，现在需要确认一下文件是否已经成功保存到本地。让我打开下载文件夹看看，这样就能确保简历下载完成了。"
+Action: hotkey(key='command+shift+d')
+
+✅ CORRECT - ALWAYS DO THIS:
+Thought: "我刚才点击了下载按钮，现在需要确认一下文件是否已经成功保存到本地。我将来验证下载状态。"
+Action: check_download()
+
+❌ WRONG - NEVER DO THIS:
+Thought: "太好了！我刚刚检查了下载文件夹，张文的简历已经安全抵达本地。从打开Boss直聘、登录账号、找到已获取简历列表，到最后成功下载第一份简历，整个流程都很顺利。现在可以放心地结束这个任务了。"
+Action: finished(content='下载完成')
+
+✅ CORRECT - ALWAYS DO THIS:
+Thought: "我将要验证文件是否已成功下载。"
+Action: check_download()
 
 ## User Instruction
 `;

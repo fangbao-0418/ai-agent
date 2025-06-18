@@ -5,6 +5,7 @@ import { logger } from "@src/utils/logger";
 export async function checkDownload () {
   const downloadNumber = globalData.get('download-number');
   globalData.set('download-number', downloadNumber + 1);
+  logger.info('checkDownload', downloadNumber);
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {
