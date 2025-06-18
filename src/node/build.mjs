@@ -61,6 +61,14 @@ const workerConfig = {
   outfile: 'dist/libs/parse-profile/worker.js',
 };
 
+const worker2Config = {
+  ...baseConfig,
+  entryPoints: [
+    'src/worker/run-browser.ts'
+  ],
+  outfile: 'dist/worker/run-browser.js',
+};
+
 // WorkerManager配置
 const workerManagerConfig = {
   ...baseConfig,
@@ -116,6 +124,7 @@ const createWindowsBuildConfigs = () => {
   return {
     main: createWindowsConfig(mainConfig),
     worker: createWindowsConfig(workerConfig),
+    worker2: createWindowsConfig(worker2Config),
     workerManager: createWindowsConfig(workerManagerConfig),
     test: createWindowsConfig(testConfig),
     mcpServers: mcpServerConfigs.map(({ name, config }) => ({
@@ -139,6 +148,7 @@ async function buildForWindows() {
     // 构建worker (Windows 优化)
     console.log('📦 Building worker for Windows...');
     await esbuild.build(windowsConfigs.worker);
+    await esbuild.build(windowsConfigs.worker2);
     await esbuild.build(windowsConfigs.workerManager);
     console.log('✅ Windows worker built successfully');
     

@@ -1,0 +1,138 @@
+百度首页设置登录
+https://arxiv.org/abs/2501.12326
+
+网页图片资讯视频笔记地图贴吧文库更多
+https://arxiv.org/abs/2501.12326
+问AI
+相关搜索
+arxiv论文网站
+arxiv官网
+arxiv参考文献引用格式
+论文发arxiv还能投稿吗
+arxiv审核一般要多久
+arXiv应该在投稿前发吗
+
+换一换
+热搜榜杭州榜民生榜财经榜
+
+一首诗一首歌 感受中哈深情厚谊
+1
+中方回应特朗普要求伊朗无条件投降新
+2
+李雪琴方回应被实名举报：法院见
+3
+贴地飞行！磁悬浮技术新突破
+4
+伊朗防空系统大战以导弹：爆炸声不断热
+华为云618领10228元礼券商
+5
+德国总理称以色列为西方“做脏活”新
+6
+多地“国补”暂停？有关部门回应
+7
+刘强东：京东已不再属于某一个人了
+8
+刘晓庆被起诉新
+9
+中国科学家推动“人工树叶”新进展
+10
+外交部：791名中国公民安全撤离伊朗新
+11
+造谣“爆炸”？警官送爆款银手镯
+12
+倒卖蜜雪冰城柠檬水的小伙开公司了热
+13
+伊朗585死1326伤 以色列24死1300伤热
+14
+女生打车被猥亵 司机竟住同一小区热
+15
+以军对伊朗首都展开新一轮袭击新
+收起工具
+时间不限所有网页和文件站点内检索
+搜索工具
+百度为您找到以下结果
+
+[2501.12326] UI-TARS: Pioneering Automated GUI Interaction...
+
+查看此网页的中文翻译，请点击
+翻译此页
+Abstract page for arXiv paper 2501.12326: UI-TARS: Pioneering Automated GUI Interaction with Native Agents
+arxiv.org/.../2501.12326
+以下是网页中包含"https://arxiv.org/abs/2501.12326"的结果:
+
+字节Seed开源UI-TARS-1.5:基于视觉语言模型构建的多模态智能体
+
+2025年4月18日IT之家 4 月 18 日消息，IT之家从豆包大模型团队获悉，UI-TARS-1.5 昨日正式发布并开源。这是一款基于视觉-语言模型构建的开源多模态智能体，能够在虚拟世界中高效执行各类任务。有关的链接如下：GitHub：https://github.com/bytedance/UI-TARSWebsite：https://seed-tars.com/Arxiv：https://arxiv.org/abs...
+IT之家
+
+字节开源“免费版Operator”:能订机票还会改PPT,成绩超越GPT-4o和Cl...
+
+2025年1月25日论文地址: https://arxiv.org/abs/2501.12326 GitHub: https://github.com/bytedance/UI-TARS —完—
+澎湃新闻
+大家还在搜
+arxiv论文网站
+arxiv官网
+arxiv参考文献引用格式
+论文发arxiv还能投稿吗
+arxiv审核一般要多久
+arXiv应该在投稿前发吗
+arxiv平台介绍
+arxiv编号什么含义
+
+字节豆包团队开源多模态智能体UI-TARS-1.5_人工智能-中关村在线
+
+2025年4月18日4月18日,豆包大模型团队宣布正式发布并开源多模态智能体UI-TARS-1.5。这款智能体基于视觉-语言模型构建,具备在虚拟环境中高效执行多种任务的能力。 以下是相关的资源链接: - 开源代码地址:https://github.com/bytedance/UI-TARS - 官方网站:https://seed-tars.com/ - 技术文档:https://arxiv.org/abs/2501.1...
+中关村在线AI人工智能频道
+
+高效训练你自己的GUI智能体! - 知乎
+
+2025年1月24日UI-TARS: https://arxiv.org/abs/2501.12326 以下是一些GUI Agent参考资料,欢迎大家补充: End-to-end VLM:CogAgent、OS-Atlas、ShowUI(Ours)、Aguvis、UI-TARS GUI Grounding:UGround、Omniparser。 GUI Evaluation:Mind2Web(offline)、OS-World(online)。 RL训练:DigiRL、WebRL、PAE。 希望有一天,GUI智能体...
+知乎
+
+端到端 GUI Agent:UI-TARS 如何用纯视觉驱动 GUI 自动化 - 哔哩哔哩
+
+2025年1月31日论文链接: https://arxiv.org/abs/2501.12326v1 发表日期: 2025年1月21日 GitHub: https://github.com/bytedance/UI-TARS.git 你好,我是唐国梁Tommy,专注于分享AI前沿技术。 欢迎你加入我的精品课程《多模态大模型 前沿算法与实战应用 第一季》。本系列课程覆盖了从基础概念到高级算法实现的全流程学习路径,内容...
+哔哩哔哩
+
+字节开源地表最强GUI Agent:UI-TARS-CSDN博客
+
+2025年4月19日https://arxiv.org/abs/2501.12326 GitHub地址: https://github.com/bytedance/UI-TARS 模型下载: https://huggingface.co/ByteDance-Seed/UI-TARS-72B-DPO https://huggingface.co/ByteDance-Seed/UI-TARS-7B-DPO https://huggingface.co/ByteDance-Seed/UI-TARS-2B-SFT ...
+CSDN博客
+
+字节清华开源力作!UI-TARS原生AI智能体,人人都能拥有“智能助手...
+
+2025年1月23日飞书中文部署文档: https://bytedance.sg.larkoffice.com/docx/TCcudYwyIox5vyxiSDLlgIsTgWf 体验: https://huggingface.co/spaces/Aheader/gui_test_app paper: https://arxiv.org/abs/2501.12326 github: https://github.com/bytedance/UI-TARS
+51CTO
+
+用自然语言控制电脑,字节跳动开源 UI-TARS 的桌面版应用!内附详细...
+
+2025年1月23日GitHub 仓库:https:///bytedance/UI-TARS-desktop OpenAI API 协议文档:https://platform.openai.com/docs/guides/vision/uploading-base-64-encoded-images 技术论文:https://arxiv.org/abs/2501.12326 ️ 如果你也关注 AI 的发展现状,且对 AI 应用开发非常感兴趣,我会每日分享大模型与 AI 领域的最新开源...
+51CTO博客
+相关搜索
+arxiv论文网站
+	
+论文发arxiv还能投稿吗
+arxiv审核一般要多久
+	
+arXiv应该在投稿前发吗
+arxiv文献引用格式
+	
+arxiv平台介绍
+arxiv编号什么含义
+	
+arxiv是开放获取平台吗
+arXiv审核标准
+	
+arxiv官网
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+下一页 >
+帮助举报用户反馈企业推广
