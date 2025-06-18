@@ -129,7 +129,7 @@ export async function search(
     let content = "";
     try {
       await agent.run(args.query);
-      if (!args.query.includes('下载')) {
+      if (!args.query.includes('下载') && !(args.query.includes('分析') || args.query.includes('简历') || args.query.includes('总结'))) {
         // sendExecuteMessage('end', '下载完成');
         if (checkPageFilesExist()) {
           const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
@@ -137,7 +137,7 @@ export async function search(
           ${pageContent}
           请根据以上内容和用户输入的提示词"${args.query}",推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
           `
-          const streams = callDeepSeek(propmt)
+          const streams = await callDeepSeek(propmt)
           let content = ""
           for await (const chunk of streams) {
             content += chunk;

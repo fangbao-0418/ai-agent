@@ -196,7 +196,7 @@ export async function run(
           ${pageContent}
           请根据以上内容和用户输入的提示词 "${args.query}" ,推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
         `
-        const streams = callDeepSeek(prompt)
+        const streams = await callDeepSeek(prompt)
         let content = ""
         for await (const chunk of streams) {
           content += chunk;
@@ -228,7 +228,7 @@ export async function run(
       // content = "未找到待分析的文档文件";
       logger.error('未找到待分析的文档文件');
       content = "执行结束"
-      sendExecuteMessage('error', '解析失败');
+      sendExecuteMessage('end', '执行完成');
       // socket.emit('agent_message', {
       //   data: {
       //     conclusion: "未找到待分析的文档文件",

@@ -8,14 +8,14 @@ import { z } from 'zod';
 import { interceptToolCalls } from '@src/utils/file-system-interceptor';
 import { logger } from '@src/utils/logger';
 // import { interceptToolCalls } from '@renderer/api/fileSystemInterceptor';
-
+// You should use the same language as the user input by default.
 export class Executor {
   constructor(
     private appContext: AppContext,
     private agentContext: AgentContext,
     private abortSignal: AbortSignal,
   ) {}
-
+ 
   private systemPrompt = `You are a tool use expert. You should call the appropriate tools according to the aware status and environment information.You should not output any response text and only return the JSON.
 
 <overall_principal>
@@ -23,12 +23,30 @@ export class Executor {
 - Do not mention any specific tool names to users in messages
 - Carefully verify available tools; do not fabricate non-existent tools
 - Follow the instructions carefully in the aware status.
+- **CRITICAL: You must follow the COMPLETE aware status, do not simplify or extract partial information**
+- **CRITICAL: If the status mentions multiple actions (like "访问Boss直聘并完成登录，查看候选人附件简历"), you must address ALL parts**
 - Don't repeat the same mean with aware status, you should select the appropriate tool.
 - Don't ask user anything, just tell user what you will do next.If some points is not very clear, you should tell user your solution.Don't ask user anything, remember, you are a agent for user.
 - You should only respond chat message after you have finished some tools and return the summary in chat message.
 - You should not output any response text and only return the tool call.
 - Don't output any file path in current machine and ensure the security in your message. Don't output any absolute path in your message.
 </overall_principal>
+
+<status_processing_rules>
+🚨 **CRITICAL STATUS PROCESSING RULES** 🚨
+
+1. **Complete Status Following**: You MUST follow the COMPLETE aware status, not just extract keywords
+2. **Multi-Action Handling**: If status contains multiple actions (e.g., "访问Boss直聘并完成登录，查看候选人附件简历"), you must address ALL actions
+3. **Sequential Execution**: Execute actions in the order mentioned in the status
+4. **No Simplification**: Do not simplify "访问Boss直聘并完成登录，查看候选人附件简历" to just "访问Boss直聘"
+5. **Tool Selection**: Choose tools that can handle ALL parts of the status, not just the first part
+
+**Examples:**
+- Status: "我将使用浏览器访问Boss直聘并完成登录，查看候选人附件简历"
+- Correct: Use browser_use to handle ALL actions (访问 + 登录 + 查看简历)
+- Wrong: Only handle "访问Boss直聘" and ignore the rest
+
+</status_processing_rules>
 
 <chat_message_tool>
 message as summary in current step.Don't return message first when the step just started.
@@ -54,7 +72,7 @@ When you use commands, you must cd the allowed dir instead of cwd.
 </commands_tool>
 
 <language>
-You should use the same language as the user input by default.
+请使用中文回答用户的问题。(Please answer the user's questions in Chinese.)
 </language>`;
 
 // <web_search_tool>
@@ -97,7 +115,7 @@ You should use the same language as the user input by default.
         .getActiveMcpSettings();
       try {
         this.abortSignal.addEventListener('abort', abortHandler);
-
+        logger.info('Aware status: ', status);
         const result = await ipcClient.askLLMTool({
           messages: [
             Message.systemMessage(this.systemPrompt),
@@ -117,7 +135,7 @@ You should use the same language as the user input by default.
 
         // Intercept tool calls to check file permissions - this will block if permission is needed
         const interceptedToolCalls = await interceptToolCalls(toolCalls);
-
+        logger.info('Intercepted tool calls', JSON.stringify(interceptedToolCalls));
         resolve(interceptedToolCalls);
       } catch (error) {
         reject(error);

@@ -287,7 +287,7 @@ export class AgentFlow {
 
           await this.eventManager.addLoadingStatus(this.loadingStatusTip);
           // this.appContext.setAgentStatusTip(this.loadingStatusTip);
-
+          logger.info('awareResult.status', awareResult.status);
           const toolCallList = (await executor.run(awareResult.status)).filter(
             Boolean,
           );

@@ -164,7 +164,7 @@ If you reset the plan to a new one, you should also reset the step to number 1.
 
 In the \`status\` field, you should only return a sentence to tell user what you will do next, and don't need to return the reason and other information.Please the the first person perspective to answer, indicating that you are work for the user.
 
-根据用户输入语言使用相应语言回复 (Use the same language as user input for response)
+请使用中文回答用户的问题。(Please answer the user's questions in Chinese.)
 
 **状态描述要清楚反映当前是浏览器操作步骤还是文档分析步骤**
 
