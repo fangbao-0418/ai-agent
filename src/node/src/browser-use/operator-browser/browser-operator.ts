@@ -653,10 +653,12 @@ export class DefaultBrowserOperator extends BrowserOperator {
 
     if (!this.browser) {
       this.browser = new LocalBrowser({ logger: this.logger });
+      this.logger.info('launch browser start');
       await this.browser.launch({
         executablePath: this.browserPath,
         browserType: this.browserType,
       });
+      this.logger.info('launch browser end');
     }
 
     if (!this.instance) {

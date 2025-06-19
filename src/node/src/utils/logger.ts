@@ -42,7 +42,11 @@ class Logger implements ILogger {
   }
 
   private formatMessage(level: LogLevel, message: string, ...args: any[]): string {
-    const timestamp = new Date().toISOString();
+    // const timestamp = new Date().toISOString();
+    const date = new Date()
+    const timestamp = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-') + ' ' + [
+      date.getHours(), date.getMinutes(), date.getSeconds()
+    ].join(':') + '.' + date.getMilliseconds();
     const formattedArgs = args.length > 0 ? ' ' + args.map(arg => 
       typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
     ).join(' ') : '';

@@ -43,19 +43,18 @@ export const getSystemPromptV1_5_Custom = (
 \`\`\`
 Thought: ...
 Action: ...
-Details: ...
 \`\`\`
 
 ## Action Space
-click(start_box='[x1, y1, x2, y2]')
-left_double(start_box='[x1, y1, x2, y2]')
-right_single(start_box='[x1, y1, x2, y2]')
-drag(start_box='[x1, y1, x2, y2]', end_box='[x3, y3, x4, y4]')
-hotkey(key='')
-type(content='') #If you want to submit your input, use "\\n" at the end of \`content\`.
-scroll(start_box='[x1, y1, x2, y2]', direction='down or up or right or left')
+click(point='<point>x1 y1</point>')
+left_double(point='<point>x1 y1</point>')
+right_single(point='<point>x1 y1</point>')
+drag(start_point='<point>x1 y1</point>', end_point='<point>x2 y2</point>')
+hotkey(key='ctrl c') # Split keys with a space and use lowercase. Also, do not use more than 3 keys in one hotkey action.
+type(content='xxx') # Use escape characters \\', \\\", and \\n in content part to ensure we can parse the content in normal python string format. If you want to submit your input, use \\n at the end of content. 
+scroll(point='<point>x1 y1</point>', direction='down or up or right or left') # Show more information on the \`direction\` side.
 wait() #Sleep for 5s and take a screenshot to check for any changes.
-finished(content='xxx') #Use escape characters \\', \\", and \\n in content part to ensure we can parse the content in normal python string format.
+finished(content='xxx') # Use escape characters \\', \\", and \\n in content part to ensure we can parse the content in normal python string format.
 check_download() #Confirm whether the file has been downloaded successfully. Use when you need to "确认文件是否保存到本地", "打开下载文件夹", "检查下载状态", "验证文件下载", "确保文件已下载", or any task about verifying download completion.
 
 ## Process Control
@@ -93,7 +92,6 @@ check_download() #Confirm whether the file has been downloaded successfully. Use
 ## Note
 - Use Chinese in \`Thought\` part.
 - Write a small plan and finally summarize your next action (with its target element) in one sentence in \`Thought\` part.
-- In \`Details\`, describe everything you see in the current screenshot.
 - Try not to repeat lines and get stuck in a loop of thinking.
 - **🚨 CRITICAL: Download File Management - MUST USE check_download() 🚨**
   **When ANY download button is clicked, IMMEDIATELY follow this process:**
@@ -120,6 +118,7 @@ check_download() #Confirm whether the file has been downloaded successfully. Use
   - ❌ Don't use file explorer to verify
   - ❌ Don't make assumptions about download status
   - ✅ ALWAYS use check_download() for verification
+- **如何是boss直聘要点击下载附件滚动请查看聊天框内是否有附件简历进行点击**
 
 ## Download Verification Examples
 ❌ WRONG - NEVER DO THIS:
@@ -166,7 +165,7 @@ call_user() # Submit the task and call the user when the task is unsolvable, or 
 
 ## Note
 - Use Chinese in \`Thought\` part.
-- Compose a step-by-step approach in the \`Thought\` part, specifying your next action and its focus.
+- Write a small plan and finally summarize your next action (with its target element) in one sentence in \`Thought\` part.
 
 ## User Instruction
 `;

@@ -139,6 +139,18 @@ process.on('SIGTERM', () => {
   }, 5000);
 });
 
+process.on('exit', (err) => {
+  logger.error('node-exit', err);
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('uncaughtException', err);
+});
+
+process.on('unhandledRejection', (err) => {
+  logger.error('unhandledRejection', err);
+});
+
 const start = () => {
   // 启动服务器
   server.listen(PORT, HOST, () => {

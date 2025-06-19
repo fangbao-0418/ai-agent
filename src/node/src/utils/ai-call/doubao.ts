@@ -22,7 +22,7 @@ export async function *callDoubao(input: {
                 "url": input.imageUrl
                 // url: 'iVBORw0KGgoAAAANSUhEUgAACwkAAAWMCAYAAADf9SuYAAwpCElEQVR4AezhUXbc2KEA2UaA6vmP7332MHpd5YmXJC1VlS1AVQeGkcnE3v7//t8aA/7vBgUjGMH/Dfh+gxswghtwGzAGjKBgBAnFT8VPjShZZUBMa2EPizUKKmtGEPMW9hqsUVHZYjwtmVfxqpbYtCzyqIpdjIdVsSVji8qsii3GoVS+qoXjqGxRNimHKSimGU9LQM5THEbZZuySzBKQmFWxh8ppkj3eYpNymIgjqWwx5sVzk1UKyipjlzEG80TlWS1xOUPsEBDTFGTaglz+OQN5TQpy+ccCY5Ny+ZXBYRSUwxinKuYZz8pA5qlsqdhSsUXlKG+IPCblcQXEpoqj3GQXlVkC8riUacqxBpsqjqJyJmVTsUq2KZcVb4PTFE9rAWSdsqk4TQTEGpUtC/KoKh6VgMisimclIMdZFjlLcTlEQKxRUVljPK2KLSpbFl6XcRp…D8m7I0gTg3YkvZUrbGYKkJxbGByJqyFT/YUT6W8ccBA/nnUj6WnJtAcuwV39aXXCPHBAbfk4Gcm7zJsRGPKS5RzsUlAnKuBjvKJco/UyDnSu41+FSDPeUS5THFbQqKLeVYcckYrAWyVtxscKq4lbI1uE/xKOUS5TYC8owCJrdRtsbgksFaQfEY5WMplxTHBOQ5yrHi+woG9ykepSwVv6QsGR+ruJVyrPglZUlAuc2cbI04loDcRrmNgbGlLBVbxSXKlnIs9oqtV1yibClLBcUx5TbFZcrSEGRtTn5bY8ip4lZyn+KS4pIfP3hMseXkkjm5lfKZArmP8rGKWylbL1kq/jikPKa4REFZGrFVLAUkxwTkjzsUW3If5aMpS8XWiNsUlyl//I3h4FMVW8pWsSTwio9VbBmPmZMtZevF4FRAsqX8m/IX5S8NcPAmClNQyIEDvgAFXi8QcKDgDxgD/jcWeKmo10t/WgAAAABJRU5ErkJggg=='
               },
-              "type": "image_base64"
+              "type": "image_url"
             }
           ],
           "role": "user"

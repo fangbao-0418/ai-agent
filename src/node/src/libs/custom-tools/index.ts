@@ -13,9 +13,10 @@ export function executeCustomTool(toolCall: ToolCall) {
   } 
   else if (toolCall.function.name === 'resume_analysis') {
     return resumeAnalysis.run(toolCall);
-  } else {
-    return deepseek.run(toolCall);
   }
+  // else {
+  //   return deepseek.run(toolCall);
+  // }
   // return [
   //   {
   //     isError: false,

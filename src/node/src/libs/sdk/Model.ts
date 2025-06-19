@@ -57,6 +57,9 @@ export class UITarsModel extends Model {
     },
     options: {
       signal?: AbortSignal;
+      thinking?: {
+        type: 'enabled'
+      },
     },
   ): Promise<{
     prediction: string;
@@ -134,6 +137,9 @@ export class UITarsModel extends Model {
       },
       {
         signal,
+        thinking: {
+          type: 'enabled'
+        }
       },
     )
       .catch((e) => {

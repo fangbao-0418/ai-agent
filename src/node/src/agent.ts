@@ -68,7 +68,9 @@ class AgentServer {
       model: {
         baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
         apiKey: '40510637-b0b7-4106-a372-acf2983ad03c',
-        model: 'doubao-1.5-ui-tars-250328',
+        // model: 'doubao-1.5-ui-tars-250328',
+        // doubao-1-5-ui-tars-250428
+        model: 'doubao-1-5-ui-tars-250428',
         // baseURL: 'http://116.148.216.92:32513/v1',
         // apiKey: 'EMPTY',
         // model: 'UI-TARS-1.5-7B',
@@ -77,6 +79,7 @@ class AgentServer {
       logger,
       operator: operator,
       onData: (e)  => {
+        console.log(e, 'e')
         this.onData?.(e);
       },
       onError: (params: any) => {

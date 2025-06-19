@@ -165,6 +165,7 @@ export async function search(
       } catch (e) {
         logger.info('❌ Browser-use: 销毁浏览器实例失败', e);
       }
+      logger.info('browser-use success');
     } catch (e: any) {
       isError = true;
       content = e?.message || "执行失败";

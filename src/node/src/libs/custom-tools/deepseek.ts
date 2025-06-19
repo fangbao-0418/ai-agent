@@ -118,8 +118,9 @@ export async function run(
 
     const streams = callDeepSeek(args.query)
     let content = ""
+    let conclusion = ""
     for await (const chunk of streams) {
-      content += chunk;
+      conclusion += chunk;
       socket.emit('agent_message', {
         data: {
           conclusion: chunk,
@@ -130,12 +131,12 @@ export async function run(
     }
     socket.emit('agent_message', {
       data: {
-        conclusion: content,
+        conclusion: conclusion,
         status: "end"
       },
       type: 'streaming'
     });
-   
+    content = "执行成功";
     // 执行完成后销毁监听器
     destroyAnalysisEventListeners();
     logger.info('resume-analysis result', content);
