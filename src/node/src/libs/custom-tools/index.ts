@@ -2,6 +2,7 @@ import { ToolCall } from '@agent-infra/shared';
 import { search } from './search';
 import * as browserUse from './browser-use';
 import * as resumeAnalysis from './resume-analysis';
+import * as pageAnalysis from './page-analysis';
 import * as deepseek from './deepseek';
 
 export function executeCustomTool(toolCall: ToolCall) {
@@ -13,6 +14,8 @@ export function executeCustomTool(toolCall: ToolCall) {
   } 
   else if (toolCall.function.name === 'resume_analysis') {
     return resumeAnalysis.run(toolCall);
+  } else if (toolCall.function.name === 'page_analysis') {
+    return pageAnalysis.run(toolCall);
   }
   // else {
   //   return deepseek.run(toolCall);

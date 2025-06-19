@@ -194,7 +194,7 @@ export async function run(
         const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
         const prompt = `
           ${pageContent}
-          请根据以上内容和用户输入的提示词 "${args.query}" ,推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
+          一定不要对上面内容做任何回复、推理和分析，请根据以上内容和用户输入的提示词 "${args.query}" ,推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
         `
         const streams = await callDeepSeek(prompt)
         let content = ""

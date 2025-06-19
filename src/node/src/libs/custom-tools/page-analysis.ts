@@ -1,13 +1,8 @@
 import { SearchProvider, SearchSettings, ToolCall } from '@agent-infra/shared';
 import { SearchClient, SearchResult } from '@agent-infra/search';
 import { MCPToolResult } from '@src/types';
-import { SettingStore } from '@src/utils/store/setting.js';
 import { logger } from '@utils/logger';
-import { maskSensitiveData } from '@utils/maskSensitiveData';
-import AgentServer from '@src/agent';
-import { checkPageFilesExist, cleanupOldSessionDirs } from '@src/utils/helper';
-import parseProfiles, { parseProfilesStream } from '../parse-profile';
-import WorkerManager from '../parse-profile/worker-manager'; // 导入WorkerManager
+import { checkPageFilesExist, cleanupOldSessionDirs, sendExecuteMessage } from '@src/utils/helper';
 import emitter from '@src/utils/emitter'; // 导入全局emitter
 const { jsonrepair } = require('jsonrepair');
 import globalData from '@src/global';
@@ -28,27 +23,23 @@ function setupAnalysisEventListeners() {
   console.log('🎧 Resume-analysis: 开始监听agent全局事件');
   isAnalysisListening = true;
 
-  const workerManager = WorkerManager.getInstance();
 
   // 监听agent停止事件
   analysisEventListeners['stop'] = () => {
     console.log('🛑 Resume-analysis: 收到agent停止信号');
     // 停止文档解析流程
-    workerManager.stop();
   };
 
   // 监听agent暂停事件
   analysisEventListeners['pause'] = () => {
     console.log('⏸️ Resume-analysis: 收到agent暂停信号');
     // 暂停文档解析流程
-    workerManager.pause();
   };
 
   // 监听agent恢复事件
   analysisEventListeners['resume'] = () => {
     console.log('▶️ Resume-analysis: 收到agent恢复信号');
     // 恢复文档解析流程
-    workerManager.resume();
   };
 
   // 监听agent完成事件
@@ -107,92 +98,50 @@ export async function run(
     count?: number;
     stream?: boolean; // 新增：是否启用流式输出
   };
-  const count = args?.count ?? 10;
-  const enableStream = args?.stream ?? true; // 默认启用流式输出
-  
+
   try {
 
     let results: SearchResult;
     let isError = false;
-    // const agent = new AgentServer();
-    // await agent.run(args.query);
     const socket = globalData.get('socket');
     let content = "";
-    if (checkPageFilesExist()) {
-      const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
-      // const prompt = `
-      //   ${pageContent}
-      // `
-      // callDeepSeek(prompt)
+    
+    try {
+      sendExecuteMessage('start', '开始执行');
+      if (checkPageFilesExist()) {
+        sendExecuteMessage('running', '正在执行');
+        const pageContent = fs.readFileSync(path.join(globalData.get('temp-page-dir'), globalData.get('session-id') + '.txt'), 'utf-8');
+        const propmt = `
+        ${pageContent}
+        一定不要对上面内容做任何回复、推理和分析，请根据以上内容和用户输入的提示词"${args.query}",推测用户意图，如果涉及浏览器相关操作动作请进行排除，输出结果要严格按照排除后的内容进行输出，不要输出限定词，不要输出任何解释
+        `
+        const streams = await callDeepSeek(propmt)
+        let conclusion = ""
+        for await (const chunk of streams) {
+          conclusion += chunk;
+          socket.emit('agent_message', {
+            data: {
+              conclusion: chunk,
+              status: "streaming"
+            },
+            type: 'streaming'
+          });
+        }
+        socket.emit('agent_message', {
+          data: {
+            conclusion: conclusion,
+            status: "end"
+          },
+          type: 'streaming'
+        });
+        content = "执行成功";
+        sendExecuteMessage('end', '执行成功');
+      }
+    } catch (error) {
+      isError = false;
+      content = "执行结束";
+      sendExecuteMessage('error', '执行失败');
     }
-    //   try {
-    //     if (enableStream) {
-    //       // 流式处理：直接开始流式输出，不发送running消息
-    //       console.log('🚀 开始流式解析...');
-    //       let currentContent = '';
-    //       socket.emit('agent_message', {
-    //         data: {
-    //           conclusion: "开始解析文件，请稍等...",
-    //           status: "start"
-    //         }
-    //       });
-    //       const result = await parseProfilesStream(args.query, (chunk: string) => {
-    //         currentContent += chunk;
-    //         console.log('📤 发送streaming消息，累计长度:', currentContent.length);
-    //         // 实时发送流式数据到前端
-    //         socket.emit('agent_message', {
-    //           data: {
-    //             conclusion: chunk,
-    //             status: "streaming"
-    //           }
-    //         });
-    //       });
-          
-    //       console.log('✅ 流式解析完成，发送end消息');
-    //       // 发送最终完成状态
-    //       socket.emit('agent_message', {
-    //         data: {
-    //           conclusion: result,
-    //           status: "end"
-    //         }
-    //       });
-    //     } else {
-    //       // 非流式处理：发送running状态后处理
-    //       socket.emit('agent_message', {
-    //         data: {
-    //           conclusion: "开始解析文件",
-    //           status: "running"
-    //         }
-    //       });
-          
-    //       const result = await parseProfiles(args.query);
-    //       socket.emit('agent_message', {
-    //         data: {
-    //           conclusion: result,
-    //           status: "end"
-    //         }
-    //       });
-    //     }
-    //     content = "解析完成";
-    //   } catch (error) {
-    //     logger.error('Worker执行文档解析失败:', error);
-    //     socket.emit('agent_message', {
-    //       data: {
-    //         conclusion: `文档解析失败: ${(error as Error).message}`,
-    //         status: "error"
-    //       }
-    //     });
-    //   }
-    // } else {
-    //   isError = false;
-    //   content = "未找到待分析的文档文件";
-    //   socket.emit('agent_message', {
-    //     data: {
-    //       conclusion: "未找到待分析的文档文件",
-    //       status: "error"
-    //     }
-    //   });
-    // }
     
     // 执行完成后销毁监听器
     destroyAnalysisEventListeners();
@@ -211,7 +160,7 @@ export async function run(
     return [
       {
         isError: false,
-        content: [rawErrorMessage],
+        content: ["执行结束"],
       },
     ];
   }

@@ -73,6 +73,7 @@ const App: React.FC = () => {
   });
   const [autoMode, setAutoMode] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null); // 跟踪当前流式传输的消息ID
+  const [planList, setPlanList] = useState<any[]>([]); // 新增计划列表状态
   const streamingMessageIdRef = useRef<string | null>(null); // 使用ref来避免状态更新延迟
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketService = useRef<SocketService | null>(null);
@@ -103,6 +104,15 @@ const App: React.FC = () => {
 
     socketService.current.on('agent_message', (data: any) => {
       console.log('📨 收到消息:', data, 'streamingId:', streamingMessageIdRef.current)
+      
+      // 监听计划消息
+      if (data?.type === 'plan') {
+        if (Array.isArray(data.data?.plan) && data.data.plan.length > 0) {
+          setPlanList(data.data.plan);
+        }
+        // 如果没有 plan 字段则不做任何处理，保持原有计划
+        return;
+      }
       
       // 处理简历解析相关的消息
       if (data?.data?.conclusion !== undefined) {
@@ -484,6 +494,23 @@ const App: React.FC = () => {
                   </div>
                 )}
               </Space>
+            </Card>
+
+            {/* 新增计划列表卡片 */}
+            <Card size="small" title="计划列表" style={{ marginBottom: 16 }}>
+              {planList && planList.length > 0 ? (
+                <List
+                  size="small"
+                  dataSource={planList}
+                  renderItem={(item, idx) => (
+                    <List.Item>
+                      <span style={{ fontWeight: 500 }}>{idx + 1}. {item.title}</span>
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <span style={{ color: '#aaa' }}>暂无计划</span>
+              )}
             </Card>
 
             <Card size="small" title="控制面板" style={{ marginBottom: 16 }}>

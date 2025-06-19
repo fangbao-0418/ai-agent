@@ -233,7 +233,7 @@ export class GUIAgent<T extends Operator> extends BaseGUIAgent<
         let end = Date.now();
 
         if (isValidImage) {
-          // parsePageContent(snapshot.base64)
+          parsePageContent(snapshot.base64)
           data.conversations.push({
             from: 'human',
             value: IMAGE_PLACEHOLDER,

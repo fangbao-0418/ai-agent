@@ -4,15 +4,15 @@ import fs from "fs";
 import path from "path";
 import { logger } from "./logger";
 import { callDoubao } from "./ai-call/doubao";
-import { replaceBase64Prefix } from "@src/libs/sdk/utils";
+import { preprocessResizeImage } from "@src/libs/sdk/utils";
 
 const tasks: string[] = []
 
 let isRunning = false;
 
 async function parseImage (base64Image: string) {
-  const streams = callDoubao({
-    imageUrl: base64Image
+  const streams = await callDoubao({
+    imageUrl: 'data:image/png;base64,' + await preprocessResizeImage(base64Image, 5120 * 289 * 28)
   })
   let content = ""
   for await (const chunk of streams) {
